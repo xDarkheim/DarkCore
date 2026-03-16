@@ -28,10 +28,10 @@ Microsoft SQL Server  (external — your MuOnline game database)
 
 ## Configuration before first start
 
-| File | Contains | Git-tracked |
-| :--- | :--- | :---: |
-| `includes/config/cms.json` | Database, site settings, features | ❌ |
-| `docker/config.env` | Docker runtime: domain, timezone, cron, Xdebug | ❌ |
+ File  Contains  Git-tracked 
+ :---  :---  :---: 
+ `includes/config/cms.json`  Database, site settings, features  No 
+ `docker/config.env`  Docker runtime: domain, timezone, cron, Xdebug  No 
 
 Both have committed example/default files to copy from.
 
@@ -114,7 +114,7 @@ Then configure a **Proxy Host** in Nginx Proxy Manager:
 | Scheme | `http` |
 | Forward Hostname / IP | `cms_darkweb` *(your container name)* |
 | Forward Port | `8081` |
-| Block Common Exploits | ✅ |
+ Block Common Exploits  Yes 
 
 SSL → **Request a new SSL Certificate** (Let's Encrypt).
 

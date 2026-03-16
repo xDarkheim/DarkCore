@@ -185,13 +185,13 @@ All classes under `src/` are autoloaded via Composer PSR-4 with the root namespa
 
 | Path | Edit? | Notes |
 | :--- | :---: | :--- |
-| `src/` | ✅ | Application / domain / infrastructure classes |
-| `includes/config/cms.json` | ✅ | Main config: DB credentials, server name, feature toggles |
-| `assets/css/*.css` | ✅ | Page/component styles — add filename to `$_cssFiles` in `templates/default/index.php` |
-| `templates/default/css/*.css` | ✅ | Template layout styles — add `<link>` before `override.css` |
-| `templates/default/js/*.js` | ✅ | Template JS — add `<script>` tag in `templates/default/index.php` |
-| `modules/usercp/*.php` | ✅ | Individual UserCP sub-pages |
-| `includes/languages/*/language.php` | ✅ | Translation phrases |
-| `vendor/` | ❌ | Managed by Composer — run `composer install` / `composer update` |
-| `includes/cache/` | ❌ | Runtime cache managed by CMS |
-| `includes/logs/` | ❌ | Runtime logs managed by CMS |
+| `src/` | Yes | Application / domain / infrastructure classes |
+| `includes/config/cms.json` | Yes | Main config: DB credentials, server name, feature toggles |
+| `assets/css/*.css` | Yes | Page/component styles — add filename to `$_cssFiles` in `templates/default/index.php` |
+| `templates/default/css/*.css` | Yes | Template layout styles — add `<link>` before `override.css` |
+| `templates/default/js/*.js` | Yes | Template JS — add `<script>` tag in `templates/default/index.php` |
+| `modules/usercp/*.php` | Yes | Individual UserCP sub-pages |
+| `includes/languages/*/language.php` | Yes | Translation phrases |
+| `vendor/` | No | Managed by Composer — run `composer install` / `composer update` |
+| `includes/cache/` | No | Runtime cache managed by CMS |
+| `includes/logs/` | No | Runtime logs managed by CMS |

@@ -18,12 +18,12 @@
 
 | Layer | |
 | :--- | :--- |
-| 🔧 **Backend** | PHP 8.4, Apache 2.4+ (`mod_rewrite`), Composer 2 (PSR-4) |
-| 🗄️ **Database** | Microsoft SQL Server via `pdo_dblib` (FreeTDS) |
-| 🎨 **Frontend** | Bootstrap 3, Vanilla JS, fully mobile responsive |
-| 🐳 **Runtime** | Docker + docker compose |
+| **Backend** | PHP 8.4, Apache 2.4+ (`mod_rewrite`), Composer 2 (PSR-4) |
+| **Database** | Microsoft SQL Server via `pdo_dblib` (FreeTDS) |
+| **Frontend** | Bootstrap 3, Vanilla JS, fully mobile responsive |
+| **Runtime** | Docker + docker compose |
 
-> ⚠️ **Emulator compatibility:** X-Team, MuEmu, Louis, Darkheim Emulator.
+> **Emulator compatibility:** X-Team, MuEmu, Louis, Darkheim Emulator.
 > IGCN, zTeam, OpenMU and other emulators are not yet supported.
 
 ---
@@ -49,17 +49,17 @@ Open `https://your-domain/install/` in the browser, complete the setup wizard, t
 
 | Feature | Details |
 | :--- | :--- |
-| 🔐 Authentication | Registration, login, forgot password, email verification |
-| ⚔️ Character management | View and edit character stats |
-| 🏆 Rankings | Player and guild rankings with class filter |
-| 📰 News | Multi-language news with translations |
-| 💳 Donations & credits | PayPal integration and credits system |
-| 🛠️ Admin panel | Full-featured control panel (`admincp/`) |
-| 🔌 Plugins | Runtime-loadable plugin system |
-| 🌐 Multi-language | EN, RU, CN, ES, PT, RO |
-| 📱 Mobile responsive | Hamburger menu, stacking grid, touch-friendly tables |
-| ⏱️ Cron & API | Scheduled tasks via `api/cron.php` |
-| ℹ️ Info page | Server rates, character classes, game features, maps |
+| Authentication | Registration, login, forgot password, email verification |
+| Character management | View and edit character stats |
+| Rankings | Player and guild rankings with class filter |
+| News | Multi-language news with translations |
+| Donations & credits | PayPal integration and credits system |
+| Admin panel | Full-featured control panel (`admincp/`) |
+| Plugins | Runtime-loadable plugin system |
+| Multi-language | EN, RU, CN, ES, PT, RO |
+| Mobile responsive | Hamburger menu, stacking grid, touch-friendly tables |
+| Cron & API | Scheduled tasks via `api/cron.php` |
+| Info page | Server rates, character classes, game features, maps |
 
 ---
 
@@ -67,13 +67,13 @@ Open `https://your-domain/install/` in the browser, complete the setup wizard, t
 
 | Document | What it covers |
 | :--- | :--- |
-| 📁 [`docs/project-structure.md`](docs/project-structure.md) | Directory layout, bootstrap path, namespace map |
-| ⚙️ [`docs/configuration.md`](docs/configuration.md) | `cms.json` keys, `docker/config.env` variables |
-| 🚀 [`docs/deployment.md`](docs/deployment.md) | Docker setup, reverse proxy, useful commands |
-| 🎨 [`docs/build.md`](docs/build.md) | Frontend assets, CSS/JS load order, cache busting |
-| 💅 [`docs/css-architecture.md`](docs/css-architecture.md) | CSS naming conventions, dark mode, mobile breakpoints |
-| 🧪 [`docs/phpunit.md`](docs/phpunit.md) | Running tests, writing tests, IDE setup, Xdebug |
-| 🔍 [`docs/phpstan.md`](docs/phpstan.md) | Static analysis, suppression rules, common errors |
+| [`docs/project-structure.md`](docs/project-structure.md) | Directory layout, bootstrap path, namespace map |
+| [`docs/configuration.md`](docs/configuration.md) | `cms.json` keys, `docker/config.env` variables |
+| [`docs/deployment.md`](docs/deployment.md) | Docker setup, reverse proxy, useful commands |
+| [`docs/build.md`](docs/build.md) | Frontend assets, CSS/JS load order, cache busting |
+| [`docs/css-architecture.md`](docs/css-architecture.md) | CSS naming conventions, dark mode, mobile breakpoints |
+| [`docs/phpunit.md`](docs/phpunit.md) | Running tests, writing tests, IDE setup, Xdebug |
+| [`docs/phpstan.md`](docs/phpstan.md) | Static analysis, suppression rules, common errors |
 
 ---
 

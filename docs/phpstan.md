@@ -47,7 +47,7 @@ visible to PHPStan without a live database.
 
 ## Suppression rules
 
-> ⚠️ **Do not add new global suppressions.** Fix type errors in source instead.
+> **Do not add new global suppressions.** Fix type errors in source instead.
 
 ### Global suppression (`phpstan.neon`)
 
