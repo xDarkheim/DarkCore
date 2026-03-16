@@ -11,6 +11,7 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-0.0.1-0f0f0f?style=flat-square)](CHANGELOG.md)
+[![CI](https://github.com/xDarkheim/DarkWeb/actions/workflows/ci.yml/badge.svg)](https://github.com/xDarkheim/DarkWeb/actions/workflows/ci.yml)
 
 </div>
 
@@ -18,7 +19,7 @@
 
 ## ⚠️ Emulator compatibility
 
-> **DarkWeb currently works with [X-Team](https://github.com/xTeam-emu), [MuEmu](https://github.com/muemu), [Louis](https://github.com/djnandinho26/MUEMU) and **Darkheim Emulator** builds.**
+> **DarkWeb currently works with X-Team, MuEmu, Louis and Darkheim Emulator builds.**
 >
 > The database table structure is based on the **X-Team / MuEmu / Louis** schema (`MasterSkillTree`, `ResetCount`, `MasterResetCount`, `Gens_Rank`, etc.).
 >
@@ -97,8 +98,9 @@ All project docs live in [`docs/`](docs/):
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you'd like to change.
+Pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting changes.
 
+For major features, open an issue first to discuss what you'd like to change.  
 Please make sure to update tests as appropriate and run:
 
 ```bash
@@ -106,8 +108,13 @@ composer test       # PHPUnit
 composer analyse    # PHPStan
 ```
 
+See also: [Code of Conduct](CODE_OF_CONDUCT.md) · [Security Policy](SECURITY.md) · [Changelog](CHANGELOG.md)
+
 ---
 
 ## License
 
-[MIT](LICENSE) © 2024-2026 [Dmytro Hovenko](https://darkheim.net)
+DarkWeb CMS is open-source software licensed under the **[MIT License](LICENSE)**.
+
+© 2024–2026 [Dmytro Hovenko](https://darkheim.net) — All rights reserved to the original author.  
+You are free to use, modify, and distribute this software under the terms of the MIT License.
