@@ -11,7 +11,6 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-0.0.1-0f0f0f?style=flat-square)](CHANGELOG.md)
-[![CI](https://github.com/xDarkheim/DarkWeb/actions/workflows/ci.yml/badge.svg)](https://github.com/xDarkheim/DarkWeb/actions/workflows/ci.yml)
 
 </div>
 
