@@ -11,17 +11,17 @@ Copy `cms.json.default` to `cms.json` and fill in your values. The installer doe
 ### System
 
 | Key | Type | Description |
-|-----|------|-------------|
+| :--- | :---: | :--- |
 | `system_active` | bool | `false` → shows maintenance redirect |
 | `maintenance_page` | string | URL to redirect to when system is inactive |
 | `error_reporting` | bool | Enable PHP error output (disable in production) |
 | `website_template` | string | Template directory name under `templates/` (default: `"default"`) |
 | `cms_installed` | bool | Set to `true` by the installer — blocks re-running install |
 
-### Server info (displayed on the site)
+### Server info
 
 | Key | Type | Description |
-|-----|------|-------------|
+| :--- | :---: | :--- |
 | `server_name` | string | Server name shown in header, login modal, meta tags |
 | `server_tagline` | string | Subtitle line in the header |
 | `website_title` | string | `<title>` tag content |
@@ -40,7 +40,7 @@ Copy `cms.json.default` to `cms.json` and fill in your values. The installer doe
 ### Database
 
 | Key | Type | Description |
-|-----|------|-------------|
+| :--- | :---: | :--- |
 | `SQL_DB_HOST` | string | SQL Server hostname or IP |
 | `SQL_DB_NAME` | string | Database name (default: `"MuOnline"`) |
 | `SQL_DB_USER` | string | Database user |
@@ -52,19 +52,19 @@ Copy `cms.json.default` to `cms.json` and fill in your values. The installer doe
 ### Language
 
 | Key | Type | Description |
-|-----|------|-------------|
+| :--- | :---: | :--- |
 | `language_default` | string | Default language code. Supported: `"en"`, `"ru"`, `"cn"`, `"es"`, `"pt"`, `"ro"` |
 | `language_switch_active` | bool | Show language switcher in the top bar |
 | `language_debug` | bool | Highlight missing phrases (dev only) |
 
-> **Active languages:** EN, RU, CN, ES, PT, RO.  
-> Language phrase files live in `includes/languages/<code>/language.php`.  
+> **Active languages:** EN, RU, CN, ES, PT, RO.
+> Language phrase files live in `includes/languages/<code>/language.php`.
 > To add a new language: create the directory and phrase file, then add the entry to `templateLanguageSelector()` in `templates/default/inc/template.functions.php`.
 
 ### Authentication & registration
 
 | Key | Type | Description |
-|-----|------|-------------|
+| :--- | :---: | :--- |
 | `username_min_len` | int | Minimum username length |
 | `username_max_len` | int | Maximum username length |
 | `password_min_len` | int | Minimum password length |
@@ -73,7 +73,7 @@ Copy `cms.json.default` to `cms.json` and fill in your values. The installer doe
 ### Features
 
 | Key | Type | Description |
-|-----|------|-------------|
+| :--- | :---: | :--- |
 | `player_profiles` | bool | Enable public player profile pages |
 | `guild_profiles` | bool | Enable public guild profile pages |
 | `character_avatars_dir` | string | Sub-directory under `img/` for character avatar images |
@@ -84,14 +84,14 @@ Copy `cms.json.default` to `cms.json` and fill in your values. The installer doe
 ### Cron
 
 | Key | Type | Description |
-|-----|------|-------------|
+| :--- | :---: | :--- |
 | `cron_api` | bool | Enable the `/api/cron.php` endpoint |
 | `cron_api_key` | string | Secret key required in the `?key=` query parameter |
 
 ### Social links
 
 | Key | Description |
-|-----|-------------|
+| :--- | :--- |
 | `social_link_facebook` | Facebook URL |
 | `social_link_instagram` | Instagram URL |
 | `social_link_discord` | Discord invite URL |
@@ -110,18 +110,16 @@ Maps admin usernames to their access level. Currently only level `100` (full acc
 
 Docker runtime settings live in **`docker/config.env`** — a separate file that is git-ignored and never committed.
 
-Copy the example template and edit for your environment:
-
 ```bash
 cp docker/config.env.example docker/config.env
 ```
 
 | Variable | Default | Description |
-|----------|---------|-------------|
-| `DOCKER_SERVER_NAME` | `localhost` | Domain name. Injected into Apache `VirtualHost` as `ServerName` and into `PHP_IDE_CONFIG=serverName=<value>` for Xdebug IDE path mapping. |
-| `DOCKER_TIMEZONE` | `UTC` | IANA timezone applied to the container via `/etc/localtime`. |
-| `DOCKER_CRON_URL` | *(empty)* | Full URL for the cron endpoint — written to `/etc/cron.d/cms-cron` (runs every minute). Must include `?key=<cron_api_key>`. Leave empty to disable cron. |
-| `DOCKER_XDEBUG_MODE` | `off` | Xdebug 3 mode. Values: `off`, `debug`, `profile`, `trace`, or comma-separated combos (e.g. `debug,coverage`). |
+| :--- | :---: | :--- |
+| `DOCKER_SERVER_NAME` | `localhost` | Domain name — injected into Apache `VirtualHost` as `ServerName` and into `PHP_IDE_CONFIG` for Xdebug path mapping |
+| `DOCKER_TIMEZONE` | `UTC` | IANA timezone applied to the container via `/etc/localtime` |
+| `DOCKER_CRON_URL` | *(empty)* | Full URL for the cron endpoint — written to `/etc/cron.d/cms-cron`. Must include `?key=<cron_api_key>`. Leave empty to disable cron |
+| `DOCKER_XDEBUG_MODE` | `off` | Xdebug 3 mode: `off`, `debug`, `profile`, `trace`, `coverage`, or comma-separated combos |
 
 > **When to rebuild vs restart:**
 > - `docker/config.env` change only → `docker compose restart`
@@ -130,21 +128,19 @@ cp docker/config.env.example docker/config.env
 ## Other config files
 
 | File | Purpose |
-|------|---------|
-| `cms.tables.php` | Maps CMS internal column names to your actual DB column names. Edit if your MuOnline database has non-standard column names. |
-| `custom.tables.php` | Project-specific column overrides — takes precedence over `cms.tables.php`. |
-| `castlesiege.json` | Castle Siege configuration (guild, schedule, prize). |
-| `usercp.json` | UserCP menu items — controls which pages appear in the sidebar and in what order. |
-| `navbar.json` | Navigation bar items configuration. |
-| `email.xml` | Email template definitions (subject, body templates for registration, password reset, etc.). |
-| `timezone.php` | Sets `date_default_timezone_set()`. Defaults to `Europe/Kiev`. |
-| `writable.paths.json` | List of paths the installer checks for write permissions. |
-
+| :--- | :--- |
+| `cms.tables.php` | Maps CMS internal column names to your actual DB column names |
+| `custom.tables.php` | Project-specific column overrides — takes precedence over `cms.tables.php` |
+| `castlesiege.json` | Castle Siege configuration (guild, schedule, prize) |
+| `usercp.json` | UserCP menu items — controls which pages appear in the sidebar |
+| `navbar.json` | Navigation bar items configuration |
+| `email.xml` | Email template definitions (subject, body for registration, password reset, etc.) |
+| `timezone.php` | Sets `date_default_timezone_set()`. Defaults to `Europe/Kiev` |
+| `writable.paths.json` | List of paths the installer checks for write permissions |
 
 ## Security notes
 
-- `includes/config/`, `includes/cache/`, and `includes/logs/` are protected by `.htaccess` (`Deny from all`).
-- Never commit `cms.json` to a public repository — it contains database credentials.
-- `docker-compose.override.yml` is in `.gitignore` and must never be committed.
-- Delete the `install/` directory after running the web installer.
-
+- `includes/config/`, `includes/cache/`, and `includes/logs/` are protected by `.htaccess` (`Deny from all`)
+- Never commit `cms.json` to a public repository — it contains database credentials
+- `docker-compose.override.yml` is in `.gitignore` and must never be committed
+- Delete the `install/` directory after running the web installer

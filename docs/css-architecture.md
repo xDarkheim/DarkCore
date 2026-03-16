@@ -4,10 +4,8 @@ This file documents how frontend styles are layered and where layout responsibil
 
 ## Overview
 
-Styles are split into two locations:
-
 | Location | Purpose |
-|----------|---------|
+| :--- | :--- |
 | `templates/default/css/` | Template-level layout: structure, navbar, header, footer |
 | `assets/css/` | Page/component styles — loaded by every template |
 
@@ -18,7 +16,7 @@ Both sets are injected individually via `<link>` tags in `templates/default/inde
 Order is critical — `override.css` must always be last.
 
 | # | File | Location | Purpose |
-|---|------|----------|---------|
+| :---: | :--- | :--- | :--- |
 | 1 | Bootstrap 3 CDN | CDN | Grid, components, utilities |
 | 2 | Bootstrap Icons CDN | CDN | Icon font (`bi bi-*`) |
 | 3 | `style.css` | `templates/default/css/` | Base theme: body, navbar, container, footer, hamburger menu |
@@ -42,12 +40,12 @@ Order is critical — `override.css` must always be last.
 
 ## CSS naming conventions
 
-All DarkWeb-owned utility classes use the `dh-` prefix. Template-level structural classes are defined in `style.css` and `override.css`.
+All DarkWeb-owned utility classes use the `dh-` prefix.
 
 ### Global template classes (`style.css`)
 
 | Class | Purpose |
-|-------|---------|
+| :--- | :--- |
 | `.dh-logo` | Server logo image (`<img>`) |
 | `.dh-online-bar` | Online player progress bar container |
 | `.dh-online-bar-progress` | Online bar filled portion |
@@ -56,10 +54,8 @@ All DarkWeb-owned utility classes use the `dh-` prefix. Template-level structura
 
 ### CSS custom properties (`variables.css`)
 
-All component styles use `--dh-*` CSS variables defined in `:root` and overridden for `.dark-mode`:
-
-| Variable | Light value | Dark value |
-|----------|-------------|------------|
+| Variable | Light | Dark |
+| :--- | :---: | :---: |
 | `--dh-accent` | `#3f6588` | `#4a7aaa` |
 | `--dh-gold` | `#c4a030` | `#d4aa50` |
 | `--dh-text` | `#333333` | `#d7dde5` |
@@ -70,10 +66,8 @@ All component styles use `--dh-*` CSS variables defined in `:root` and overridde
 
 ### Info page class headers (`info.css`)
 
-Each character class card uses a modifier on `.info-class-header`:
-
-| Modifier | Class |
-|----------|-------|
+| Modifier | Character class |
+| :--- | :--- |
 | `.dk` | Dark Knight |
 | `.dw` | Dark Wizard |
 | `.elf` | Fairy Elf |
@@ -90,31 +84,24 @@ Each character class card uses a modifier on `.info-class-header`:
 All responsive behaviour is driven by `override.css`. No separate mobile stylesheet exists.
 
 | Breakpoint | What changes |
-|------------|--------------|
+| :---: | :--- |
 | `≤ 991px` | Container becomes fluid, footer padding reduced, background `cover` |
-| `≤ 768px` | Hamburger menu activates — `#navbar` gets solid white/dark background, `ul` hidden until `.active` toggled |
-| `≤ 767px` | Grid columns stack (`col-xs-12`), tables get `overflow-x: auto`, rankings menu scrolls horizontally, news titles wrap |
+| `≤ 768px` | Hamburger menu activates — `#navbar` gets solid background, `ul` hidden until `.active` toggled |
+| `≤ 767px` | Grid columns stack (`col-xs-12`), tables get `overflow-x: auto`, rankings menu scrolls horizontally |
 | `≤ 480px` | Logo max-width limited, font sizes reduced, footer columns stack |
 
-### Hamburger menu
-
-The toggle button `#menu-toggle` is `display:none` on desktop and `display:inline-block` at `≤ 768px`.  
-JS in `index.php` toggles `.active` on `#navbar` to show/hide the `<ul>`. Clicking outside the navbar closes it automatically. The icon switches between `bi-list` (☰) and `bi-x-lg` (✕).
+The toggle button `#menu-toggle` is `display:none` on desktop and `display:inline-block` at `≤ 768px`.
+JS in `index.php` toggles `.active` on `#navbar` to show/hide the `<ul>`. The icon switches between `bi-list` (☰) and `bi-x-lg` (✕).
 
 ## Dark mode
 
-Dark mode is applied via the `html.dark-mode` class, set by `localStorage` on page load.  
-The toggle button `#theme-toggle` (Bootstrap Icons `bi-moon-stars-fill` / `bi-sun-fill`) is in the top bar.  
+Dark mode is applied via the `html.dark-mode` class, set by `localStorage` on page load.
+The toggle button `#theme-toggle` (`bi-moon-stars-fill` / `bi-sun-fill`) is in the top bar.
 All dark mode overrides are in `override.css` under `html.dark-mode` selectors.
 
 ## The override system
 
-`override.css` is loaded **last** and uses `!important` to guarantee precedence over:
+`override.css` is loaded **last** and uses `!important` to guarantee precedence over base styles and Bootstrap 3.
 
-- Base `style.css` declarations
-- Bootstrap 3 CDN styles
-- Any component style defined earlier in the load order
-
-**Rule of thumb:**
 - Component base styles → individual files in `assets/css/`
 - Final visual values, layout corrections, mobile breakpoints → `override.css`

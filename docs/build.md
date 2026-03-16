@@ -21,10 +21,8 @@ See [CSS Architecture](css-architecture.md) for the full load order and naming c
 
 Each JS file is included with its own `<script>` tag at the bottom of `<body>` in `templates/default/index.php`.
 
-**Load order:**
-
 | # | File | Purpose |
-|---|------|---------|
+| :---: | :--- | :--- |
 | 1 | jQuery 3.7.1 (CDN) | DOM manipulation |
 | 2 | `main.js` | Server time clock, castle siege countdown, PayPal calculator |
 | 3 | `events.js` | Event schedule feed (`/api/events.php`) |
