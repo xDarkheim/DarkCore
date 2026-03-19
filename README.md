@@ -100,6 +100,13 @@ vendor/bin/php-cs-fixer fix  # code style
 
 ---
 
+## Credits
+
+- Lautaro Angelico — creator of WebEngine 1.2.6, which DarkCore is based on and currently being reworked.
+- alevarxz — improvements to the default template design used as a base.
+
+---
+
 ## License
 
 MIT License © 2026 [Dmytro Hovenko](https://darkheim.net)
