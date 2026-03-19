@@ -1,7 +1,8 @@
-RewriteEngine on
-
-# ── Static asset caching ─────────────────────────────────────────────────────
-# CSS/JS versioned via ?v= query string — allow short cache
+Options +FollowSymLinks -Indexes
+DirectoryIndex index.php index.html
+RewriteEngine On
+# Static asset caching
+# CSS/JS versioned via ?v= query string - allow short cache
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresByType image/jpeg           "access plus 30 days"
@@ -12,7 +13,6 @@ RewriteEngine on
     ExpiresByType font/woff2           "access plus 30 days"
     ExpiresByType font/woff            "access plus 30 days"
 </IfModule>
-
 <IfModule mod_headers.c>
     <FilesMatch "\.(css|js)$">
         Header set Cache-Control "no-cache, must-revalidate"
@@ -21,22 +21,18 @@ RewriteEngine on
         Header set Cache-Control "public, max-age=2592000, immutable"
     </FilesMatch>
 </IfModule>
-# ─────────────────────────────────────────────────────────────────────────────
-
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !^/admincp/ [NC]
 RewriteCond %{REQUEST_URI} !^/install/ [NC]
 RewriteCond %{REQUEST_URI} !^/api/ [NC]
-RewriteRule ^([a-zA-Z0-9]+)/([a-zA-Z0-9]+)/([a-zA-Z0-9-_\/]+)/?$ index.php?page=$1&subpage=$2&request=$3 [QSA,L]
-
+RewriteRule ^([a-zA-Z0-9]+)/([a-zA-Z0-9]+)/([a-zA-Z0-9-_/]+)/?$ index.php?page=$1&subpage=$2&request=$3 [QSA,L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !^/admincp/ [NC]
 RewriteCond %{REQUEST_URI} !^/install/ [NC]
 RewriteCond %{REQUEST_URI} !^/api/ [NC]
 RewriteRule ^([a-zA-Z0-9]+)/([a-zA-Z0-9]+)/?$ index.php?page=$1&subpage=$2 [QSA,L]
-
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !^/admincp/ [NC]

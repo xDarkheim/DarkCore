@@ -56,7 +56,7 @@ final class GeoIpService
             ? 'default'
             : strtolower($countryCode);
 
-        $base = defined('__PATH_COUNTRY_FLAGS__') ? (string) __PATH_COUNTRY_FLAGS__ : '';
+        $base = defined('__PATH_COUNTRY_FLAGS__') ? (string) constant('__PATH_COUNTRY_FLAGS__') : '';
 
         return $base . $code . '.gif';
     }

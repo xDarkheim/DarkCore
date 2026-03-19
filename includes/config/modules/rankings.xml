@@ -3,7 +3,7 @@
 	<active>1</active>
 	<rankings_results>50</rankings_results>
 	<rankings_show_date>1</rankings_show_date>
-	<rankings_show_default>resets</rankings_show_default>
+	<rankings_show_default>level</rankings_show_default>
 	<rankings_show_place_number>1</rankings_show_place_number>
 	<rankings_enable_level>1</rankings_enable_level>
 	<rankings_enable_resets>1</rankings_enable_resets>
