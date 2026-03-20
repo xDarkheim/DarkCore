@@ -59,7 +59,7 @@ Copy `cms.json.default` to `cms.json` and fill in your values. The installer doe
 
 > **Active languages:** EN, RU, CN, ES, PT, RO.
 > Language phrase files live in `includes/languages/<code>/language.php`.
-> To add a new language: create the directory and phrase file, then add the entry to `templateLanguageSelector()` in `templates/default/inc/template.functions.php`.
+> To add a new language: create the directory and phrase file, then add the entry to `templateLanguageSelector()` in `public/templates/default/inc/template.functions.php`.
 
 ### Authentication & registration
 
@@ -140,7 +140,7 @@ cp docker/config.env.example docker/config.env
 
 ## Security notes
 
-- `includes/config/`, `includes/cache/`, and `includes/logs/` are protected by `.htaccess` (`Deny from all`)
+- `includes/config/`, `var/cache/`, and `var/logs/` are protected from direct web access (`public/` is the only DocumentRoot)
 - Never commit `cms.json` to a public repository — it contains database credentials
 - `docker-compose.override.yml` is in `.gitignore` and must never be committed
-- Delete the `install/` directory after running the web installer
+- Delete the `public/install/` directory after running the web installer

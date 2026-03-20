@@ -148,11 +148,13 @@ This map shows where the main CMS components live and which paths are safe to mo
 │   │   ├── modules/                # Per-module XML configs (feature toggles)
 │   │   └── writable.paths.json     # Paths checked for write permissions on install
 │   ├── languages/                  # Phrase files — one PHP file per language code
-│   ├── cache/                      # Runtime cache (auto-created, NOT web-accessible)
-│   ├── logs/                       # Runtime logs  (auto-created, NOT web-accessible)
 │   ├── emails/                     # Email template helpers
 │   ├── cron/                       # Cron job scripts
 │   └── plugins/                    # Runtime plugin files
+│
+├── var/                            # Runtime-only data (NOT web-accessible)
+│   ├── cache/                      # JSON/text caches, ranking caches, news cache, plugins cache
+│   └── logs/                       # PHP and DB error logs
 │
 ├── modules/                        # Frontend page modules (NOT web-accessible directly)
 │   ├── home.php
@@ -194,7 +196,7 @@ public/index.php
               ├── includes/config/cms.tables.php
               ├── includes/config/timezone.php
               ├── includes/bootstrap/compat.php
-              ├── plugin files          ← from includes/cache/plugins.cache
+              ├── plugin files          ← from var/cache/plugins.cache
               └── Handler::loadPage()  ← Darkheim\Infrastructure\Routing\Handler
 ```
 
@@ -208,8 +210,8 @@ public/index.php
 | `__PATH_MODULES__` | `modules/` filesystem path |
 | `__PATH_TEMPLATES__` | `public/templates/` filesystem path |
 | `__PATH_CONFIGS__` | `includes/config/` filesystem path |
-| `__PATH_CACHE__` | `includes/cache/` filesystem path |
-| `__PATH_LOGS__` | `includes/logs/` filesystem path |
+| `__PATH_CACHE__` | `var/cache/` filesystem path |
+| `__PATH_LOGS__` | `var/logs/` filesystem path |
 | `__BASE_URL__` | Site URL (e.g. `https://example.com/`) |
 | `__PATH_IMG__` | `__BASE_URL__ . 'img/'` |
 | `__PATH_ASSETS__` | `__BASE_URL__ . 'assets/'` |
@@ -309,6 +311,6 @@ one-to-three-line wrapper that casts arguments and delegates to the matching `sr
 | `modules/usercp/*.php` | ✅ | Individual UserCP sub-pages |
 | `includes/languages/*/language.php` | ✅ | Translation phrases |
 | `vendor/` | ❌ | Managed by Composer — run `composer install` / `composer update` |
-| `includes/cache/` | ❌ | Runtime cache managed by CMS |
-| `includes/logs/` | ❌ | Runtime logs managed by CMS |
+| `var/cache/` | ❌ | Runtime cache managed by CMS |
+| `var/logs/` | ❌ | Runtime logs managed by CMS |
 

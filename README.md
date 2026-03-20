@@ -42,7 +42,7 @@ cp docker/config.env.example docker/config.env
 docker compose up -d --build
 ```
 
-Open `https://your-domain/install/` in the browser, complete the setup wizard, then **delete the `install/` directory**.
+Open `https://your-domain/install/` in the browser, complete the setup wizard, then **delete the `public/install/` directory**.
 
 ---
 
@@ -55,11 +55,11 @@ Open `https://your-domain/install/` in the browser, complete the setup wizard, t
 | Rankings | Player and guild rankings with class filter |
 | News | Multi-language news with translations |
 | Donations & credits | PayPal integration and credits system |
-| Admin panel | Full-featured control panel (`admincp/`) |
+| Admin panel | Full-featured control panel (`public/admincp/`) |
 | Plugins | Runtime-loadable plugin system |
 | Multi-language | EN, RU, CN, ES, PT, RO |
 | Mobile responsive | Hamburger menu, stacking grid, touch-friendly tables |
-| Cron & API | Scheduled tasks via `api/cron.php` |
+| Cron & API | Scheduled tasks via `public/api/cron.php` |
 | Info page | Server rates, character classes, game features, maps |
 
 ---
@@ -86,6 +86,7 @@ Open `https://your-domain/install/` in the browser, complete the setup wizard, t
 - Classes in `src/` depend on these adapters instead of reading PHP superglobals directly.
 - `includes/bootstrap/boot.php` — thin entry point; loads Composer autoloader and boots `AppKernel`.
 - `includes/bootstrap/compat.php` — **global function shim**; every function is a one-liner that delegates to a namespaced class. Legacy modules keep working without change; new code calls the class directly.
+- Runtime data now lives in `var/cache/` and `var/logs/`; only `public/` is web-accessible.
 - All business logic that was previously in `includes/bootstrap/functions.php` now lives in proper namespaced classes: `GameHelper`, `MessageRenderer`, `Redirector`, `Translator`, `ProfileRenderer`, `SessionManager`, `AdminGuard`, `IpBlocker`, `GeoIpService`, `CacheBuilder`, `CacheRepository`, `TimeHelper`, `Encoder`, `FileHelper`, `LanguageRepository`, and others.
 
 ---

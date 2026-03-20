@@ -22,10 +22,10 @@ cms_get() {
 
 # ── 1. Create required directories if they don't exist (fresh clone) ──────────
 echo "[startup] Creating required directories..."
-mkdir -p /var/www/html/includes/cache/news/translations \
-         /var/www/html/includes/cache/profiles/guilds \
-         /var/www/html/includes/cache/profiles/players \
-         /var/www/html/includes/logs \
+mkdir -p /var/www/html/var/cache/news/translations \
+         /var/www/html/var/cache/profiles/guilds \
+         /var/www/html/var/cache/profiles/players \
+         /var/www/html/var/logs \
          /var/www/html/includes/config
 
 # ── 1a. Touch required cache & log files ──────────────────────────────────────
@@ -49,31 +49,31 @@ for f in \
     rankings_votes.cache \
     server_info.cache
 do
-    touch "/var/www/html/includes/cache/${f}"
+    touch "/var/www/html/var/cache/${f}"
 done
 
-touch /var/www/html/includes/logs/database_errors.log \
-      /var/www/html/includes/logs/php_errors.log
+touch /var/www/html/var/logs/database_errors.log \
+      /var/www/html/var/logs/php_errors.log
 
 # ── 2. Protect sensitive directories with .htaccess (if not already present) ──
-echo "[startup] Securing directories..."
-for dir in cache logs config; do
-    htfile="/var/www/html/includes/${dir}/.htaccess"
+echo "[startup] Securing runtime and config directories..."
+for path in /var/www/html/var/cache /var/www/html/var/logs /var/www/html/includes/config; do
+    htfile="${path}/.htaccess"
     if [ ! -f "$htfile" ]; then
         echo "Deny from all" > "$htfile"
-        echo "[startup] Created .htaccess in includes/${dir}"
+        echo "[startup] Created .htaccess in ${path}"
     fi
 done
 
 # ── 3. Fix permissions ────────────────────────────────────────────────────────
 echo "[startup] Setting up permissions..."
 chown -R www-data:www-data \
-    /var/www/html/includes/cache \
-    /var/www/html/includes/logs \
+    /var/www/html/var/cache \
+    /var/www/html/var/logs \
     /var/www/html/includes/config 2>/dev/null || true
 chmod -R 775 \
-    /var/www/html/includes/cache \
-    /var/www/html/includes/logs \
+    /var/www/html/var/cache \
+    /var/www/html/var/logs \
     /var/www/html/includes/config 2>/dev/null || true
 
 # ── 4. Composer — install dependencies and regenerate autoloader ──────────────

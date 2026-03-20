@@ -1,11 +1,11 @@
 <?php
 // check the installation directory — only warn if not blocked by .htaccess
-$_installHtaccess = __ROOT_DIR__ . 'install/.htaccess';
-if(file_exists(__ROOT_DIR__ . 'install/') && !(file_exists($_installHtaccess) && strpos(file_get_contents($_installHtaccess), 'Require all denied') !== false)) {
+$_installHtaccess = __PUBLIC_DIR__ . 'install/.htaccess';
+if(file_exists(__PUBLIC_DIR__ . 'install/') && !(file_exists($_installHtaccess) && strpos(file_get_contents($_installHtaccess), 'Require all denied') !== false)) {
 	// Toast notification
-	message('warning', 'Install directory still exists — rename or delete it.', 'WARNING');
+	message('warning', 'public/install/ directory still exists — rename or delete it.', 'WARNING');
 	// Persistent inline banner on the dashboard
-	inline_message('warning', 'Your install/ directory still exists. It is strongly recommended that you rename or delete it before going live.');
+	inline_message('warning', 'Your public/install/ directory still exists. It is strongly recommended that you rename or delete it before going live.');
 }
 
 $database = $dB;

@@ -3,7 +3,7 @@
  * DarkCore CMS
  * 
  * 
- * @version 0.0.1
+ * @version 1.1.0
  * @author Dmytro Hovenko <dmytro.hovenko@gmail.com>
  * @copyright (c) 2026 DarkCore CMS. All Rights Reserved.
  * 
@@ -32,7 +32,7 @@ if(!isset($_REQUEST['subpage'])) {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="<?php echo htmlspecialchars((string) config('language_default', true), ENT_QUOTES, 'UTF-8'); ?>">
 	<head>
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -140,7 +140,7 @@ if(!isset($_REQUEST['subpage'])) {
 		</div>
 		<div id="header">
 			<a href="<?php echo __BASE_URL__; ?>">
-				<img class="dh-logo" src="<?php echo __PATH_TEMPLATE_IMG__; ?>logo.png" title="<?php config('server_name'); ?>"/>
+				<img class="dh-logo" src="<?php echo __PATH_TEMPLATE_IMG__; ?>logo.png" title="<?php config('server_name'); ?>" alt="<?php echo htmlspecialchars((string) config('server_name', true), ENT_QUOTES, 'UTF-8'); ?>"/>
 			</a>
 		</div>
 		<div class="header-info-container">

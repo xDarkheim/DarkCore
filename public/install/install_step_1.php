@@ -2,7 +2,7 @@
 /**
  * DarkCore
  *
- * @version 0.0.1
+ * @version 1.1.0
  * @author      Dmytro Hovenko <dmytro.hovenko@gmail.com>
  */
 
@@ -66,7 +66,7 @@ function optRow($label, $ok, $optNote = 'Optional') {
         <?php
         if(is_array($writablePaths)) {
             foreach($writablePaths as $filepath) {
-                $fullPath = __PATH_INCLUDES__ . $filepath;
+                $fullPath = __ROOT_DIR__ . ltrim($filepath, '/');
                 if(!file_exists($fullPath)) {
                     $badge = '<span class="label label-danger"><i class="bi bi-x-lg"></i> Missing</span>';
                 } elseif(!is_writable($fullPath)) {

@@ -97,7 +97,7 @@ docker compose up -d --build
 
 # 5. Run the web installer (first time only)
 # Open https://your-domain/install/ in a browser
-# → Delete the install/ directory after setup is complete
+# → Delete the public/install/ directory after setup is complete
 ```
 
 > **Rebuilding the image is required** when you change `docker/Dockerfile` or
@@ -119,7 +119,7 @@ Then configure a **Proxy Host** in Nginx Proxy Manager:
 | Scheme | `http` |
 | Forward Hostname / IP | `cms_darkcore` *(your container name)* |
 | Forward Port | `8081` |
- Block Common Exploits  Yes 
+| Block Common Exploits | `Yes` |
 
 SSL → **Request a new SSL Certificate** (Let's Encrypt).
 
@@ -146,9 +146,9 @@ SSL → **Request a new SSL Certificate** (Let's Encrypt).
 ### What entrypoint.sh does on each start
 
 1. Reads `DOCKER_*` variables from the container environment
-2. Creates all required directories (`includes/cache/` subtree, `includes/logs/`, `includes/config/`)
+2. Creates all required directories (`var/cache/` subtree, `var/logs/`, `includes/config/`)
 3. Creates all required cache and log files if missing
-4. Drops `Deny from all` `.htaccess` into `cache/`, `logs/`, `config/`
+4. Drops `Deny from all` `.htaccess` into `var/cache/`, `var/logs/`, and `includes/config/`
 5. Fixes ownership/permissions: `www-data:www-data`, mode `775`
 6. Runs `composer install --no-interaction --optimize-autoloader`
 7. Applies timezone from `DOCKER_TIMEZONE`

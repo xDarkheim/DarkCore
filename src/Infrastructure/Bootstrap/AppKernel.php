@@ -148,19 +148,19 @@ final class AppKernel
             '__PATH_MODULES__' => $rootDir . 'modules/',
             '__PATH_MODULES_USERCP__' => $rootDir . 'modules/usercp/',
             '__PATH_EMAILS__' => $rootDir . 'includes/emails/',
-            '__PATH_CACHE__' => $rootDir . 'includes/cache/',
+            '__PATH_CACHE__' => $rootDir . 'var/cache/',
             '__PATH_ADMINCP__' => $publicDir . 'admincp/',
             '__PATH_ADMINCP_INC__' => $publicDir . 'admincp/inc/',
             '__PATH_ADMINCP_MODULES__' => $publicDir . 'admincp/modules/',
-            '__PATH_NEWS_CACHE__' => $rootDir . 'includes/cache/news/',
-            '__PATH_NEWS_TRANSLATIONS_CACHE__' => $rootDir . 'includes/cache/news/translations/',
+            '__PATH_NEWS_CACHE__' => $rootDir . 'var/cache/news/',
+            '__PATH_NEWS_TRANSLATIONS_CACHE__' => $rootDir . 'var/cache/news/translations/',
             '__PATH_PLUGINS__' => $rootDir . 'includes/plugins/',
             '__PATH_CONFIGS__' => $rootDir . 'includes/config/',
             '__PATH_MODULE_CONFIGS__' => $rootDir . 'includes/config/modules/',
             '__PATH_CRON__' => $rootDir . 'includes/cron/',
-            '__PATH_LOGS__' => $rootDir . 'includes/logs/',
-            '__PATH_GUILD_PROFILES_CACHE__' => $rootDir . 'includes/cache/profiles/guilds/',
-            '__PATH_PLAYER_PROFILES_CACHE__' => $rootDir . 'includes/cache/profiles/players/',
+            '__PATH_LOGS__' => $rootDir . 'var/logs/',
+            '__PATH_GUILD_PROFILES_CACHE__' => $rootDir . 'var/cache/profiles/guilds/',
+            '__PATH_PLAYER_PROFILES_CACHE__' => $rootDir . 'var/cache/profiles/players/',
             '__PATH_MODULES_RANKINGS__' => $baseUrl . 'rankings/',
             '__PATH_ADMINCP_HOME__' => $baseUrl . 'admincp/',
             '__PATH_IMG__' => $baseUrl . 'img/',
@@ -171,9 +171,9 @@ final class AppKernel
             '__PATH_ASSETS__' => $baseUrl . 'assets/',
             '__PATH_ASSETS_CSS__' => $baseUrl . 'assets/css/',
             '__PATH_ASSETS_JS__' => $baseUrl . 'assets/js/',
-            'DARKHEIM_DATABASE_ERRORLOG' => $rootDir . 'includes/logs/database_errors.log',
+            'DARKHEIM_DATABASE_ERRORLOG' => $rootDir . 'var/logs/database_errors.log',
             'DARKHEIM_WRITABLE_PATHS' => $rootDir . 'includes/config/writable.paths.json',
-            'DARKHEIM_PHP_ERRORLOG' => $rootDir . 'includes/logs/php_errors.log',
+            'DARKHEIM_PHP_ERRORLOG' => $rootDir . 'var/logs/php_errors.log',
         ];
 
         foreach ($constants as $name => $value) {
@@ -185,8 +185,12 @@ final class AppKernel
 
     private function configureErrorLogging(): void
     {
+        if (defined('__PATH_LOGS__')) {
+            @mkdir(__PATH_LOGS__, 0775, true);
+        }
+
         ini_set('log_errors', '1');
-        ini_set('error_log', $this->includesDir . 'logs/php_errors.log');
+        ini_set('error_log', defined('DARKHEIM_PHP_ERRORLOG') ? DARKHEIM_PHP_ERRORLOG : $this->includesDir . 'logs/php_errors.log');
     }
 
     /**

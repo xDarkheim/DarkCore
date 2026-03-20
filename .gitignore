@@ -7,10 +7,10 @@
 .DS_Store
 Thumbs.db
 # Darkheim CMS specific
-includes/cache/*
-!includes/cache/.htaccess
-includes/logs/*
-!includes/logs/.htaccess
+var/cache/*
+!var/cache/.htaccess
+var/logs/*
+!var/logs/.htaccess
 # Temporary files
 *.tmp
 *.bak

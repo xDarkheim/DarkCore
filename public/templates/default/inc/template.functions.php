@@ -3,7 +3,7 @@
  * DarkCore CMS
  * 
  * 
- * @version 0.0.1
+ * @version 1.1.0
  * @author Dmytro Hovenko <dmytro.hovenko@gmail.com>
  * @copyright (c) 2026 DarkCore CMS. All Rights Reserved.
  * 

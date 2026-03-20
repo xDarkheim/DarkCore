@@ -8,8 +8,9 @@ if(!is_array($writablePaths)) {
 
 // File permission check
 foreach($writablePaths as $thisPath) {
-	if(file_exists(__PATH_INCLUDES__ . $thisPath)) {
-		if(!is_writable(__PATH_INCLUDES__ . $thisPath)) {
+	$fullPath = __ROOT_DIR__ . ltrim($thisPath, '/');
+	if(file_exists($fullPath)) {
+		if(!is_writable($fullPath)) {
 			$configError[] = "<span style=\"color:#aaaaaa;\">[Permission Error]</span> " . $thisPath . " <span style=\"color:red;\">(file must be writable)</span>";
 		}
 	} else {

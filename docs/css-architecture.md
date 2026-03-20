@@ -6,10 +6,10 @@ This file documents how frontend styles are layered and where layout responsibil
 
 | Location | Purpose |
 | :--- | :--- |
-| `templates/default/css/` | Template-level layout: structure, navbar, header, footer |
-| `assets/css/` | Page/component styles — loaded by every template |
+| `public/templates/default/css/` | Template-level layout: structure, navbar, header, footer |
+| `public/assets/css/` | Page/component styles — loaded by every template |
 
-Both sets are injected individually via `<link>` tags in `templates/default/index.php`. No bundler or `@import` entry point is used. Cache busting is automatic via `filemtime()` query strings.
+Both sets are injected individually via `<link>` tags in `public/templates/default/index.php`. No bundler or `@import` entry point is used. Cache busting is automatic via `filemtime()` query strings.
 
 ## CSS load order
 
@@ -19,24 +19,24 @@ Order is critical — `override.css` must always be last.
 | :---: | :--- | :--- | :--- |
 | 1 | Bootstrap 3 CDN | CDN | Grid, components, utilities |
 | 2 | Bootstrap Icons CDN | CDN | Icon font (`bi bi-*`) |
-| 3 | `style.css` | `templates/default/css/` | Base theme: body, navbar, container, footer, hamburger menu |
-| 4 | `profiles.css` | `templates/default/css/` | Old-style guild/player profile cards |
-| 5 | `castle-siege.css` | `templates/default/css/` | Castle siege background image overrides |
-| 6 | `variables.css` | `assets/css/` | CSS custom properties (`--dh-*`) |
-| 7 | `toast.css` | `assets/css/` | Toast notification component |
-| 8 | `auth.css` | `assets/css/` | Login / Register pages |
-| 9 | `ucp.css` | `assets/css/` | User Control Panel |
-| 10 | `myaccount.css` | `assets/css/` | My Account sub-page |
-| 11 | `profiles.css` | `assets/css/` | Modern `pf-*` profile layout |
-| 12 | `info.css` | `assets/css/` | Server info page |
-| 13 | `tos.css` | `assets/css/` | Terms of Service page |
-| 14 | `news.css` | `assets/css/` | News list and article pages |
-| 15 | `rankings.css` | `assets/css/` | Rankings tables and class filter |
-| 16 | `panels.css` | `assets/css/` | General panels and stat tables |
-| 17 | `paypal.css` | `assets/css/` | Donation / PayPal page |
-| 18 | `downloads.css` | `assets/css/` | Downloads page |
-| 19 | `castlesiege.css` | `assets/css/` | Castle Siege page (`cs-*`) |
-| 20 | **`override.css`** | `templates/default/css/` | **Last — wins all specificity** |
+| 3 | `style.css` | `public/templates/default/css/` | Base theme: body, navbar, container, footer, hamburger menu |
+| 4 | `profiles.css` | `public/templates/default/css/` | Old-style guild/player profile cards |
+| 5 | `castle-siege.css` | `public/templates/default/css/` | Castle siege background image overrides |
+| 6 | `variables.css` | `public/assets/css/` | CSS custom properties (`--dh-*`) |
+| 7 | `toast.css` | `public/assets/css/` | Toast notification component |
+| 8 | `auth.css` | `public/assets/css/` | Login / Register pages |
+| 9 | `ucp.css` | `public/assets/css/` | User Control Panel |
+| 10 | `myaccount.css` | `public/assets/css/` | My Account sub-page |
+| 11 | `profiles.css` | `public/assets/css/` | Modern `pf-*` profile layout |
+| 12 | `info.css` | `public/assets/css/` | Server info page |
+| 13 | `tos.css` | `public/assets/css/` | Terms of Service page |
+| 14 | `news.css` | `public/assets/css/` | News list and article pages |
+| 15 | `rankings.css` | `public/assets/css/` | Rankings tables and class filter |
+| 16 | `panels.css` | `public/assets/css/` | General panels and stat tables |
+| 17 | `paypal.css` | `public/assets/css/` | Donation / PayPal page |
+| 18 | `downloads.css` | `public/assets/css/` | Downloads page |
+| 19 | `castlesiege.css` | `public/assets/css/` | Castle Siege page (`cs-*`) |
+| 20 | **`override.css`** | `public/templates/default/css/` | **Last — wins all specificity** |
 
 ## CSS naming conventions
 
