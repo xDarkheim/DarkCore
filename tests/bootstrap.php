@@ -17,7 +17,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // ── Constants ────────────────────────────────────────────────────────────────
 
 $tmpBase = sys_get_temp_dir() . '/darkheim_tests/';
-if (!is_dir($tmpBase) && !mkdir($tmpBase, 0777, true)) {
+if (!is_dir($tmpBase) && !mkdir($tmpBase, 0777, true) && !is_dir($tmpBase)) {
     throw new \RuntimeException(
         sprintf('Directory "%s" was not created', $tmpBase)
     );
@@ -68,7 +68,7 @@ foreach ([
     $themeImgFs,
     __PATH_LOGS__,
 ] as $dir) {
-    if (!is_dir($dir) && !mkdir($dir, 0777, true)) {
+    if (!is_dir($dir) && !mkdir($dir, 0777, true) && !is_dir($dir)) {
         throw new \RuntimeException(
             sprintf('Directory "%s" was not created', $dir)
         );
@@ -77,8 +77,8 @@ foreach ([
 
 // ── DB table/column constants from the real config files ────────────────────
 
-require_once __DIR__ . '/../includes/config/cms.tables.php';
-require_once __DIR__ . '/../includes/config/custom.tables.php';
+require_once __DIR__ . '/../config/cms.tables.php';
+require_once __DIR__ . '/../config/custom.tables.php';
 
 // ── Global test config (used by config() / cmsConfigs() stubs) ──────────────
 

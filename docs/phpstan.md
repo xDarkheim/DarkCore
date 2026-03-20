@@ -30,7 +30,7 @@ docker compose exec web composer analyse
 | `level` | 5 |
 | `phpVersion` | 80400 |
 | `paths` | `src/` |
-| `bootstrapFiles` | `includes/bootstrap/compat.php`, `includes/config/cms.tables.php`, `includes/config/custom.tables.php` |
+| `bootstrapFiles` | `includes/bootstrap/compat.php`, `config/cms.tables.php`, `config/custom.tables.php` |
 
 Bootstrap files make global helpers (`lang()`, `config()`) and DB constants (`_TBL_CHR_`, `_CLMN_CHR_LVL_`)
 visible to PHPStan without a live database.

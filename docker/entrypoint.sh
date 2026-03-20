@@ -8,7 +8,7 @@ if [ -z "$DOCKER_SERVER_NAME" ] && [ -z "$DOCKER_TIMEZONE" ]; then
     echo "[startup]          Continuing with empty defaults — the site may not work correctly."
 fi
 
-CMS_JSON="/var/www/html/includes/config/cms.json"
+CMS_JSON="/var/www/html/config/cms.json"
 
 # ── Helper: read a key from cms.json via PHP (safe, no jq dependency) ─────────
 cms_get() {
@@ -26,7 +26,7 @@ mkdir -p /var/www/html/var/cache/news/translations \
          /var/www/html/var/cache/profiles/guilds \
          /var/www/html/var/cache/profiles/players \
          /var/www/html/var/logs \
-         /var/www/html/includes/config
+         /var/www/html/config
 
 # ── 1a. Touch required cache & log files ──────────────────────────────────────
 echo "[startup] Creating required cache and log files..."
@@ -57,7 +57,7 @@ touch /var/www/html/var/logs/database_errors.log \
 
 # ── 2. Protect sensitive directories with .htaccess (if not already present) ──
 echo "[startup] Securing runtime and config directories..."
-for path in /var/www/html/var/cache /var/www/html/var/logs /var/www/html/includes/config; do
+for path in /var/www/html/var/cache /var/www/html/var/logs /var/www/html/config; do
     htfile="${path}/.htaccess"
     if [ ! -f "$htfile" ]; then
         echo "Deny from all" > "$htfile"
@@ -70,11 +70,11 @@ echo "[startup] Setting up permissions..."
 chown -R www-data:www-data \
     /var/www/html/var/cache \
     /var/www/html/var/logs \
-    /var/www/html/includes/config 2>/dev/null || true
+    /var/www/html/config 2>/dev/null || true
 chmod -R 775 \
     /var/www/html/var/cache \
     /var/www/html/var/logs \
-    /var/www/html/includes/config 2>/dev/null || true
+    /var/www/html/config 2>/dev/null || true
 
 # ── 4. Composer — install dependencies and regenerate autoloader ──────────────
 echo "[startup] Running composer install..."

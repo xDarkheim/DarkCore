@@ -21,7 +21,8 @@ final class AppKernel
         ?RuntimeState $runtimeState = null,
     ) {
         $this->includesDir = rtrim(str_replace('\\', '/', $includesDir), '/') . '/';
-        $this->configProvider = $configProvider ?? new ConfigProvider($this->includesDir . 'config/');
+        $rootDir = dirname($this->includesDir);
+        $this->configProvider = $configProvider ?? new ConfigProvider($rootDir . '/config/');
         $this->runtimeState = $runtimeState ?? new RuntimeState();
         $this->handler = $handler ?? new Handler();
     }
@@ -163,8 +164,8 @@ final class AppKernel
             '__PATH_NEWS_CACHE__' => $rootDir . 'var/cache/news/',
             '__PATH_NEWS_TRANSLATIONS_CACHE__' => $rootDir . 'var/cache/news/translations/',
             '__PATH_PLUGINS__' => $rootDir . 'includes/plugins/',
-            '__PATH_CONFIGS__' => $rootDir . 'includes/config/',
-            '__PATH_MODULE_CONFIGS__' => $rootDir . 'includes/config/modules/',
+            '__PATH_CONFIGS__' => $rootDir . 'config/',
+            '__PATH_MODULE_CONFIGS__' => $rootDir . 'config/modules/',
             '__PATH_CRON__' => $rootDir . 'includes/cron/',
             '__PATH_LOGS__' => $rootDir . 'var/logs/',
             '__PATH_GUILD_PROFILES_CACHE__' => $rootDir . 'var/cache/profiles/guilds/',
@@ -180,7 +181,7 @@ final class AppKernel
             '__PATH_ASSETS_CSS__' => $baseUrl . 'assets/css/',
             '__PATH_ASSETS_JS__' => $baseUrl . 'assets/js/',
             'DARKHEIM_DATABASE_ERRORLOG' => $rootDir . 'var/logs/database_errors.log',
-            'DARKHEIM_WRITABLE_PATHS' => $rootDir . 'includes/config/writable.paths.json',
+            'DARKHEIM_WRITABLE_PATHS' => $rootDir . 'config/writable.paths.json',
             'DARKHEIM_PHP_ERRORLOG' => $rootDir . 'var/logs/php_errors.log',
         ];
 
@@ -193,8 +194,8 @@ final class AppKernel
 
     private function configureErrorLogging(): void
     {
-        if (defined('__PATH_LOGS__')) {
-            @mkdir(__PATH_LOGS__, 0775, true);
+        if (defined('__PATH_LOGS__') && !is_dir(__PATH_LOGS__) && !mkdir(__PATH_LOGS__, 0775, true) && !is_dir(__PATH_LOGS__)) {
+            throw new \RuntimeException('Could not create log directory: ' . __PATH_LOGS__);
         }
 
         ini_set('log_errors', '1');

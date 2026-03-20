@@ -5,7 +5,7 @@
 ```bash
 git clone https://github.com/xDarkheim/DarkCore DarkCore
 cd DarkCore
-cp includes/config/cms.json.default includes/config/cms.json
+cp config/cms.json.default config/cms.json
 cp docker/config.env.example docker/config.env
 docker compose up -d --build
 ```

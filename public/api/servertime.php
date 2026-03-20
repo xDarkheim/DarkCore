@@ -1,8 +1,13 @@
 <?php
+use Darkheim\Infrastructure\Http\JsonResponse;
 define('access', 'api');
 
-include('../../includes/bootstrap/boot.php');
+if(!@include('../../includes/bootstrap/boot.php')) {
+	JsonResponse::send(['code' => 500, 'error' => 'Could not load Darkheim CMS.'], 500);
+	return;
+}
 
-echo json_encode(array(
-	'ServerTime' => date("Y/m/d H:i:s")
-), JSON_THROW_ON_ERROR);
+JsonResponse::send([
+	'code' => 200,
+	'ServerTime' => date("Y/m/d H:i:s"),
+], 200);

@@ -10,6 +10,9 @@ use Darkheim\Infrastructure\Runtime\NativeSessionStore;
 use Darkheim\Infrastructure\Runtime\QueryStore;
 use Darkheim\Infrastructure\Runtime\SessionStore;
 use Darkheim\Application\Auth\Common;
+use Darkheim\Application\Page\HomeController;
+use Darkheim\Application\Page\LoginController;
+use Darkheim\Application\Page\RegisterController;
 
 /**
  * Request handler — routing, module loading, theme rendering.
@@ -88,6 +91,22 @@ class Handler
             }
 
             if (!check_value($page)) { $page = 'home'; }
+
+            // First controller-based slice: replace direct file includes for core pages.
+            if (!check_value($subpage) && in_array($page, ['home', 'login', 'register'], true)) {
+                switch ($page) {
+                    case 'home':
+                        (new HomeController())->render();
+                        break;
+                    case 'login':
+                        (new LoginController())->render();
+                        break;
+                    case 'register':
+                        (new RegisterController())->render();
+                        break;
+                }
+                return;
+            }
 
             if (!check_value($subpage)) {
                 if ($this->moduleExists($page)) {

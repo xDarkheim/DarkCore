@@ -23,7 +23,7 @@ define('__RELATIVE_ROOT__', rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIP
 define('__BASE_URL__', SERVER_PROTOCOL.HTTP_HOST.__RELATIVE_ROOT__);
 define('__PATH_INCLUDES__', __ROOT_DIR__.'includes/');
 define('__PATH_CRON__', __PATH_INCLUDES__.'cron/');
-define('__PATH_CONFIGS__', __PATH_INCLUDES__.'config/');
+define('__PATH_CONFIGS__', __ROOT_DIR__.'config/');
 // __INSTALL_ROOT__ points to the installer directory itself (public/install/)
 define('__INSTALL_ROOT__', str_replace('\\', '/', __DIR__) . '/');
 define('__INSTALL_URL__', __BASE_URL__ . 'install/');

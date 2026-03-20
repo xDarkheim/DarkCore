@@ -1,5 +1,6 @@
 <?php
 use Darkheim\Infrastructure\Cron\CronManager;
+use Darkheim\Infrastructure\Http\JsonResponse;
 // access
 define('access', 'api');
 
@@ -79,20 +80,12 @@ try {
 		}
 	}
 	
-	http_response_code(200);
-	header('Content-Type: application/json');
-	echo json_encode(
-		array(
-			'code' => 200,
-			'message' => 'Crons successfully executed.',
-			'executed' => $executedCrons
-		),
-		JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
-	);
+	JsonResponse::send([
+		'code' => 200,
+		'message' => 'Crons successfully executed.',
+		'executed' => $executedCrons,
+	], 200);
 	
 } catch(Exception $ex) {
-	http_response_code(500);
-	header('Content-Type: application/json');
-	echo json_encode(array('code' => 500, 'error' => $ex->getMessage()),
-		JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
+	JsonResponse::send(['code' => 500, 'error' => $ex->getMessage()], 500);
 }

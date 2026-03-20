@@ -6,12 +6,12 @@ parameters:
         - src/
 
     # Global helper functions and constants are loaded at runtime from
-    # includes/bootstrap/compat.php and includes/config/cms.tables.php — tell PHPStan
+    # includes/bootstrap/compat.php and config/cms.tables.php — tell PHPStan
     # about them so they don't produce "function/constant not found" errors.
     bootstrapFiles:
         - includes/bootstrap/compat.php
-        - includes/config/cms.tables.php
-        - includes/config/custom.tables.php
+        - config/cms.tables.php
+        - config/custom.tables.php
 
     # Ignore errors caused by runtime-defined constants (DB column/table names
     # from cms.tables.php) and other project-specific patterns.
@@ -22,5 +22,5 @@ parameters:
 
     excludePaths:
         - vendor/
-        - install/
+        - public/install/
         - docker/

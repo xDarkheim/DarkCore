@@ -191,10 +191,10 @@ public/index.php
   └── ../includes/bootstrap/boot.php    ← composition root
         ├── vendor/autoload.php         ← Composer PSR-4 autoloader
         └── AppKernel::boot()           ← Darkheim\Infrastructure\Bootstrap\AppKernel
-              ├── ConfigProvider        ← reads includes/config/cms.json + XML configs
+              ├── ConfigProvider        ← reads config/cms.json + XML configs
               ├── RuntimeState          ← in-memory bag: language phrases, module config
-              ├── includes/config/cms.tables.php
-              ├── includes/config/timezone.php
+              ├── config/cms.tables.php
+              ├── config/timezone.php
               ├── includes/bootstrap/compat.php
               ├── plugin files          ← from var/cache/plugins.cache
               └── Handler::loadPage()  ← Darkheim\Infrastructure\Routing\Handler
@@ -209,7 +209,7 @@ public/index.php
 | `__PATH_INCLUDES__` | `includes/` filesystem path |
 | `__PATH_MODULES__` | `modules/` filesystem path |
 | `__PATH_THEMES__` | `public/themes/` filesystem path |
-| `__PATH_CONFIGS__` | `includes/config/` filesystem path |
+| `__PATH_CONFIGS__` | `config/` filesystem path |
 | `__PATH_CACHE__` | `var/cache/` filesystem path |
 | `__PATH_LOGS__` | `var/logs/` filesystem path |
 | `__BASE_URL__` | Site URL (e.g. `https://example.com/`) |
@@ -304,7 +304,7 @@ one-to-three-line wrapper that casts arguments and delegates to the matching `sr
 | `src/` | ✅ | Application / domain / infrastructure classes |
 | `includes/bootstrap/compat.php` | ⚠️ | Add wrappers only; no logic — logic goes in `src/` |
 | `includes/bootstrap/boot.php` | ❌ | Entry point — do not add logic here |
-| `includes/config/cms.json` | ✅ | Main config: DB credentials, server name, feature toggles |
+| `config/cms.json` | ✅ | Main config: DB credentials, server name, feature toggles |
 | `public/assets/css/*.css` | ✅ | Global page/component styles |
 | `public/themes/default/css/*.css` | ✅ | Template layout styles |
 | `public/themes/default/js/*.js` | ✅ | Template JS |

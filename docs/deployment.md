@@ -30,7 +30,7 @@ Microsoft SQL Server  (external — your MuOnline game database)
 
  File  Contains  Git-tracked 
  :---  :---  :---: 
- `includes/config/cms.json`  Database, site settings, features  No 
+ `config/cms.json`  Database, site settings, features  No 
  `docker/config.env`  Docker runtime: domain, timezone, cron, Xdebug  No 
 
 Both have committed example/default files to copy from.
@@ -38,11 +38,11 @@ Both have committed example/default files to copy from.
 ### 1. Copy config files
 
 ```bash
-cp includes/config/cms.json.default includes/config/cms.json
+cp config/cms.json.default config/cms.json
 cp docker/config.env.example docker/config.env
 ```
 
-### 2. Fill in `includes/config/cms.json`
+### 2. Fill in `config/cms.json`
 
 | Key | Example | Description |
 | :--- | :---: | :--- |
@@ -84,7 +84,7 @@ git clone <your-repo-url> DarkCore
 cd DarkCore
 
 # 2. Copy and configure both files
-cp includes/config/cms.json.default includes/config/cms.json
+cp config/cms.json.default config/cms.json
 cp docker/config.env.example docker/config.env
 # → Edit cms.json with your SQL Server credentials
 # → Edit docker/config.env with your domain and timezone
@@ -146,9 +146,9 @@ SSL → **Request a new SSL Certificate** (Let's Encrypt).
 ### What entrypoint.sh does on each start
 
 1. Reads `DOCKER_*` variables from the container environment
-2. Creates all required directories (`var/cache/` subtree, `var/logs/`, `includes/config/`)
+2. Creates all required directories (`var/cache/` subtree, `var/logs/`, `config/`)
 3. Creates all required cache and log files if missing
-4. Drops `Deny from all` `.htaccess` into `var/cache/`, `var/logs/`, and `includes/config/`
+4. Drops `Deny from all` `.htaccess` into `var/cache/`, `var/logs/`, and `config/`
 5. Fixes ownership/permissions: `www-data:www-data`, mode `775`
 6. Runs `composer install --no-interaction --optimize-autoloader`
 7. Applies timezone from `DOCKER_TIMEZONE`

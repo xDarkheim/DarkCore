@@ -2,7 +2,7 @@
 
 This document maps the config files and keys used by the CMS.
 
-All configuration files live in `includes/config/`. The directory is web-blocked by `.htaccess` (`Deny from all`) and created automatically by the Docker entrypoint on first start.
+All configuration files live in `config/`. The directory is web-blocked by `.htaccess` (`Deny from all`) and created automatically by the Docker entrypoint on first start.
 
 ## cms.json — main config
 
@@ -140,7 +140,7 @@ cp docker/config.env.example docker/config.env
 
 ## Security notes
 
-- `includes/config/`, `var/cache/`, and `var/logs/` are protected from direct web access (`public/` is the only DocumentRoot)
+- `config/`, `var/cache/`, and `var/logs/` are protected from direct web access (`public/` is the only DocumentRoot)
 - Never commit `cms.json` to a public repository — it contains database credentials
 - `docker-compose.override.yml` is in `.gitignore` and must never be committed
 - Delete the `public/install/` directory after running the web installer

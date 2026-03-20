@@ -33,7 +33,7 @@ if(isset($_GET['action']) && $_GET['action'] == 'install') {
                     <li>PHP <strong>8.4</strong> or higher</li>
                     <li>PDO <code>pdo_dblib</code> via FreeTDS (Linux)</li>
                     <li>Extensions: OpenSSL, cURL, GD, mbstring, XML, JSON, ZIP, BCMath</li>
-                    <li>Writable <code>includes/config/</code>, <code>var/cache/</code>, <code>var/logs/</code></li>
+                    <li>Writable <code>config/</code>, <code>var/cache/</code>, <code>var/logs/</code></li>
                 </ul>
             </div>
         </div>
