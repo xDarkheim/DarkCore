@@ -31,7 +31,7 @@ if(!isLoggedIn()) {
 	echo '</div>';
 
 	// join now banner
-	echo '<div class="sidebar-banner"><a href="'.__BASE_URL__.'register"><img src="'.__PATH_TEMPLATE_IMG__.'sidebar_banner_join.jpg"/></a></div>';
+	echo '<div class="sidebar-banner"><a href="'.__BASE_URL__.'register"><img src="'.__PATH_THEME_IMG__.'sidebar_banner_join.jpg"/></a></div>';
 }
 
 // Usercp block
@@ -41,13 +41,13 @@ if(isLoggedIn()) {
 			echo '<h3 class="panel-title">'.lang('usercp_menu_title').' <a href="'.__BASE_URL__.'logout" class="btn btn-primary btn-xs pull-right">'.lang('login_txt_6').'</a></h3>';
 		echo '</div>';
 		echo '<div class="panel-body">';
-				templateBuildUsercp();
+				themeBuildUsercp();
 		echo '</div>';
 	echo '</div>';
 }
 
 // download banner
-echo '<div class="sidebar-banner"><a href="'.__BASE_URL__.'downloads"><img src="'.__PATH_TEMPLATE_IMG__.'sidebar_banner_download.jpg"/></a></div>';
+echo '<div class="sidebar-banner"><a href="'.__BASE_URL__.'downloads"><img src="'.__PATH_THEME_IMG__.'sidebar_banner_download.jpg"/></a></div>';
 
 // Server info block
 if(isset($srvInfo) && is_array($srvInfo)) {
@@ -71,4 +71,4 @@ if(isset($srvInfo) && is_array($srvInfo)) {
 }
 
 // Castle Siege Block
-templateCastleSiegeWidget();
+themeCastleSiegeWidget();

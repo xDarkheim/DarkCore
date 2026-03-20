@@ -164,7 +164,7 @@ foreach($cfg as $element) {
 
 	$link       = $element['type'] == 'internal' ? __BASE_URL__ . $element['link'] : $element['link'];
 	$title      = check_value(lang($element['phrase'], true)) ? lang($element['phrase']) : 'ERROR';
-	$icon       = check_value($element['icon']) ? __PATH_TEMPLATE_IMG__ . 'icons/' . $element['icon'] : __PATH_TEMPLATE_IMG__ . 'icons/usercp_default.png';
+	$icon       = check_value($element['icon']) ? __PATH_THEME_IMG__ . 'icons/' . $element['icon'] : __PATH_THEME_IMG__ . 'icons/usercp_default.png';
 	$target     = $element['newtab'] ? ' target="_blank"' : '';
 	$biIcon     = ucpBiIcon($element['icon'] ?? '');
 	$accentCls  = ucpAccentClass($element['icon'] ?? '');

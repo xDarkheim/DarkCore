@@ -44,8 +44,8 @@ try {
 		$gensDuprian    = htmlspecialchars(strip_tags(lang('rankings_txt_26',true)), ENT_QUOTES);
 		$vantarion      = htmlspecialchars(strip_tags(lang('rankings_txt_27',true)), ENT_QUOTES);
 		$gensType       = $rdata[1] == 1
-			? '<img class="rankings-gens-img" src="'.__PATH_TEMPLATE_IMG__.'gens_1.png" title="'.$gensDuprian.'" alt="'.$gensDuprian.'"/>'
-			: '<img class="rankings-gens-img" src="'.__PATH_TEMPLATE_IMG__.'gens_2.png" title="'.$vantarion.'" alt="'.$vantarion.'"/>';
+			? '<img class="rankings-gens-img" src="'.__PATH_THEME_IMG__.'gens_1.png" title="'.$gensDuprian.'" alt="'.$gensDuprian.'"/>'
+			: '<img class="rankings-gens-img" src="'.__PATH_THEME_IMG__.'gens_2.png" title="'.$vantarion.'" alt="'.$vantarion.'"/>';
 		$onlineStatus   = mconfig('show_online_status') ? (in_array(
             $rdata[0],
             $onlineCharacters,

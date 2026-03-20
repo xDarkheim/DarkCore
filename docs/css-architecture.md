@@ -6,10 +6,10 @@ This file documents how frontend styles are layered and where layout responsibil
 
 | Location | Purpose |
 | :--- | :--- |
-| `public/templates/default/css/` | Template-level layout: structure, navbar, header, footer |
+| `public/themes/default/css/` | Template-level layout: structure, navbar, header, footer |
 | `public/assets/css/` | Page/component styles — loaded by every template |
 
-Both sets are injected individually via `<link>` tags in `public/templates/default/index.php`. No bundler or `@import` entry point is used. Cache busting is automatic via `filemtime()` query strings.
+Both sets are injected individually via `<link>` tags in `public/themes/default/index.php`. No bundler or `@import` entry point is used. Cache busting is automatic via `filemtime()` query strings.
 
 ## CSS load order
 
@@ -19,9 +19,9 @@ Order is critical — `override.css` must always be last.
 | :---: | :--- | :--- | :--- |
 | 1 | Bootstrap 3 CDN | CDN | Grid, components, utilities |
 | 2 | Bootstrap Icons CDN | CDN | Icon font (`bi bi-*`) |
-| 3 | `style.css` | `public/templates/default/css/` | Base theme: body, navbar, container, footer, hamburger menu |
-| 4 | `profiles.css` | `public/templates/default/css/` | Old-style guild/player profile cards |
-| 5 | `castle-siege.css` | `public/templates/default/css/` | Castle siege background image overrides |
+| 3 | `style.css` | `public/themes/default/css/` | Base theme: body, navbar, container, footer, hamburger menu |
+| 4 | `profiles.css` | `public/themes/default/css/` | Old-style guild/player profile cards |
+| 5 | `castle-siege.css` | `public/themes/default/css/` | Castle siege background image overrides |
 | 6 | `variables.css` | `public/assets/css/` | CSS custom properties (`--dh-*`) |
 | 7 | `toast.css` | `public/assets/css/` | Toast notification component |
 | 8 | `auth.css` | `public/assets/css/` | Login / Register pages |
@@ -36,7 +36,7 @@ Order is critical — `override.css` must always be last.
 | 17 | `paypal.css` | `public/assets/css/` | Donation / PayPal page |
 | 18 | `downloads.css` | `public/assets/css/` | Downloads page |
 | 19 | `castlesiege.css` | `public/assets/css/` | Castle Siege page (`cs-*`) |
-| 20 | **`override.css`** | `public/templates/default/css/` | **Last — wins all specificity** |
+| 20 | **`override.css`** | `public/themes/default/css/` | **Last — wins all specificity** |
 
 ## CSS naming conventions
 

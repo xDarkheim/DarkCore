@@ -40,8 +40,8 @@ ssl/*.pem
 # Server-specific SSL folder
 ssl-darkheim/
 # Character avatars (uploaded files)
-public/templates/*/img/character-avatars/*
-!public/templates/*/img/character-avatars/.gitkeep
+public/themes/*/img/character-avatars/*
+!public/themes/*/img/character-avatars/.gitkeep
 # Guild marks (generated at runtime)
 public/img/guild/*.bmp
 public/img/guild/*.png

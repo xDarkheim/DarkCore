@@ -12,7 +12,7 @@ use Darkheim\Infrastructure\Runtime\SessionStore;
 use Darkheim\Application\Auth\Common;
 
 /**
- * Request handler — routing, module loading, template rendering.
+ * Request handler — routing, module loading, theme rendering.
  */
 class Handler
 {
@@ -49,8 +49,8 @@ class Handler
         if (!defined('access')) throw new \Exception('Access forbidden.');
         switch (access) {
             case 'index':
-                if (!$this->templateExists($config['website_template'])) throw new \Exception('The chosen template cannot be loaded (' . $config['website_template'] . ').');
-                include(__PATH_TEMPLATES__ . $config['website_template'] . '/index.php');
+                if (!$this->themeExists($config['website_theme'])) throw new \Exception('The chosen theme cannot be loaded (' . $config['website_theme'] . ').');
+                include(__PATH_THEMES__ . $config['website_theme'] . '/index.php');
                 break;
             case 'api':
             case 'cron':
@@ -177,9 +177,9 @@ class Handler
         return file_exists(__PATH_MODULES__ . $page . '.php');
     }
 
-    private function templateExists($template): bool
+    private function themeExists($theme): bool
     {
-        return file_exists(__PATH_TEMPLATES__ . $template . '/index.php');
+        return file_exists(__PATH_THEMES__ . $theme . '/index.php');
     }
 
     private function languageExists($language): bool

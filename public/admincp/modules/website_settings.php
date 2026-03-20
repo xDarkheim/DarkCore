@@ -6,7 +6,7 @@ $allowedSettings = array(
 	'settings_submit', # the Submit button
 	'system_active',
 	'error_reporting',
-	'website_template',
+	'website_theme',
 	'maintenance_page',
 	'server_name',
 	'website_title',
@@ -57,14 +57,14 @@ if(isset($_POST['settings_submit'])) {
 		}
 		$setting['error_reporting'] = ($_POST['error_reporting'] == 1);
 		
-		// default template
-		if(!isset($_POST['website_template'])) {
+		// default theme
+		if(!isset($_POST['website_theme'])) {
 			throw new RuntimeException('Invalid Default Template setting.');
 		}
-		if(!file_exists(__PATH_TEMPLATES__.$_POST['website_template'].'/index.php')) {
-			throw new RuntimeException('The selected template doesn\'t exist.');
+		if(!file_exists(__PATH_THEMES__.$_POST['website_theme'].'/index.php')) {
+			throw new RuntimeException('The selected theme doesn\'t exist.');
 		}
-		$setting['website_template'] = $_POST['website_template'];
+		$setting['website_theme'] = $_POST['website_theme'];
 		
 		// maintenance page
 		if(!isset($_POST['maintenance_page'])) {
@@ -370,10 +370,10 @@ echo '<div class="acp-card">';
 			echo '<tr>';
 				echo '<td>';
 					echo '<strong>Default Template</strong>';
-					echo '<p class="setting-description">Your website\'s default template.</p>';
+					echo '<p class="setting-description">Your website\'s default theme.</p>';
 				echo '</td>';
 				echo '<td>';
-					echo '<input type="text" class="form-control" name="website_template" value="'.config('website_template',true).'" required>';
+					echo '<input type="text" class="form-control" name="website_theme" value="'.config('website_theme',true).'" required>';
 				echo '</td>';
 			echo '</tr>';
 			

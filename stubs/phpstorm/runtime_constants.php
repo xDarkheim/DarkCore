@@ -4,7 +4,7 @@
  *
  * Runtime values are defined in AppKernel during bootstrap.
  * This file is not included at runtime; it only helps the IDE
- * resolve constants used in templates and legacy modules.
+ * resolve constants used in themes and legacy modules.
  */
 
 if (false) {
@@ -17,7 +17,7 @@ if (false) {
     define('__BASE_URL__', '');
 
     define('__PATH_INCLUDES__', '');
-    define('__PATH_TEMPLATES__', '');
+    define('__PATH_THEMES__', '');
     define('__PATH_LANGUAGES__', '');
     define('__PATH_MODULES__', '');
     define('__PATH_MODULES_USERCP__', '');
@@ -50,11 +50,12 @@ if (false) {
     define('DARKHEIM_WRITABLE_PATHS', '');
     define('DARKHEIM_PHP_ERRORLOG', '');
 
-    define('__PATH_TEMPLATE_ROOT__', '');
-    define('__PATH_TEMPLATE__', '');
-    define('__PATH_TEMPLATE_IMG__', '');
-    define('__PATH_TEMPLATE_CSS__', '');
-    define('__PATH_TEMPLATE_JS__', '');
-    define('__PATH_TEMPLATE_FONTS__', '');
+
+    define('__PATH_THEME_ROOT__', '');
+    define('__PATH_THEME__', '');
+    define('__PATH_THEME_IMG__', '');
+    define('__PATH_THEME_CSS__', '');
+    define('__PATH_THEME_JS__', '');
+    define('__PATH_THEME_FONTS__', '');
 }
 

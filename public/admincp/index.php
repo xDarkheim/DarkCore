@@ -15,7 +15,7 @@ try {
 		throw new RuntimeException('Could not load AdminCP configuration check.');
 	}
 } catch (Exception $ex) {
-	$errorPage = file_get_contents('../includes/error.html');
+	$errorPage = file_get_contents('../../includes/error.html');
 	echo str_replace("{ERROR_MESSAGE}", $ex->getMessage(), $errorPage);
 	die();
 }
@@ -81,7 +81,7 @@ $currentModule = $_REQUEST['module'] ?? '';
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.min.css">
-	<link rel="stylesheet" href="<?php echo __PATH_ADMINCP_HOME__; ?>css/admin.css?v=<?php echo @filemtime(__DIR__.'/css/admin.css'); ?>">
+	<link rel="stylesheet" href="css/admin.css?v=<?php echo @filemtime(__DIR__.'/css/admin.css'); ?>">
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 	<script>
 	function toggleMenu(id, btn) {
@@ -187,7 +187,7 @@ $currentModule = $_REQUEST['module'] ?? '';
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?php echo __PATH_ADMINCP_HOME__; ?>js/toast.js"></script>
+<script src="js/toast.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.min.js"></script>

@@ -1,7 +1,7 @@
 {
     "system_active": true,
     "error_reporting": false,
-    "website_template": "default",
+    "website_theme": "default",
     "maintenance_page": "https:\/\/example.com\/",
     "admins": {
         "admin": 100

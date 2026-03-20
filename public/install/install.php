@@ -15,7 +15,7 @@ if(!@include_once('loader.php')) die('Could not load DarkCore Installer.');
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>DarkCore <?php echo INSTALLER_VERSION; ?> — Installer</title>
-    <link rel="icon" type="image/x-icon" href="<?php echo __BASE_URL__; ?>templates/default/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="<?php echo __BASE_URL__; ?>themes/default/favicon.ico">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>

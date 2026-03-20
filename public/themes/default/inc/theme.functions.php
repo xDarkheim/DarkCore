@@ -13,7 +13,7 @@
 
 use Darkheim\Application\CastleSiege\CastleSiege;
 
-function templateBuildNavbar() {
+function themeBuildNavbar() {
 	$cfg = loadConfig('navbar');
 	if(!is_array($cfg)) return;
 	
@@ -44,7 +44,7 @@ function templateBuildNavbar() {
 	echo '</ul>';
 }
 
-function templateBuildUsercp() {
+function themeBuildUsercp() {
 	$cfg = loadConfig('usercp');
 	if(!is_array($cfg)) return;
 	
@@ -62,7 +62,7 @@ function templateBuildUsercp() {
 		$title = (check_value(lang($element['phrase'], true)) ? lang($element['phrase'], true) : 'Unk_phrase');
 		
 		# icon
-		$icon = (check_value($element['icon']) ? __PATH_TEMPLATE_IMG__ . 'icons/' . $element['icon'] : __PATH_TEMPLATE_IMG__ . 'icons/usercp_default.png');
+		$icon = (check_value($element['icon']) ? __PATH_THEME_IMG__ . 'icons/' . $element['icon'] : __PATH_THEME_IMG__ . 'icons/usercp_default.png');
 		
 		# visibility
 		if($element['visibility'] == 'guest') if(isLoggedIn()) continue;
@@ -78,7 +78,7 @@ function templateBuildUsercp() {
 	echo '</ul>';
 }
 
-function templateCastleSiegeWidget() {
+function themeCastleSiegeWidget() {
 	$castleSiege = new CastleSiege();
 	if(!$castleSiege->showWidget()) return;
 	$siegeData = $castleSiege->siegeData();
@@ -124,7 +124,7 @@ function templateCastleSiegeWidget() {
 	echo '</div>';
 }
 
-function templateLanguageSelector() {
+function themeLanguageSelector() {
 	$langList = array(
 		'en' => array('English', 'US'),
 		'es' => array('Español', 'ES'),

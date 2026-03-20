@@ -23,17 +23,17 @@
 		<div class="col-xs-4">
 			<div class="col-xs-4 text-center">
 				<a href="<?php config('social_link_facebook'); ?>" target="_blank" class="footer-social-link">
-					<img src="<?php echo __PATH_TEMPLATE_IMG__; ?>social/facebook.svg" width="50px" height="auto" />
+					<img src="<?php echo __PATH_THEME_IMG__; ?>social/facebook.svg" width="50px" height="auto" />
 				</a>
 			</div>
 			<div class="col-xs-4 text-center">
 				<a href="<?php config('social_link_instagram'); ?>" target="_blank" class="footer-social-link">
-					<img src="<?php echo __PATH_TEMPLATE_IMG__; ?>social/instagram.svg" width="50px" height="auto" />
+					<img src="<?php echo __PATH_THEME_IMG__; ?>social/instagram.svg" width="50px" height="auto" />
 				</a>
 			</div>
 			<div class="col-xs-4 text-center">
 				<a href="<?php config('social_link_discord'); ?>" target="_blank" class="footer-social-link">
-					<img src="<?php echo __PATH_TEMPLATE_IMG__; ?>social/discord.svg" width="50px" height="auto" />
+					<img src="<?php echo __PATH_THEME_IMG__; ?>social/discord.svg" width="50px" height="auto" />
 				</a>
 			</div>
 		</div>

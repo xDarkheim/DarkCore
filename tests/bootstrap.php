@@ -17,7 +17,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // ── Constants ────────────────────────────────────────────────────────────────
 
 $tmpBase = sys_get_temp_dir() . '/darkheim_tests/';
-if (!mkdir($tmpBase, 0777, true) && !is_dir($tmpBase)) {
+if (!is_dir($tmpBase) && !mkdir($tmpBase, 0777, true)) {
     throw new \RuntimeException(
         sprintf('Directory "%s" was not created', $tmpBase)
     );
@@ -32,18 +32,24 @@ define('__PATH_EMAILS__',            $tmpBase . 'emails/');
 define('__PATH_CRON__',              $tmpBase . 'cron/');
 define('__PUBLIC_DIR__',             $tmpBase . 'public/');
 define('__PATH_PLUGINS__',           $tmpBase . 'plugins/');
-define('__PATH_TEMPLATES__',         __PUBLIC_DIR__ . 'templates/');
+define('__PATH_THEMES__',            __PUBLIC_DIR__ . 'themes/');
 define('__PATH_MODULES__',           $tmpBase . 'modules/');
 define('__PATH_ADMINCP_MODULES__',   $tmpBase . 'admincp/modules/');
 define('__PATH_PLAYER_PROFILES_CACHE__', $tmpBase . 'cache/profiles/players/');
 define('__PATH_GUILD_PROFILES_CACHE__',  $tmpBase . 'cache/profiles/guilds/');
-define('__PATH_TEMPLATE_IMG__',      __PUBLIC_DIR__ . 'img/');
 define('__PATH_API__',               'http://localhost:8081/api/');
 define('__PATH_ADMINCP_HOME__',      'http://localhost:8081/admincp/');
 define('__BASE_URL__',               'http://localhost:8081/');
 define('__CMS_VERSION__',            '1.1.0');
 define('DARKHEIM_DATABASE_ERRORLOG', __PATH_LOGS__ . 'db_errors.log');
 define('DARKHEIM_PHP_ERRORLOG',      __PATH_LOGS__ . 'php_errors.log');
+define('__PATH_THEME_ROOT__',        __PATH_THEMES__ . 'default/');
+define('__PATH_THEME__',             __BASE_URL__ . 'themes/default/');
+define('__PATH_THEME_IMG__',         __PATH_THEME__ . 'img/');
+define('__PATH_THEME_CSS__',         __PATH_THEME__ . 'css/');
+define('__PATH_THEME_JS__',          __PATH_THEME__ . 'js/');
+define('__PATH_THEME_FONTS__',       __PATH_THEME__ . 'fonts/');
+$themeImgFs = __PATH_THEME_ROOT__ . 'img/';
 
 foreach ([
     __PATH_CACHE__,
@@ -54,15 +60,15 @@ foreach ([
     __PATH_CRON__,
     __PATH_PLUGINS__,
     __PUBLIC_DIR__,
-    __PATH_TEMPLATES__,
+    __PATH_THEMES__,
     __PATH_MODULES__,
     __PATH_ADMINCP_MODULES__,
     __PATH_PLAYER_PROFILES_CACHE__,
     __PATH_GUILD_PROFILES_CACHE__,
-    __PATH_TEMPLATE_IMG__,
+    $themeImgFs,
     __PATH_LOGS__,
 ] as $dir) {
-    if (!mkdir($dir, 0777, true) && !is_dir($dir)) {
+    if (!is_dir($dir) && !mkdir($dir, 0777, true)) {
         throw new \RuntimeException(
             sprintf('Directory "%s" was not created', $dir)
         );
@@ -88,7 +94,7 @@ $GLOBALS['_TEST_CMS_CONFIG'] = [
     'language_switch_active'    => false,
     'language_debug'            => false,
     'error_reporting'           => false,
-    'website_template'          => 'default',
+    'website_theme'          => 'default',
     'cms_installed'             => true,
     'username_min_len'          => 4,
     'username_max_len'          => 13,
@@ -210,7 +216,22 @@ function canAccessAdminCP(string $username): mixed
     return null;
 }
 
-function templateBuildNavbar(): string
+function themeBuildNavbar(): string
+{
+    return '';
+}
+
+function themeBuildUsercp(): string
+{
+    return '';
+}
+
+function themeLanguageSelector(): string
+{
+    return '';
+}
+
+function themeCastleSiegeWidget(): string
 {
     return '';
 }

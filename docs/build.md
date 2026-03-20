@@ -4,7 +4,7 @@ CSS and JS source files are served directly. There is no bundler, transpiler, or
 
 ## CSS
 
-All stylesheets are injected with individual `<link>` tags directly in `public/templates/default/index.php`.  
+All stylesheets are injected with individual `<link>` tags directly in `public/themes/default/index.php`.  
 No `main.css` entry point or `@import` bundling is used.
 
 Assets from `assets/css/` are loaded dynamically:
@@ -19,7 +19,7 @@ See [CSS Architecture](css-architecture.md) for the full load order and naming c
 
 ## JS
 
-Each JS file is included with its own `<script>` tag at the bottom of `<body>` in `public/templates/default/index.php`.
+Each JS file is included with its own `<script>` tag at the bottom of `<body>` in `public/themes/default/index.php`.
 
 | # | File | Purpose |
 | :---: | :--- | :--- |
@@ -40,11 +40,11 @@ js/main.js?v=1741820000
 
 ## Adding a new CSS file
 
-1. Create the file in `public/assets/css/` (for page/component styles) or `public/templates/default/css/` (for template-level layout).
-2. For `public/assets/css/`: add the filename (without `.css`) to the `$_cssFiles` array in `public/templates/default/index.php`.
-3. For `public/templates/default/css/`: add a new `<link>` tag in `public/templates/default/index.php` **before** `override.css`.
+1. Create the file in `public/assets/css/` (for page/component styles) or `public/themes/default/css/` (for theme-level layout).
+2. For `public/assets/css/`: add the filename (without `.css`) to the `$_cssFiles` array in `public/themes/default/index.php`.
+3. For `public/themes/default/css/`: add a new `<link>` tag in `public/themes/default/index.php` **before** `override.css`.
 
 ## Adding a new JS file
 
-1. Create the file in `public/templates/default/js/` or `public/assets/js/`.
-2. Add a `<script>` tag at the bottom of `<body>` in `public/templates/default/index.php`.
+1. Create the file in `public/themes/default/js/` or `public/assets/js/`.
+2. Add a `<script>` tag at the bottom of `<body>` in `public/themes/default/index.php`.

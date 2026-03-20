@@ -63,7 +63,7 @@ final class AppKernel
         }
 
         $this->loadPlugins($config);
-        $this->defineTemplatePathConstants((string) $config['website_template']);
+        $this->defineThemePathConstants((string) $config['website_theme']);
         $this->handler->loadPage();
     }
 
@@ -121,29 +121,37 @@ final class AppKernel
     private function definePathConstants(): void
     {
         $httpHost = $_SERVER['HTTP_HOST'] ?? 'CLI';
-        $serverProtocol = (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) === 'on') ? 'https://' : 'https://';
+        $serverProtocol = (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) === 'on') ? 'https://' : 'http://';
         $rootDir = str_replace('\\', '/', dirname($this->includesDir)) . '/';
+        $publicDir = is_dir($rootDir . 'public') ? $rootDir . 'public/' : $rootDir;
 
-        // Derive the URL base path from SCRIPT_NAME (e.g. '/index.php' → '/', '/cms/index.php' → '/cms/')
-        // This works correctly whether DocumentRoot is the project root or public/.
+        $access = defined('access') ? (string) access : '';
+        $rootDepth = match ($access) {
+            'admincp', 'api', 'cron', 'install' => 2,
+            default => 1,
+        };
+
+        // Derive the site-root URL path from SCRIPT_NAME.
+        // Examples:
+        //   /index.php               -> /
+        //   /cms/index.php           -> /cms/
+        //   /cms/admincp/index.php   -> /cms/
+        //   /cms/api/version.php     -> /cms/
         $relativeRoot = !empty($_SERVER['SCRIPT_NAME'])
-            ? rtrim(str_replace('\\', '/', dirname((string) $_SERVER['SCRIPT_NAME'])), '/') . '/'
+            ? rtrim(str_replace('\\', '/', dirname((string) $_SERVER['SCRIPT_NAME'], $rootDepth)), '/') . '/'
             : '/';
 
         $baseUrl = $serverProtocol . $httpHost . $relativeRoot;
-
-        // Filesystem path to the web-accessible public/ directory.
-        $publicDir = is_dir($rootDir . 'public') ? $rootDir . 'public/' : $rootDir;
 
         $constants = [
             'HTTP_HOST' => $httpHost,
             'SERVER_PROTOCOL' => $serverProtocol,
             '__ROOT_DIR__' => $rootDir,
             '__PUBLIC_DIR__' => $publicDir,
+            '__PATH_THEMES__' => $publicDir . 'themes/',
             '__RELATIVE_ROOT__' => $relativeRoot,
             '__BASE_URL__' => $baseUrl,
             '__PATH_INCLUDES__' => $rootDir . 'includes/',
-            '__PATH_TEMPLATES__' => $publicDir . 'templates/',
             '__PATH_LANGUAGES__' => $rootDir . 'includes/languages/',
             '__PATH_MODULES__' => $rootDir . 'modules/',
             '__PATH_MODULES_USERCP__' => $rootDir . 'modules/usercp/',
@@ -190,7 +198,7 @@ final class AppKernel
         }
 
         ini_set('log_errors', '1');
-        ini_set('error_log', defined('DARKHEIM_PHP_ERRORLOG') ? DARKHEIM_PHP_ERRORLOG : $this->includesDir . 'logs/php_errors.log');
+        ini_set('error_log', DARKHEIM_PHP_ERRORLOG);
     }
 
     /**
@@ -234,8 +242,8 @@ final class AppKernel
      */
     private function validateConfiguration(array $config): void
     {
-        if (!file_exists(__PATH_TEMPLATES__ . (string) $config['website_template'])) {
-            throw new Exception('The default template doesn\'t exist.');
+        if (!file_exists(__PATH_THEMES__ . (string) $config['website_theme'])) {
+            throw new Exception('The default theme doesn\'t exist.');
         }
 
         if (!check_value($config['SQL_DB_HOST'] ?? null)) {
@@ -323,15 +331,15 @@ final class AppKernel
         }
     }
 
-    private function defineTemplatePathConstants(string $template): void
+    private function defineThemePathConstants(string $theme): void
     {
         $constants = [
-            '__PATH_TEMPLATE_ROOT__' => __PATH_TEMPLATES__ . $template . '/',
-            '__PATH_TEMPLATE__' => __BASE_URL__ . 'templates/' . $template . '/',
-            '__PATH_TEMPLATE_IMG__' => __BASE_URL__ . 'templates/' . $template . '/img/',
-            '__PATH_TEMPLATE_CSS__' => __BASE_URL__ . 'templates/' . $template . '/css/',
-            '__PATH_TEMPLATE_JS__' => __BASE_URL__ . 'templates/' . $template . '/js/',
-            '__PATH_TEMPLATE_FONTS__' => __BASE_URL__ . 'templates/' . $template . '/fonts/',
+            '__PATH_THEME_ROOT__' => __PATH_THEMES__ . $theme . '/',
+            '__PATH_THEME__' => __BASE_URL__ . 'themes/' . $theme . '/',
+            '__PATH_THEME_IMG__' => __BASE_URL__ . 'themes/' . $theme . '/img/',
+            '__PATH_THEME_CSS__' => __BASE_URL__ . 'themes/' . $theme . '/css/',
+            '__PATH_THEME_JS__' => __BASE_URL__ . 'themes/' . $theme . '/js/',
+            '__PATH_THEME_FONTS__' => __BASE_URL__ . 'themes/' . $theme . '/fonts/',
         ];
 
         foreach ($constants as $name => $value) {

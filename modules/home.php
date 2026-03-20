@@ -62,14 +62,14 @@
 					echo '</form>';
 				echo '</div>';
 			echo '</div>';
-			echo '<div class="sidebar-banner"><a href="'.__BASE_URL__.'register"><img src="'.__PATH_TEMPLATE_IMG__.'sidebar_banner_join.jpg"/></a></div>';
+			echo '<div class="sidebar-banner"><a href="'.__BASE_URL__.'register"><img src="'.__PATH_THEME_IMG__.'sidebar_banner_join.jpg"/></a></div>';
 		} else {
 			echo '<div class="panel panel-sidebar panel-usercp">';
 				echo '<div class="panel-heading">';
 					echo '<h3 class="panel-title">'.lang('usercp_menu_title').' <a href="'.__BASE_URL__.'logout" class="btn btn-primary btn-xs pull-right">'.lang('login_txt_6').'</a></h3>';
 				echo '</div>';
 				echo '<div class="panel-body">';
-						templateBuildUsercp();
+						themeBuildUsercp();
 				echo '</div>';
 			echo '</div>';
 		}

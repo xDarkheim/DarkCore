@@ -118,7 +118,7 @@ This map shows where the main CMS components live and which paths are safe to mo
 │   │   ├── servertime.php
 │   │   └── version.php
 │   ├── install/                    # Web-based installer (remove after setup)
-│   └── templates/                  # ★ Theme templates (web-accessible CSS/JS/img)
+│   └── themes/                  # ★ Theme templates (web-accessible CSS/JS/img)
 │       └── default/                # Default dark-fantasy theme (Bootstrap 3)
 │           ├── index.php           # Template entry point — injects CSS/JS, renders layout
 │           ├── css/                # Template-level CSS
@@ -126,7 +126,7 @@ This map shows where the main CMS components live and which paths are safe to mo
 │           ├── img/                # Template images
 │           ├── fonts/              # Local webfonts
 │           └── inc/                # Server-side partials (PHP includes)
-│               ├── template.functions.php
+│               ├── theme.functions.php
 │               └── modules/
 │                   ├── footer.php
 │                   └── sidebar.php
@@ -208,7 +208,7 @@ public/index.php
 | `__PUBLIC_DIR__` | `public/` filesystem path (DocumentRoot) |
 | `__PATH_INCLUDES__` | `includes/` filesystem path |
 | `__PATH_MODULES__` | `modules/` filesystem path |
-| `__PATH_TEMPLATES__` | `public/templates/` filesystem path |
+| `__PATH_THEMES__` | `public/themes/` filesystem path |
 | `__PATH_CONFIGS__` | `includes/config/` filesystem path |
 | `__PATH_CACHE__` | `var/cache/` filesystem path |
 | `__PATH_LOGS__` | `var/logs/` filesystem path |
@@ -306,8 +306,8 @@ one-to-three-line wrapper that casts arguments and delegates to the matching `sr
 | `includes/bootstrap/boot.php` | ❌ | Entry point — do not add logic here |
 | `includes/config/cms.json` | ✅ | Main config: DB credentials, server name, feature toggles |
 | `public/assets/css/*.css` | ✅ | Global page/component styles |
-| `public/templates/default/css/*.css` | ✅ | Template layout styles |
-| `public/templates/default/js/*.js` | ✅ | Template JS |
+| `public/themes/default/css/*.css` | ✅ | Template layout styles |
+| `public/themes/default/js/*.js` | ✅ | Template JS |
 | `modules/usercp/*.php` | ✅ | Individual UserCP sub-pages |
 | `includes/languages/*/language.php` | ✅ | Translation phrases |
 | `vendor/` | ❌ | Managed by Composer — run `composer install` / `composer update` |

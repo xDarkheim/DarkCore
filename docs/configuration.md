@@ -15,7 +15,7 @@ Copy `cms.json.default` to `cms.json` and fill in your values. The installer doe
 | `system_active` | bool | `false` → shows maintenance redirect |
 | `maintenance_page` | string | URL to redirect to when system is inactive |
 | `error_reporting` | bool | Enable PHP error output (disable in production) |
-| `website_template` | string | Template directory name under `templates/` (default: `"default"`) |
+| `website_theme` | string | Theme directory name under `themes/` (default: `"default"`) |
 | `cms_installed` | bool | Set to `true` by the installer — blocks re-running install |
 
 ### Server info
@@ -59,7 +59,7 @@ Copy `cms.json.default` to `cms.json` and fill in your values. The installer doe
 
 > **Active languages:** EN, RU, CN, ES, PT, RO.
 > Language phrase files live in `includes/languages/<code>/language.php`.
-> To add a new language: create the directory and phrase file, then add the entry to `templateLanguageSelector()` in `public/templates/default/inc/template.functions.php`.
+> To add a new language: create the directory and phrase file, then add the entry to `themeLanguageSelector()` in `public/themes/default/inc/theme.functions.php`.
 
 ### Authentication & registration
 

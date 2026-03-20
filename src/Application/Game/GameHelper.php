@@ -51,7 +51,7 @@ final class GameHelper
     ): string {
         $custom    = self::custom();
         $classes   = $custom['character_class'] ?? [];
-        $avatarDir = defined('__PATH_TEMPLATE_IMG__') ? (string) __PATH_TEMPLATE_IMG__ : '';
+        $avatarDir = defined('__PATH_THEME_IMG__') ? (string) __PATH_THEME_IMG__ : '';
 
         // Config key for the avatar subdirectory
         try {

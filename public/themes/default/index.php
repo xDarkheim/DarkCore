@@ -12,7 +12,7 @@
  */
 
 if(!defined('access') or !access) die();
-include('inc/template.functions.php');
+include('inc/theme.functions.php');
 
 $serverInfoCache = LoadCacheData('server_info.cache');
 if(is_array($serverInfoCache)) {
@@ -68,15 +68,15 @@ if(!isset($_REQUEST['subpage'])) {
 		<meta name="twitter:title"       content="<?php echo $_seo_title; ?>"/>
 		<meta name="twitter:description" content="<?php echo $_seo_description; ?>"/>
 		<meta name="twitter:image"       content="<?php echo $_seo_image; ?>"/>
-		<link rel="shortcut icon" href="<?php echo __PATH_TEMPLATE__; ?>favicon.ico"/>
+		<link rel="shortcut icon" href="<?php echo __PATH_THEME__; ?>favicon.ico"/>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 		<link href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700" rel="stylesheet">
 		<link href="https://fonts.googleapis.com/css?family=Cinzel" rel="stylesheet">
 
-		<link href="<?php echo __PATH_TEMPLATE_CSS__; ?>style.css?v=<?php echo filemtime(__PATH_TEMPLATE_ROOT__.'css/style.css'); ?>" rel="stylesheet" media="screen">
-		<link href="<?php echo __PATH_TEMPLATE_CSS__; ?>profiles.css?v=<?php echo filemtime(__PATH_TEMPLATE_ROOT__.'css/profiles.css'); ?>" rel="stylesheet" media="screen">
-		<link href="<?php echo __PATH_TEMPLATE_CSS__; ?>castle-siege.css?v=<?php echo filemtime(__PATH_TEMPLATE_ROOT__.'css/castle-siege.css'); ?>" rel="stylesheet" media="screen">
+		<link href="<?php echo __PATH_THEME_CSS__; ?>style.css?v=<?php echo filemtime(__PATH_THEME_ROOT__.'css/style.css'); ?>" rel="stylesheet" media="screen">
+		<link href="<?php echo __PATH_THEME_CSS__; ?>profiles.css?v=<?php echo filemtime(__PATH_THEME_ROOT__.'css/profiles.css'); ?>" rel="stylesheet" media="screen">
+		<link href="<?php echo __PATH_THEME_CSS__; ?>castle-siege.css?v=<?php echo filemtime(__PATH_THEME_ROOT__.'css/castle-siege.css'); ?>" rel="stylesheet" media="screen">
 		<?php
 		$_assetsCss = __PUBLIC_DIR__.'assets/css/';
 		$_assetsUrl = __PATH_ASSETS_CSS__;
@@ -87,7 +87,7 @@ if(!isset($_REQUEST['subpage'])) {
 		?>
 		<link href="<?php echo $_assetsUrl.$_f; ?>.css?v=<?php echo filemtime($_path); ?>" rel="stylesheet" media="screen">
 		<?php endforeach; ?>
-		<link href="<?php echo __PATH_TEMPLATE_CSS__; ?>override.css?v=<?php echo filemtime(__PATH_TEMPLATE_ROOT__.'css/override.css'); ?>" rel="stylesheet" media="screen">
+		<link href="<?php echo __PATH_THEME_CSS__; ?>override.css?v=<?php echo filemtime(__PATH_THEME_ROOT__.'css/override.css'); ?>" rel="stylesheet" media="screen">
 		<script>
 			var baseUrl = '<?php echo __BASE_URL__; ?>';
 		</script>
@@ -105,7 +105,7 @@ if(!isset($_REQUEST['subpage'])) {
 			<div class="global-top-bar-content">
 				<div class="row">
 					<div class="col-xs-6 text-left global-top-bar-nopadding">
-					<?php if(config('language_switch_active',true)) templateLanguageSelector(); ?>
+					<?php if(config('language_switch_active',true)) themeLanguageSelector(); ?>
 					</div>
 					<div class="col-xs-6 text-right global-top-bar-nopadding">
 					<?php if(isLoggedIn()) { ?>
@@ -135,12 +135,12 @@ if(!isset($_REQUEST['subpage'])) {
         		<i class="bi bi-list"></i>
     		</button>
 			<div id="main-nav">
-			<?php templateBuildNavbar(); ?>
+			<?php themeBuildNavbar(); ?>
 			</div>
 		</div>
 		<div id="header">
 			<a href="<?php echo __BASE_URL__; ?>">
-				<img class="dh-logo" src="<?php echo __PATH_TEMPLATE_IMG__; ?>logo.png" title="<?php config('server_name'); ?>" alt="<?php echo htmlspecialchars((string) config('server_name', true), ENT_QUOTES, 'UTF-8'); ?>"/>
+				<img class="dh-logo" src="<?php echo __PATH_THEME_IMG__; ?>logo.png" title="<?php config('server_name'); ?>" alt="<?php echo htmlspecialchars((string) config('server_name', true), ENT_QUOTES, 'UTF-8'); ?>"/>
 			</a>
 		</div>
 		<div class="header-info-container">
@@ -193,7 +193,7 @@ if(!isset($_REQUEST['subpage'])) {
 					<?php $handler->loadModule($_REQUEST['page'],$_REQUEST['subpage']); ?>
 				</div>
 				<div class="col-xs-4">
-					<?php include(__PATH_TEMPLATE_ROOT__ . 'inc/modules/sidebar.php'); ?>
+					<?php include(__PATH_THEME_ROOT__ . 'inc/modules/sidebar.php'); ?>
 				</div>
 				<?php } else { ?>
 				<div class="col-xs-12">
@@ -203,7 +203,7 @@ if(!isset($_REQUEST['subpage'])) {
 			</div>
 		</div>
 		<footer class="footer">
-			<?php include(__PATH_TEMPLATE_ROOT__ . 'inc/modules/footer.php'); ?>
+			<?php include(__PATH_THEME_ROOT__ . 'inc/modules/footer.php'); ?>
 		</footer>
 		<script>
 			(function() {
@@ -256,8 +256,8 @@ if(!isset($_REQUEST['subpage'])) {
 			})();
 		</script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-		<script src="<?php echo __PATH_TEMPLATE_JS__; ?>main.js?v=<?php echo filemtime(__PATH_TEMPLATE_ROOT__.'js/main.js'); ?>"></script>
-		<script src="<?php echo __PATH_TEMPLATE_JS__; ?>events.js?v=<?php echo filemtime(__PATH_TEMPLATE_ROOT__.'js/events.js'); ?>"></script>
+		<script src="<?php echo __PATH_THEME_JS__; ?>main.js?v=<?php echo filemtime(__PATH_THEME_ROOT__.'js/main.js'); ?>"></script>
+		<script src="<?php echo __PATH_THEME_JS__; ?>events.js?v=<?php echo filemtime(__PATH_THEME_ROOT__.'js/events.js'); ?>"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
 		<script src="<?php echo __PATH_ASSETS_JS__; ?>components.js?v=<?php echo file_exists(__PUBLIC_DIR__.'assets/js/components.js') ? filemtime(__PUBLIC_DIR__.'assets/js/components.js') : 1; ?>"></script>
 	</body>
