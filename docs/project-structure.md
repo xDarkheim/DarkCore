@@ -308,9 +308,9 @@ All classes under `src/` are autoloaded via Composer PSR-4 with the root namespa
 | `Darkheim\Application\Game\*` | `src/Application/Game/` | Class avatars, maps, Gens, guild logo |
 | `Darkheim\Application\Helpers\*` | `src/Application/Helpers/` | Encoder, TimeHelper |
 | `Darkheim\Application\Language\*` | `src/Application/Language/` | Translator, LanguageRepository |
- `Darkheim\Application\News\*`  `src/Application/News/`  News value object, repository, service 
- `Darkheim\Application\Page\*`  `src/Application/Page/`  Top-level page controllers (one per public route) 
- `Darkheim\Application\Profile\*`  `src/Application/Profile/`  Profile link builder, repository 
+| `Darkheim\Application\News\*` | `src/Application/News/` | News value object, repository, service |
+| `Darkheim\Application\Page\*` | `src/Application/Page/` | Top-level page controllers (one per public route) |
+| `Darkheim\Application\Profile\*` | `src/Application/Profile/` | Profile link builder, repository |
 | `Darkheim\Application\Rankings\*` | `src/Application/Rankings/` | Ranking cache, repository, service |
 | `Darkheim\Application\View\*` | `src/Application/View/` | MessageRenderer (toast + inline) |
 | `Darkheim\Application\Vote\*` | `src/Application/Vote/` | Vote tracking |
