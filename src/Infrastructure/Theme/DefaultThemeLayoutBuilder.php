@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Theme;
 
+use Darkheim\Application\Auth\AdminGuard;
 use Darkheim\Application\CastleSiege\CastleSiege;
 use Darkheim\Application\Game\GameHelper;
 use Darkheim\Application\Profile\ProfileRenderer;
@@ -35,7 +36,7 @@ final class DefaultThemeLayoutBuilder
             'showLanguageSwitcher'   => (bool) config('language_switch_active', true),
             'languageSwitcherHtml'   => $this->renderLanguageSwitcherHtml(),
             'topBarIsLoggedIn'       => $isLoggedIn,
-            'topBarShowAdmincp'      => $isLoggedIn && canAccessAdminCP($_SESSION['username'] ?? ''),
+            'topBarShowAdmincp'      => $isLoggedIn && AdminGuard::canAccess((string) ($_SESSION['username'] ?? '')),
             'topBarUsercpLabel'      => (string) lang('module_titles_txt_3'),
             'topBarLogoutLabel'      => (string) lang('menu_txt_6'),
             'topBarRegisterLabel'    => (string) lang('menu_txt_3'),
@@ -104,7 +105,7 @@ final class DefaultThemeLayoutBuilder
     private function serverInfoData(): array
     {
         $rows            = [];
-        $serverInfoCache = (new CacheRepository(__PATH_CACHE__))->loadLegacyText('server_info.cache');
+        $serverInfoCache = new CacheRepository(__PATH_CACHE__)->loadLegacyText('server_info.cache');
         $srvInfo         = null;
         if (is_array($serverInfoCache) && isset($serverInfoCache[1][0]) && is_string($serverInfoCache[1][0])) {
             $srvInfo = explode('|', $serverInfoCache[1][0]);

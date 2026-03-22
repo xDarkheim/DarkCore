@@ -8,13 +8,14 @@ use Darkheim\Application\Account\Account;
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Credits\CreditSystem;
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Payment\PaypalIPN;
 
 final class PaypalApiController
 {
     public function render(): void
     {
-        $cfg = loadConfigurations('donation-paypal');
+        $cfg = BootstrapContext::configProvider()?->moduleConfig('donation-paypal');
         if (!is_array($cfg)) {
             header('HTTP/1.1 500 Internal Server Error');
             return;

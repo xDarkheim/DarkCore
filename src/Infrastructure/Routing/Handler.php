@@ -61,7 +61,7 @@ class Handler
 
     public function loadPage(): void
     {
-        $config    = cmsConfigs();
+        $config    = BootstrapContext::configProvider()?->cms() ?? [];
         $custom    = BootstrapContext::runtimeState()?->customConfig()    ?? [];
         $lang      = BootstrapContext::runtimeState()?->languagePhrases() ?? [];
         $tSettings = [];
@@ -104,7 +104,7 @@ class Handler
 
     public function loadModule(?string $page = 'news', ?string $subpage = 'home'): void
     {
-        $config    = cmsConfigs();
+        $config    = BootstrapContext::configProvider()?->cms() ?? [];
         $custom    = BootstrapContext::runtimeState()?->customConfig()    ?? [];
         $lang      = BootstrapContext::runtimeState()?->languagePhrases() ?? [];
         $mconfig   = BootstrapContext::runtimeState()?->moduleConfig()    ?? [];
@@ -152,7 +152,7 @@ class Handler
 
     public function loadAdminCPModule($module = 'home'): void
     {
-        $config  = cmsConfigs();
+        $config  = BootstrapContext::configProvider()?->cms() ?? [];
         $lang    = BootstrapContext::runtimeState()?->languagePhrases() ?? [];
         $custom  = BootstrapContext::runtimeState()?->customConfig()    ?? [];
         $handler = $this;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Auth;
 
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Domain\Validator;
 
@@ -147,7 +148,7 @@ class Common
         if (!check_value($userid)) return;
         $result = $this->muonline->query_fetch_single("SELECT * FROM " . Passchange_Request . " WHERE user_id = ?", array($userid));
         if (!is_array($result)) return;
-        $configs = loadConfigurations('my-password');
+        $configs = BootstrapContext::configProvider()?->moduleConfig('my-password');
         if (!is_array($configs)) return;
         $request_timeout = $configs['change_password_request_timeout'] * 3600;
         $request_date    = $result['request_date'] + $request_timeout;

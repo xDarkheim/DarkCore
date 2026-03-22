@@ -7,6 +7,7 @@ namespace Darkheim\Application\Account;
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Auth\Login;
 use Darkheim\Infrastructure\Email\Email;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Runtime\ServerContext;
 use Darkheim\Domain\Validator;
 
@@ -48,7 +49,7 @@ class Account extends Common
         if ($password != $cpassword) throw new \Exception(lang('error_8', true));
         if (!Validator::Email($email)) throw new \Exception(lang('error_9', true));
 
-        $regCfg = loadConfigurations('register');
+        $regCfg = $this->moduleConfig('register');
 
         if ($this->userExists($username)) throw new \Exception(lang('error_10', true));
         if ($this->emailExists($email)) throw new \Exception(lang('error_11', true));
@@ -143,7 +144,7 @@ class Account extends Common
         if (!Validator::PasswordLength($new_password)) throw new \Exception(lang('error_7', true));
         if ($new_password != $confirm_new_password) throw new \Exception(lang('error_8', true));
 
-        $mypassCfg = loadConfigurations('my-password');
+        $mypassCfg = $this->moduleConfig('my-password');
         if (!$this->validateUser($username, $password)) throw new \Exception(lang('error_13', true));
         if ($this->accountOnline($username)) throw new \Exception(lang('error_14', true));
         if ($this->hasActivePasswordChangeRequest($userid)) throw new \Exception(lang('error_19', true));
@@ -183,7 +184,7 @@ class Account extends Common
         $result = $this->muonline->query_fetch_single("SELECT * FROM " . Passchange_Request . " WHERE user_id = ?", array($user_id));
         if (!is_array($result)) throw new \Exception(lang('error_25', true));
 
-        $mypassCfg       = loadConfigurations('my-password');
+        $mypassCfg       = $this->moduleConfig('my-password');
         $request_timeout = $mypassCfg['change_password_request_timeout'] * 3600;
         $request_date    = $result['request_date'] + $request_timeout;
 
@@ -287,7 +288,7 @@ class Account extends Common
         $accountInfo = $this->accountInformation($accountId);
         if (!is_array($accountInfo)) throw new \Exception(lang('error_21', true));
 
-        $myemailCfg = loadConfigurations('my-email');
+        $myemailCfg = $this->moduleConfig('my-email');
         if ($myemailCfg['require_verification']) {
             $userName         = $accountInfo[_CLMN_USERNM_];
             $userEmail        = $accountInfo[_CLMN_EMAIL_];
@@ -318,7 +319,7 @@ class Account extends Common
         $verifyKey = $this->muonline->query_fetch_single("SELECT * FROM " . Register_Account . " WHERE registration_account = ? AND registration_key = ?", array($username, $key));
         if (!is_array($verifyKey)) throw new \Exception(lang('error_25', true));
 
-        $regCfg = loadConfigurations('register');
+        $regCfg = $this->moduleConfig('register');
         $data   = ['username' => $verifyKey['registration_account'], 'password' => $verifyKey['registration_password'], 'name' => $verifyKey['registration_account'], 'serial' => $this->_defaultAccountSerial, 'email' => $verifyKey['registration_email']];
 
         switch ($this->_passwordEncryption) {
@@ -449,7 +450,7 @@ class Account extends Common
         if (!check_value($username)) return;
         $result = $this->muonline->query_fetch_single("SELECT * FROM " . Register_Account . " WHERE registration_account = ?", array($username));
         if (!is_array($result)) return;
-        $configs   = loadConfigurations('register');
+        $configs   = $this->moduleConfig('register');
         $timelimit = $result['registration_date'] + $configs['verification_timelimit'] * 60 * 60;
         if ($timelimit > time()) return true;
         $this->_deleteRegistrationVerification($username);
@@ -461,7 +462,7 @@ class Account extends Common
         if (!check_value($email)) return;
         $result = $this->muonline->query_fetch_single("SELECT * FROM " . Register_Account . " WHERE registration_email = ?", array($email));
         if (!is_array($result)) return;
-        $configs   = loadConfigurations('register');
+        $configs   = $this->moduleConfig('register');
         $timelimit = $result['registration_date'] + $configs['verification_timelimit'] * 60 * 60;
         if ($timelimit > time()) return true;
         $this->_deleteRegistrationVerification($result['registration_account']);
@@ -489,6 +490,13 @@ class Account extends Common
     private function _generateAccountRecoveryLink($userid, $email, $recovery_code): string
     {
         return __BASE_URL__ . 'forgotpassword/?ui=' . $userid . '&ue=' . $email . '&key=' . $recovery_code;
+    }
+
+    private function moduleConfig(string $name): array
+    {
+        $config = BootstrapContext::configProvider()?->moduleConfig($name);
+
+        return is_array($config) ? $config : [];
     }
 }
 

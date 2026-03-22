@@ -17,7 +17,6 @@
  */
 
 use Darkheim\Application\Admincp\AdmincpUrlGenerator;
-use Darkheim\Application\Auth\AdminGuard;
 use Darkheim\Application\Auth\SessionManager;
 use Darkheim\Application\Language\Translator;
 use Darkheim\Application\View\MessageRenderer;
@@ -54,7 +53,7 @@ function isLoggedIn(): ?bool
         return null;
     }
 
-    $loginConfigs = loadConfigurations('login');
+    $loginConfigs = BootstrapContext::configProvider()?->moduleConfig('login');
     if (
         is_array($loginConfigs)
         && ($loginConfigs['enable_session_timeout'] ?? false)
@@ -69,10 +68,6 @@ function isLoggedIn(): ?bool
 }
 
 
-function canAccessAdminCP($username): bool
-{
-    return AdminGuard::canAccess((string) $username);
-}
 
 function admincp_base($module = ''): string
 {
@@ -136,14 +131,9 @@ function langf($phrase, $args = [], $print = false): ?string
 // Config accessors
 // ---------------------------------------------------------------------------
 
-function cmsConfigs(): array
-{
-    return BootstrapContext::configProvider()?->cms() ?? [];
-}
-
 function config($config_name, $return = false)
 {
-    $config = cmsConfigs();
+    $config = BootstrapContext::configProvider()?->cms() ?? [];
     if (! array_key_exists($config_name, $config)) {
         return null;
     }
@@ -171,16 +161,6 @@ function mconfig($configuration)
     return $mconfig[$configuration]                              ?? null;
 }
 
-function loadConfigurations($file): ?array
-{
-    if (! check_value($file)) {
-        return null;
-    }
-
-    $result = BootstrapContext::configProvider()?->moduleConfig((string) $file);
-
-    return is_array($result) ? $result : null;
-}
 
 // ---------------------------------------------------------------------------
 // Time

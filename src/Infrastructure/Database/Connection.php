@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Database;
 
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
+
 /**
  * Database connection factory — returns a live dB instance by name.
  */
@@ -34,7 +36,7 @@ class Connection
 
     private static function _config(string $config): mixed
     {
-        $cmsConfig = cmsConfigs();
+        $cmsConfig = BootstrapContext::configProvider()?->cms() ?? [];
         if (!array_key_exists($config, $cmsConfig)) return null;
         return $cmsConfig[$config];
     }

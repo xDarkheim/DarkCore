@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Auth;
 
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\Runtime\ServerContext;
 use Darkheim\Domain\Validator;
@@ -26,7 +27,7 @@ class Login
         $this->muonline = Connection::Database('MuOnline');
         $this->sessionManager = $sessionManager ?? new SessionManager();
         $this->serverContext = $serverContext ?? new ServerContext();
-        $loginConfigs   = loadConfigurations('login');
+        $loginConfigs   = BootstrapContext::configProvider()?->moduleConfig('login');
         if (!is_array($loginConfigs)) throw new \Exception(lang('error_98'));
         $this->_config = $loginConfigs;
     }

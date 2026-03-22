@@ -348,12 +348,11 @@ one-to-three-line wrapper that casts arguments and delegates to the matching `sr
 | `check_value()`                                                                                                                                           | `Validator::hasValue()`                                       |
 | `redirect()`                                                                                                                                              | `Redirector::go()`                                            |
 | `isLoggedIn()`                                                                                                                                             | `SessionManager`                                              |
-| `canAccessAdminCP()`                                                                                                                                      | `AdminGuard::canAccess()`                                     |
 | `admincp_base()`                                                                                                                                          | `AdmincpUrlGenerator::base()`                                 |
 | `message()` / `inline_message()`                                                                                                                          | `MessageRenderer::toast()` / `::inline()`                     |
 | `lang()` / `langf()`                                                                                                                                      | `Translator::phrase()` / `::phraseFmt()`                      |
-| `config()` / `cmsConfigs()`                                                                                                                               | `ConfigProvider::cms()`                                       |
-| `loadConfigurations()` / `mconfig()`                                                                                                                      | `ConfigProvider` + `RuntimeState`                             |
+| `config()`                                                                                                                                                 | `ConfigProvider::cms()`                                       |
+| `mconfig()`                                                                                                                                                | `ConfigProvider` + `RuntimeState`                             |
 | `enabledisableCheckboxes()`                                                                                                                                | compatibility-only HTML helper for remaining config partials  |
 
 ## What to edit vs. what not to touch

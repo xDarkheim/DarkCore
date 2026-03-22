@@ -6,6 +6,7 @@ namespace Darkheim\Application\Page;
 
 use Darkheim\Application\Game\GameHelper;
 use Darkheim\Application\Profile\ProfileRenderer;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\Theme\DefaultThemeLayoutBuilder;
 use Darkheim\Infrastructure\View\ViewRenderer;
@@ -54,7 +55,7 @@ final class HomeController
         }
 
         // Top Level ranking
-        $rankingsConfig = loadConfigurations('rankings');
+        $rankingsConfig = BootstrapContext::configProvider()?->moduleConfig('rankings');
         $topLevelData   = [];
         $levelCache     = $cacheRepo->loadLegacyText('rankings_level.cache');
         if (is_array($levelCache)) {
