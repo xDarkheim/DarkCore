@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\Language\LanguageRepository;
 use Darkheim\Application\News\NewsService as News;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -22,7 +23,7 @@ final class AddNewsTranslationController
             $newsService = new News();
             loadModuleConfigs('news');
 
-            if (!$newsService->isNewsDirWritable()) {
+            if (! $newsService->isNewsDirWritable()) {
                 throw new \RuntimeException('The news cache folder is not writable.');
             }
 
@@ -41,12 +42,12 @@ final class AddNewsTranslationController
             }
 
             $newsData = $newsService->loadNewsData($_GET['id']);
-            if (!is_array($newsData)) {
+            if (! is_array($newsData)) {
                 throw new \RuntimeException('Could not load news data.');
             }
 
-            $languagesList = getInstalledLanguagesList();
-            if (!is_array($languagesList)) {
+            $languagesList = LanguageRepository::getInstalled();
+            if (! is_array($languagesList)) {
                 throw new \RuntimeException('There are no available languages.');
             }
 
@@ -67,4 +68,3 @@ final class AddNewsTranslationController
         }
     }
 }
-

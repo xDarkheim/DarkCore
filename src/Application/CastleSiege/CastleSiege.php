@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\CastleSiege;
 
-use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Application\Helpers\TimeHelper;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Cache\CacheRepository;
+use Darkheim\Infrastructure\Database\Connection;
 
 /**
  * Castle Siege — schedule generation, stage management, live/cached siege data.
@@ -55,7 +55,9 @@ class CastleSiege
     public function __construct()
     {
         $cfg = loadConfig($this->_configFileName);
-        if (!$cfg) throw new \Exception('Could not load castle siege configuration file.');
+        if (! $cfg) {
+            throw new \Exception('Could not load castle siege configuration file.');
+        }
 
         $this->_active                  = (bool) $cfg['active'];
         $this->_hideIdle                = (bool) $cfg['hide_idle'];
@@ -84,7 +86,9 @@ class CastleSiege
     {
         if ($this->_liveData) {
             $this->_initDatabase();
-        } elseif (!is_array($this->_cacheSiegeData)) return null;
+        } elseif (! is_array($this->_cacheSiegeData)) {
+            return null;
+        }
 
         return [
             'current_stage'           => $this->getCurrentStage(),
@@ -109,7 +113,9 @@ class CastleSiege
 
     public function getNextStage(): ?array
     {
-        if ($this->_nextStage === 0) return $this->_getNextScheduleStartingStage();
+        if ($this->_nextStage === 0) {
+            return $this->_getNextScheduleStartingStage();
+        }
         return $this->_nextStage !== null ? ($this->_schedule[$this->_nextStage] ?? null) : null;
     }
 
@@ -118,46 +124,94 @@ class CastleSiege
         return $this->_warfareStage !== null ? ($this->_schedule[$this->_warfareStage] ?? null) : null;
     }
 
-    public function getNextStageCountdown(): string    { return $this->_formatCountdownTime($this->_getSecondsForNextStage()); }
-    public function getWarfareStageCountdown(): string { return $this->_formatCountdownTime($this->_getSecondsForWarfareStage()); }
+    public function getNextStageCountdown(): string
+    {
+        return $this->_formatCountdownTime($this->_getSecondsForNextStage());
+    }
+    public function getWarfareStageCountdown(): string
+    {
+        return $this->_formatCountdownTime($this->_getSecondsForWarfareStage());
+    }
 
     public function getCastleData()
     {
-        if ($this->_liveData) return $this->_returnCastleData();
+        if ($this->_liveData) {
+            return $this->_returnCastleData();
+        }
         return $this->_cacheSiegeData['castle_data'] ?? null;
     }
 
     public function getCastleOwnerAlliance()
     {
-        if ($this->_liveData) return $this->_returnCastleOwnerAlliance();
+        if ($this->_liveData) {
+            return $this->_returnCastleOwnerAlliance();
+        }
         return $this->_cacheSiegeData['castle_owner_alliance'] ?? null;
     }
 
     public function getRegisteredGuildsAndAlliances()
     {
-        if ($this->_liveData) return $this->_returnRegisteredGuildsAndAlliances();
+        if ($this->_liveData) {
+            return $this->_returnRegisteredGuildsAndAlliances();
+        }
         return $this->_cacheSiegeData['registered_guilds'] ?? null;
     }
 
-    public function friendlyDateFormat(int $ts): string { return date($this->_friendlyDateFormat, $ts); }
-    public function showCastleOwner(): bool           { return $this->_showCastleOwner; }
-    public function showCastleOwnerAlliance(): bool   { return $this->_showCastleOwnerAlliance; }
-    public function showBattleCountdown(): bool       { return $this->_showBattleCountdown; }
-    public function showCastleInformation(): bool     { return $this->_showCastleInformation; }
-    public function showCurrentStage(): bool          { return $this->_showCurrentStage; }
-    public function showNextStage(): bool             { return $this->_showNextStage; }
-    public function showRegisteredGuilds(): bool      { return $this->_showRegisteredGuilds; }
-    public function showBattleDuration(): bool        { return $this->_showBattleDuration; }
-    public function showSchedule(): bool              { return $this->_showSchedule; }
-    public function showWidget(): bool                { return $this->_showWidget; }
+    public function friendlyDateFormat(int $ts): string
+    {
+        return date($this->_friendlyDateFormat, $ts);
+    }
+    public function showCastleOwner(): bool
+    {
+        return $this->_showCastleOwner;
+    }
+    public function showCastleOwnerAlliance(): bool
+    {
+        return $this->_showCastleOwnerAlliance;
+    }
+    public function showBattleCountdown(): bool
+    {
+        return $this->_showBattleCountdown;
+    }
+    public function showCastleInformation(): bool
+    {
+        return $this->_showCastleInformation;
+    }
+    public function showCurrentStage(): bool
+    {
+        return $this->_showCurrentStage;
+    }
+    public function showNextStage(): bool
+    {
+        return $this->_showNextStage;
+    }
+    public function showRegisteredGuilds(): bool
+    {
+        return $this->_showRegisteredGuilds;
+    }
+    public function showBattleDuration(): bool
+    {
+        return $this->_showBattleDuration;
+    }
+    public function showSchedule(): bool
+    {
+        return $this->_showSchedule;
+    }
+    public function showWidget(): bool
+    {
+        return $this->_showWidget;
+    }
 
-    public function moduleEnabled(): bool             { return $this->_active; }
+    public function moduleEnabled(): bool
+    {
+        return $this->_active;
+    }
 
     public function getWarfareDuration(): string
     {
-        $warfareStage = $this->getWarfareStage();
+        $warfareStage           = $this->getWarfareStage();
         $warfareDurationSeconds = $warfareStage['end_timestamp'] - $warfareStage['start_timestamp'];
-        $warfareDuration = TimeHelper::secToHms($warfareDurationSeconds);
+        $warfareDuration        = TimeHelper::secToHms($warfareDurationSeconds);
         return langf('castlesiege_battle_duration', [$warfareDuration[0], $warfareDuration[1]]);
     }
 
@@ -170,7 +224,7 @@ class CastleSiege
 
     protected function _generateSchedule(): void
     {
-        if (!is_array($this->_stages)) {
+        if (! is_array($this->_stages)) {
             throw new \Exception('The castle siege schedule could not be generated, missing stages data.');
         }
 
@@ -216,8 +270,12 @@ class CastleSiege
     protected function _determineCurrentStage(): void
     {
         foreach ($this->_schedule as $key => $row) {
-            if (time() < $row['start_timestamp']) continue;
-            if (time() > $row['end_timestamp'])   continue;
+            if (time() < $row['start_timestamp']) {
+                continue;
+            }
+            if (time() > $row['end_timestamp']) {
+                continue;
+            }
             $this->_currentStage = $key;
             return;
         }
@@ -245,9 +303,9 @@ class CastleSiege
 
     protected function _getNextScheduleStartingStage(): array
     {
-        $stage          = $this->_schedule[0];
-        $startTimestamp = strtotime('next ' . $stage['start_day'] . ' ' . $stage['start_time'], $stage['start_timestamp']);
-        $endTimestamp   = strtotime('next ' . $stage['end_day'] . ' ' . $stage['end_time'], $stage['end_timestamp']);
+        $stage                    = $this->_schedule[0];
+        $startTimestamp           = strtotime('next ' . $stage['start_day'] . ' ' . $stage['start_time'], $stage['start_timestamp']);
+        $endTimestamp             = strtotime('next ' . $stage['end_day'] . ' ' . $stage['end_time'], $stage['end_timestamp']);
         $stage['start_timestamp'] = $startTimestamp;
         $stage['end_timestamp']   = $endTimestamp;
         $stage['start_date']      = date($this->_dateFormat, $startTimestamp);
@@ -269,17 +327,23 @@ class CastleSiege
 
     protected function _formatCountdownTime(int $seconds): string
     {
-        $timeleft = sec_to_dhms($seconds);
-        if ($timeleft[0] > 0) return langf('castlesiege_time_1', [$timeleft[0], $timeleft[1]]);
-        if ($timeleft[1] > 0) return langf('castlesiege_time_2', [$timeleft[1], $timeleft[2]]);
-        if ($timeleft[2] > 0) return langf('castlesiege_time_3', [$timeleft[2]]);
+        $timeleft = TimeHelper::secToDhms($seconds);
+        if ($timeleft[0] > 0) {
+            return langf('castlesiege_time_1', [$timeleft[0], $timeleft[1]]);
+        }
+        if ($timeleft[1] > 0) {
+            return langf('castlesiege_time_2', [$timeleft[1], $timeleft[2]]);
+        }
+        if ($timeleft[2] > 0) {
+            return langf('castlesiege_time_3', [$timeleft[2]]);
+        }
         return lang('castlesiege_time_4');
     }
 
     protected function _returnCastleData(): ?array
     {
         $result = $this->db->query_fetch_single(
-            "SELECT * FROM " . _TBL_MUCASTLE_DATA_
+            "SELECT * FROM " . _TBL_MUCASTLE_DATA_,
         );
         return is_array($result) ? $result : null;
     }
@@ -288,10 +352,12 @@ class CastleSiege
     {
         $castleData      = $this->getCastleData();
         $castleOwnerData = $this->_getGuildData($castleData[_CLMN_MCD_GUILD_OWNER_]);
-        if (!is_array($castleOwnerData)) return null;
+        if (! is_array($castleOwnerData)) {
+            return null;
+        }
 
         $castleOwnerData['member_count'] = $this->_getGuildMemberCount($castleData[_CLMN_MCD_GUILD_OWNER_]);
-        $result[] = $castleOwnerData;
+        $result[]                        = $castleOwnerData;
 
         $alliedGuilds = $this->_getAlliedGuilds($castleData[_CLMN_MCD_GUILD_OWNER_]);
         if (is_array($alliedGuilds)) {
@@ -306,7 +372,7 @@ class CastleSiege
     {
         $guildMembers = $this->db->query_fetch_single(
             "SELECT COUNT(*) AS result FROM " . _TBL_GUILDMEMB_ . " WHERE " . _CLMN_GUILDMEMB_NAME_ . " = ?",
-            [$guild]
+            [$guild],
         );
         return is_array($guildMembers) ? (int) $guildMembers['result'] : 1;
     }
@@ -315,16 +381,20 @@ class CastleSiege
     {
         $alliedGuilds = $this->db->query_fetch(
             "SELECT * FROM " . _TBL_MUCASTLE_SGL_ . " WHERE " . _CLMN_MCSGL_GID_ . " = (SELECT " . _CLMN_MCSGL_GID_ . " FROM " . _TBL_MUCASTLE_SGL_ . " WHERE " . _CLMN_MCSGL_GNAME_ . " = :guild) AND " . _CLMN_MCSGL_GNAME_ . " != :guild",
-            ['guild' => $guild]
+            ['guild' => $guild],
         );
-        if (!is_array($alliedGuilds)) return null;
+        if (! is_array($alliedGuilds)) {
+            return null;
+        }
 
         $result = [];
         foreach ($alliedGuilds as $alliedGuild) {
             $alliedGuildData = $this->_getGuildData($alliedGuild[_CLMN_MCSGL_GNAME_]);
-            if (!is_array($alliedGuildData)) continue;
+            if (! is_array($alliedGuildData)) {
+                continue;
+            }
             $alliedGuildData['member_count'] = $this->_getGuildMemberCount($alliedGuild[_CLMN_MCSGL_GNAME_]);
-            $result[] = $alliedGuildData;
+            $result[]                        = $alliedGuildData;
         }
         return count($result) > 0 ? $result : null;
     }
@@ -333,7 +403,7 @@ class CastleSiege
     {
         $result = $this->db->query_fetch_single(
             "SELECT *, CONVERT(varchar(max), " . _CLMN_GUILD_LOGO_ . ", 2) as " . _CLMN_GUILD_LOGO_ . " FROM " . _TBL_GUILD_ . " WHERE " . _CLMN_GUILD_NAME_ . " = ?",
-            [$guild]
+            [$guild],
         );
         return is_array($result) ? $result : null;
     }
@@ -341,16 +411,18 @@ class CastleSiege
     protected function _returnRegisteredGuildsAndAlliances(): ?array
     {
         $registeredGuilds = $this->db->query_fetch(
-            "SELECT * FROM " . _TBL_MUCASTLE_RS_ . " ORDER BY " . _CLMN_MCRS_SEQNUM_
+            "SELECT * FROM " . _TBL_MUCASTLE_RS_ . " ORDER BY " . _CLMN_MCRS_SEQNUM_,
         );
-        if (!is_array($registeredGuilds)) return null;
+        if (! is_array($registeredGuilds)) {
+            return null;
+        }
 
         $result = [];
         foreach ($registeredGuilds as $registeredGuild) {
             $guildData = $this->_getGuildData($registeredGuild[_CLMN_MCRS_GUILD_]);
             if (is_array($guildData)) {
                 $guildData['member_count'] = $this->_getGuildMemberCount($registeredGuild[_CLMN_MCRS_GUILD_]);
-                $result[] = $guildData;
+                $result[]                  = $guildData;
             }
             $alliedGuilds = $this->_getAlliedGuilds($registeredGuild[_CLMN_MCRS_GUILD_]);
             if (is_array($alliedGuilds)) {
@@ -370,12 +442,12 @@ class CastleSiege
             'registered_guilds'     => $this->getRegisteredGuildsAndAlliances(),
         ];
         $encoded = CacheBuilder::encode($data, true);
-        return (new CacheRepository(__PATH_CACHE__))->save($this->_cacheFileName, $encoded);
+        return new CacheRepository(__PATH_CACHE__)->save($this->_cacheFileName, $encoded);
     }
 
     protected function _loadCacheSiegeData(): void
     {
-        $data = (new CacheRepository(__PATH_CACHE__))->load($this->_cacheFileName);
+        $data = new CacheRepository(__PATH_CACHE__)->load($this->_cacheFileName);
         if (is_array($data)) {
             $this->_cacheSiegeData = $data;
         }
@@ -383,8 +455,9 @@ class CastleSiege
 
     protected function _initDatabase(): void
     {
-        if (!empty($this->db)) return;
+        if (! empty($this->db)) {
+            return;
+        }
         $this->db = Connection::Database($this->_database);
     }
 }
-

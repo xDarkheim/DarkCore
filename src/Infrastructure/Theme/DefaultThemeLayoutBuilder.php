@@ -7,6 +7,8 @@ namespace Darkheim\Infrastructure\Theme;
 use Darkheim\Application\CastleSiege\CastleSiege;
 use Darkheim\Application\Game\GameHelper;
 use Darkheim\Application\Profile\ProfileRenderer;
+use Darkheim\Infrastructure\Cache\CacheRepository;
+use Darkheim\Infrastructure\Http\GeoIpService;
 
 final class DefaultThemeLayoutBuilder
 {
@@ -101,7 +103,7 @@ final class DefaultThemeLayoutBuilder
     private function serverInfoData(): array
     {
         $rows            = [];
-        $serverInfoCache = LoadCacheData('server_info.cache');
+        $serverInfoCache = (new CacheRepository(__PATH_CACHE__))->loadLegacyText('server_info.cache');
         $srvInfo         = null;
         if (is_array($serverInfoCache) && isset($serverInfoCache[1][0]) && is_string($serverInfoCache[1][0])) {
             $srvInfo = explode('|', $serverInfoCache[1][0]);
@@ -350,12 +352,12 @@ final class DefaultThemeLayoutBuilder
 
         $html        = '<ul class="dh-lang-switcher">';
         $currentInfo = $languageList[$currentLanguage];
-        $html .= '<li><a href="' . htmlspecialchars(__BASE_URL__ . 'language/switch/to/' . strtolower($currentLanguage), ENT_QUOTES, 'UTF-8') . '" title="' . htmlspecialchars($currentInfo[0], ENT_QUOTES, 'UTF-8') . '"><img src="' . htmlspecialchars(getCountryFlag($currentInfo[1]), ENT_QUOTES, 'UTF-8') . '" alt="' . htmlspecialchars($currentInfo[0], ENT_QUOTES, 'UTF-8') . '" /> ' . htmlspecialchars(strtoupper($currentLanguage), ENT_QUOTES, 'UTF-8') . '</a></li>';
+        $html .= '<li><a href="' . htmlspecialchars(__BASE_URL__ . 'language/switch/to/' . strtolower($currentLanguage), ENT_QUOTES, 'UTF-8') . '" title="' . htmlspecialchars($currentInfo[0], ENT_QUOTES, 'UTF-8') . '"><img src="' . htmlspecialchars(GeoIpService::flagUrl($currentInfo[1]), ENT_QUOTES, 'UTF-8') . '" alt="' . htmlspecialchars($currentInfo[0], ENT_QUOTES, 'UTF-8') . '" /> ' . htmlspecialchars(strtoupper($currentLanguage), ENT_QUOTES, 'UTF-8') . '</a></li>';
         foreach ($languageList as $language => $languageInfo) {
             if ($language === $currentLanguage) {
                 continue;
             }
-            $html .= '<li><a href="' . htmlspecialchars(__BASE_URL__ . 'language/switch/to/' . strtolower($language), ENT_QUOTES, 'UTF-8') . '" title="' . htmlspecialchars($languageInfo[0], ENT_QUOTES, 'UTF-8') . '"><img src="' . htmlspecialchars(getCountryFlag($languageInfo[1]), ENT_QUOTES, 'UTF-8') . '" alt="' . htmlspecialchars($languageInfo[0], ENT_QUOTES, 'UTF-8') . '" /> ' . htmlspecialchars(strtoupper($language), ENT_QUOTES, 'UTF-8') . '</a></li>';
+            $html .= '<li><a href="' . htmlspecialchars(__BASE_URL__ . 'language/switch/to/' . strtolower($language), ENT_QUOTES, 'UTF-8') . '" title="' . htmlspecialchars($languageInfo[0], ENT_QUOTES, 'UTF-8') . '"><img src="' . htmlspecialchars(GeoIpService::flagUrl($languageInfo[1]), ENT_QUOTES, 'UTF-8') . '" alt="' . htmlspecialchars($languageInfo[0], ENT_QUOTES, 'UTF-8') . '" /> ' . htmlspecialchars(strtoupper($language), ENT_QUOTES, 'UTF-8') . '</a></li>';
         }
         $html .= '</ul>';
 

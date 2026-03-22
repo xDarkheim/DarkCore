@@ -10,6 +10,7 @@ use Darkheim\Application\Rankings\RankingCache;
 use Darkheim\Application\Rankings\RankingRepository;
 use Darkheim\Application\Rankings\RankingsService;
 use Darkheim\Infrastructure\Cache\CacheRepository;
+use Darkheim\Infrastructure\Http\GeoIpService;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class RankingsSectionController
@@ -284,7 +285,7 @@ final class RankingsSectionController
         $cells   = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
         $cells[] = number_format((int) $entry[2]);
         if ($showLocation) {
-            $cells[] = returnMapName((int) ($entry[3] ?? 0));
+            $cells[] = GameHelper::mapName((int) ($entry[3] ?? 0));
         }
 
         return $this->rowModel($classId, $position, $cells);
@@ -303,7 +304,7 @@ final class RankingsSectionController
         $cells[] = number_format((int) $entry[3]);
         $cells[] = number_format((int) $entry[2]);
         if ($showLocation) {
-            $cells[] = returnMapName((int) ($entry[4] ?? 0));
+            $cells[] = GameHelper::mapName((int) ($entry[4] ?? 0));
         }
 
         return $this->rowModel($classId, $position, $cells);
@@ -320,10 +321,10 @@ final class RankingsSectionController
         $classId = (int) $entry[1];
         $cells   = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
         $cells[] = number_format((int) $entry[3]);
-        $cells[] = returnPkLevel((int) $entry[5]);
+        $cells[] = GameHelper::pkLevel((int) $entry[5]);
         $cells[] = number_format((int) $entry[2]);
         if ($showLocation) {
-            $cells[] = returnMapName((int) ($entry[4] ?? 0));
+            $cells[] = GameHelper::mapName((int) ($entry[4] ?? 0));
         }
 
         return $this->rowModel($classId, $position, $cells);
@@ -366,7 +367,7 @@ final class RankingsSectionController
         $cells[] = number_format((int) $entry[2]);
         $cells[] = number_format((int) $entry[1]);
         if ($showLocation) {
-            $cells[] = returnMapName((int) ($entry[4] ?? 0));
+            $cells[] = GameHelper::mapName((int) ($entry[4] ?? 0));
         }
 
         return $this->rowModel($classId, $position, $cells);
@@ -384,7 +385,7 @@ final class RankingsSectionController
         $cells   = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
         $cells[] = number_format((int) round(((float) $entry[1]) / 60 / 60)) . ' ' . lang('rankings_txt_16', true);
         if ($showLocation) {
-            $cells[] = returnMapName((int) ($entry[3] ?? 0));
+            $cells[] = GameHelper::mapName((int) ($entry[3] ?? 0));
         }
 
         return $this->rowModel($classId, $position, $cells);
@@ -402,7 +403,7 @@ final class RankingsSectionController
         $cells   = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
         $cells[] = number_format((int) $entry[1]);
         if ($showLocation) {
-            $cells[] = returnMapName((int) ($entry[3] ?? 0));
+            $cells[] = GameHelper::mapName((int) ($entry[3] ?? 0));
         }
 
         return $this->rowModel($classId, $position, $cells);
@@ -434,7 +435,7 @@ final class RankingsSectionController
         $cells[]     = (string) $entry[3];
         $cells[]     = number_format((int) $entry[2]);
         if ($showLocation) {
-            $cells[] = returnMapName((int) ($entry[6] ?? 0));
+            $cells[] = GameHelper::mapName((int) ($entry[6] ?? 0));
         }
 
         return $this->rowModel($classId, $position, $cells);
@@ -453,7 +454,7 @@ final class RankingsSectionController
         $cells[] = number_format((int) $entry[3]);
         $cells[] = number_format((int) $entry[1]);
         if ($showLocation) {
-            $cells[] = returnMapName((int) ($entry[4] ?? 0));
+            $cells[] = GameHelper::mapName((int) ($entry[4] ?? 0));
         }
 
         return $this->rowModel($classId, $position, $cells);
@@ -472,7 +473,7 @@ final class RankingsSectionController
         }
         if ($showCountry) {
             $countryCode = $characterCountries[$name] ?? 'default';
-            $cells[]     = '<img src="' . getCountryFlag($countryCode) . '" alt="' . htmlspecialchars($countryCode, ENT_QUOTES, 'UTF-8') . '" />';
+            $cells[]     = '<img src="' . GeoIpService::flagUrl($countryCode) . '" alt="' . htmlspecialchars($countryCode, ENT_QUOTES, 'UTF-8') . '" />';
         }
         $cells[] = GameHelper::playerClassAvatar($classId, true, true, 'rankings-class-image');
         $cells[] = ProfileRenderer::player($name) . $this->onlineStatusHtml($name, $showOnlineStatus, $onlineCharacters);

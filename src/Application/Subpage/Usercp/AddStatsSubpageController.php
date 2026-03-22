@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Subpage\Usercp;
 
 use Darkheim\Application\Character\Character;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class AddStatsSubpageController
@@ -28,7 +29,7 @@ final class AddStatsSubpageController
                 throw new \Exception(lang('error_47', true));
             }
 
-            $commandClasses = custom('character_cmd');
+            $commandClasses = (BootstrapContext::runtimeState()?->customConfig() ?? [])['character_cmd'] ?? null;
             if (!is_array($commandClasses)) {
                 throw new \Exception(lang('error_59', true));
             }

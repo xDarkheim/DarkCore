@@ -8,6 +8,7 @@ use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Cache\CacheRepository;
+use Darkheim\Application\Language\LanguageRepository;
 
 /**
  * NewsService — full CRUD, caching, translation management for news articles.
@@ -44,7 +45,7 @@ class NewsService
     public function setLanguage($language): void
     {
         if (!check_value($language)) return;
-        $languagesList = getInstalledLanguagesList();
+        $languagesList = LanguageRepository::getInstalled();
         if (!is_array($languagesList)) return;
         if (!in_array($language, $languagesList, true)) return;
         $this->_language = $language;

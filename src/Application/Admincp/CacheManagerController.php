@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Admincp;
 
 use Darkheim\Infrastructure\Cache\CacheManager;
+use Darkheim\Infrastructure\Helpers\FileHelper;
 use Darkheim\Infrastructure\Runtime\NativeQueryStore;
 use Darkheim\Infrastructure\Runtime\QueryStore;
 use Darkheim\Infrastructure\View\ViewRenderer;
@@ -82,7 +83,7 @@ final class CacheManagerController
             $isWritable = (int) ($row['write'] ?? 0) === 1;
             $rows[] = [
                 'file' => $file,
-                'size' => readableFileSize((int) ($row['size'] ?? 0)),
+                'size' => FileHelper::readableSize((int) ($row['size'] ?? 0)),
                 'lastModified' => (string) ($row['edit'] ?? ''),
                 'writableLabel' => $isWritable ? 'Yes' : 'Not Writable',
                 'writableClass' => $isWritable ? 'badge-status on' : 'badge-status off',
@@ -117,7 +118,7 @@ final class CacheManagerController
             $cards[] = [
                 'label' => $label,
                 'fileCount' => number_format($count),
-                'totalSize' => readableFileSize($size),
+                'totalSize' => FileHelper::readableSize($size),
                 'deleteUrl' => admincp_base('cachemanager&action=' . $action),
                 'showDelete' => $count > 0,
                 'deleteLabel' => 'Delete ' . $label . ' Cache',

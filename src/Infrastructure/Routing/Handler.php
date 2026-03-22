@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Routing;
 
+use Darkheim\Application\Auth\Common;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\Runtime\NativeQueryStore;
 use Darkheim\Infrastructure\Runtime\NativeSessionStore;
 use Darkheim\Infrastructure\Runtime\QueryStore;
 use Darkheim\Infrastructure\Runtime\SessionStore;
-use Darkheim\Application\Auth\Common;
 use Darkheim\Infrastructure\Theme\DefaultThemeLayoutBuilder;
 
 /**
@@ -44,27 +45,27 @@ class Handler
         ?PageAccessDispatcher $pageAccessDispatcher = null,
         ?DefaultThemeLayoutBuilder $themeLayoutBuilder = null,
     ) {
-        $this->session = $session ?? new NativeSessionStore();
-        $this->query = $query ?? new NativeQueryStore();
-        $this->controllerDispatcher = $controllerDispatcher ?? new ControllerRouteDispatcher();
+        $this->session                 = $session                 ?? new NativeSessionStore();
+        $this->query                   = $query                   ?? new NativeQueryStore();
+        $this->controllerDispatcher    = $controllerDispatcher    ?? new ControllerRouteDispatcher();
         $this->admincpModuleDispatcher = $admincpModuleDispatcher ?? new AdmincpModuleDispatcher();
-        $this->requestParameterParser = $requestParameterParser ?? new RequestParameterParser();
-        $this->routeInputSanitizer = $routeInputSanitizer ?? new RouteInputSanitizer();
-        $this->languageBootstrapper = $languageBootstrapper ?? new LanguageBootstrapper();
-        $this->moduleRouteResolver = $moduleRouteResolver ?? new ModuleRouteResolver();
-        $this->subpageRouteDispatcher = $subpageRouteDispatcher ?? new SubpageRouteDispatcher();
-        $this->apiRouteDispatcher = $apiRouteDispatcher ?? new ApiRouteDispatcher();
-        $this->pageAccessDispatcher = $pageAccessDispatcher ?? new PageAccessDispatcher();
-        $this->themeLayoutBuilder = $themeLayoutBuilder ?? new DefaultThemeLayoutBuilder();
+        $this->requestParameterParser  = $requestParameterParser  ?? new RequestParameterParser();
+        $this->routeInputSanitizer     = $routeInputSanitizer     ?? new RouteInputSanitizer();
+        $this->languageBootstrapper    = $languageBootstrapper    ?? new LanguageBootstrapper();
+        $this->moduleRouteResolver     = $moduleRouteResolver     ?? new ModuleRouteResolver();
+        $this->subpageRouteDispatcher  = $subpageRouteDispatcher  ?? new SubpageRouteDispatcher();
+        $this->apiRouteDispatcher      = $apiRouteDispatcher      ?? new ApiRouteDispatcher();
+        $this->pageAccessDispatcher    = $pageAccessDispatcher    ?? new PageAccessDispatcher();
+        $this->themeLayoutBuilder      = $themeLayoutBuilder      ?? new DefaultThemeLayoutBuilder();
     }
 
     public function loadPage(): void
     {
-        $config = cmsConfigs();
-        $custom = customData();
-        $lang = getLanguagePhrases();
+        $config    = cmsConfigs();
+        $custom    = BootstrapContext::runtimeState()?->customConfig() ?? [];
+        $lang      = getLanguagePhrases();
         $tSettings = [];
-        $handler = $this;
+        $handler   = $this;
 
         $this->languageBootstrapper->bootstrap($this->session, $config);
 
@@ -81,14 +82,16 @@ class Handler
             return;
         }
 
-        $moduleHtml = $this->renderModuleHtml($currentPage, $currentSubpage);
+        $moduleHtml  = $this->renderModuleHtml($currentPage, $currentSubpage);
         $themeLayout = $this->themeLayoutBuilder->build($currentPage, $currentSubpage);
 
-        if (!defined('access')) throw new \Exception('Access forbidden.');
+        if (! defined('access')) {
+            throw new \Exception('Access forbidden.');
+        }
         $this->pageAccessDispatcher->dispatch(
             (string) access,
             (string) $config['website_theme'],
-            compact('config', 'custom', 'lang', 'tSettings', 'handler', 'moduleHtml', 'themeLayout')
+            compact('config', 'custom', 'lang', 'tSettings', 'handler', 'moduleHtml', 'themeLayout'),
         );
     }
 
@@ -101,27 +104,29 @@ class Handler
 
     public function loadModule(?string $page = 'news', ?string $subpage = 'home'): void
     {
-        $config = cmsConfigs();
-        $custom = customData();
-        $lang = getLanguagePhrases();
-        $mconfig = moduleConfigData();
+        $config    = cmsConfigs();
+        $custom    = BootstrapContext::runtimeState()?->customConfig() ?? [];
+        $lang      = getLanguagePhrases();
+        $mconfig   = moduleConfigData();
         $tSettings = [];
         try {
-            $handler  = $this;
-            $page     = $this->routeInputSanitizer->sanitize($page);
-            $subpage  = $this->routeInputSanitizer->sanitize($subpage);
+            $handler = $this;
+            $page    = $this->routeInputSanitizer->sanitize($page);
+            $subpage = $this->routeInputSanitizer->sanitize($subpage);
 
             $this->requestParameterParser->parseInto($this->query);
 
-            if (!check_value($page)) { $page = 'home'; }
+            if (! check_value($page)) {
+                $page = 'home';
+            }
 
             // Controller-based routes are defined in config/routes.web.php.
-            if (!check_value($subpage) && $this->controllerDispatcher->dispatch((string) $page)) {
+            if (! check_value($subpage) && $this->controllerDispatcher->dispatch((string) $page)) {
                 return;
             }
 
             // Top-level pages must be controller-routed; no legacy fallback.
-            if (!check_value($subpage)) {
+            if (! check_value($subpage)) {
                 $this->module404();
                 return;
             }
@@ -147,20 +152,28 @@ class Handler
 
     public function loadAdminCPModule($module = 'home'): void
     {
-        $config = cmsConfigs();
-        $lang = getLanguagePhrases();
-        $custom = customData();
+        $config  = cmsConfigs();
+        $lang    = getLanguagePhrases();
+        $custom  = BootstrapContext::runtimeState()?->customConfig() ?? [];
         $handler = $this;
         $mconfig = moduleConfigData();
         $gconfig = [];
-        $cms = null;
+        $cms     = null;
 
         $dB     = Connection::Database('MuOnline');
         $common = new Common();
 
         $module = (check_value($module) ? $module : 'home');
         if ($this->admincpModuleDispatcher->dispatch((string) $module, compact(
-            'config', 'lang', 'custom', 'handler', 'mconfig', 'gconfig', 'cms', 'dB', 'common'
+            'config',
+            'lang',
+            'custom',
+            'handler',
+            'mconfig',
+            'gconfig',
+            'cms',
+            'dB',
+            'common',
         ))) {
             return;
         }
@@ -183,8 +196,12 @@ class Handler
 
     public function switchLanguage($language): bool
     {
-        if (!check_value($language)) return false;
-        if (!$this->languageExists($language)) return false;
+        if (! check_value($language)) {
+            return false;
+        }
+        if (! $this->languageExists($language)) {
+            return false;
+        }
         $this->session->set('language_display', $language);
         return true;
     }
@@ -195,7 +212,10 @@ class Handler
         return file_exists(__PATH_LANGUAGES__ . $language . '/language.php');
     }
 
-    private function module404(): void { redirect(); }
+    private function module404(): void
+    {
+        redirect();
+    }
 
     private function dispatchApiRequest(string $page, string $subpage): bool
     {
@@ -203,11 +223,11 @@ class Handler
             return false;
         }
 
-        if (!$this->apiRouteDispatcher->dispatch($subpage)) {
+        if (! $this->apiRouteDispatcher->dispatch($subpage)) {
             http_response_code(404);
             header('Content-Type: application/json');
             echo json_encode([
-                'code' => 404,
+                'code'  => 404,
                 'error' => 'API endpoint not found.',
             ], JSON_THROW_ON_ERROR);
         }
@@ -216,4 +236,3 @@ class Handler
     }
 
 }
-

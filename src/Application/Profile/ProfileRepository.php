@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Profile;
 
-use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Character\Character;
+use Darkheim\Application\Helpers\Encoder;
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Database\Connection;
 
 /**
  * ProfileRepository — player and guild profile caching and data retrieval.
@@ -40,7 +41,9 @@ class ProfileRepository
         $this->_checkCacheDir($this->_playersCachePath);
 
         $profileConfig = loadConfigurations('profiles');
-        if (!is_array($profileConfig)) throw new \Exception(lang('error_25', true));
+        if (! is_array($profileConfig)) {
+            throw new \Exception(lang('error_25', true));
+        }
         $this->cfg = $profileConfig;
     }
 
@@ -58,23 +61,37 @@ class ProfileRepository
     public function setRequest($input): void
     {
         if (array_key_exists('encode', $this->cfg) && $this->cfg['encode'] == 1) {
-            if (!Validator::Chars($input, ['a-z', 'A-Z', '0-9', '_', '-'])) throw new \Exception(lang('error_25', true));
-            $decodedReq = base64url_decode($input);
-            if (!$decodedReq) throw new \Exception(lang('error_25', true));
+            if (! Validator::Chars($input, ['a-z', 'A-Z', '0-9', '_', '-'])) {
+                throw new \Exception(lang('error_25', true));
+            }
+            $decodedReq = Encoder::base64urlDecode((string) $input);
+            if (! $decodedReq) {
+                throw new \Exception(lang('error_25', true));
+            }
             $this->_request = $decodedReq;
             return;
         }
 
-        if (!Validator::AlphaNumeric($input)) throw new \Exception(lang('error_25', true));
-        if (strlen($input) > $this->_reqMaxLen) throw new \Exception(lang('error_25', true));
-        if (strlen($input) < 4) throw new \Exception(lang('error_25', true));
+        if (! Validator::AlphaNumeric($input)) {
+            throw new \Exception(lang('error_25', true));
+        }
+        if (strlen($input) > $this->_reqMaxLen) {
+            throw new \Exception(lang('error_25', true));
+        }
+        if (strlen($input) < 4) {
+            throw new \Exception(lang('error_25', true));
+        }
         $this->_request = $input;
     }
 
     public function data(): array
     {
-        if (!check_value($this->_type))    throw new \Exception(lang('error_21', true));
-        if (!check_value($this->_request)) throw new \Exception(lang('error_21', true));
+        if (! check_value($this->_type)) {
+            throw new \Exception(lang('error_21', true));
+        }
+        if (! check_value($this->_request)) {
+            throw new \Exception(lang('error_21', true));
+        }
         $this->_checkCache();
         return explode('|', $this->_fileData);
     }
@@ -83,14 +100,16 @@ class ProfileRepository
 
     private function _checkCacheDir(string $path): void
     {
-        if (!check_value($path)) return;
-        if (!file_exists($path) || !is_dir($path)) {
+        if (! check_value($path)) {
+            return;
+        }
+        if (! file_exists($path) || ! is_dir($path)) {
             $msg = config('error_reporting', true)
                 ? "Invalid cache directory ($path)"
                 : lang('error_21', true);
             throw new \Exception($msg);
         }
-        if (!is_writable($path)) {
+        if (! is_writable($path)) {
             $msg = config('error_reporting', true)
                 ? "The cache directory is not writable ($path)"
                 : lang('error_21', true);
@@ -102,7 +121,7 @@ class ProfileRepository
     {
         if ($this->_type === 'guild') {
             $reqFile = $this->_guildsCachePath . strtolower($this->_request) . '.cache';
-            if (!file_exists($reqFile)) {
+            if (! file_exists($reqFile)) {
                 $this->_cacheGuildData();
             }
             $fileData = explode('|', (string) file_get_contents($reqFile));
@@ -111,7 +130,7 @@ class ProfileRepository
             }
         } else {
             $reqFile = $this->_playersCachePath . strtolower($this->_request) . '.cache';
-            if (!file_exists($reqFile)) {
+            if (! file_exists($reqFile)) {
                 $this->_cachePlayerData();
             }
             $fileData = explode('|', (string) file_get_contents($reqFile));
@@ -126,15 +145,19 @@ class ProfileRepository
     {
         $guildData = $this->dB->query_fetch_single(
             "SELECT *, CONVERT(varchar(max), " . _CLMN_GUILD_LOGO_ . ", 2) as " . _CLMN_GUILD_LOGO_ . " FROM " . _TBL_GUILD_ . " WHERE " . _CLMN_GUILD_NAME_ . " = ?",
-            [$this->_request]
+            [$this->_request],
         );
-        if (!$guildData) throw new \Exception(lang('error_25', true));
+        if (! $guildData) {
+            throw new \Exception(lang('error_25', true));
+        }
 
         $guildMembers = $this->dB->query_fetch(
             "SELECT * FROM " . _TBL_GUILDMEMB_ . " WHERE " . _CLMN_GUILDMEMB_NAME_ . " = ?",
-            [$this->_request]
+            [$this->_request],
         );
-        if (!$guildMembers) throw new \Exception(lang('error_25', true));
+        if (! $guildMembers) {
+            throw new \Exception(lang('error_25', true));
+        }
 
         $members = [];
         foreach ($guildMembers as $gmember) {
@@ -160,7 +183,9 @@ class ProfileRepository
     {
         $character  = new Character();
         $playerData = $character->CharacterData($this->_request);
-        if (!$playerData) throw new \Exception(lang('error_25', true));
+        if (! $playerData) {
+            throw new \Exception(lang('error_25', true));
+        }
 
         /** @phpstan-ignore equal.alwaysFalse */
         if (_TBL_MASTERLVL_ == _TBL_CHR_) {
@@ -173,9 +198,11 @@ class ProfileRepository
         $guild     = '';
         $guildData = $this->dB->query_fetch_single(
             "SELECT * FROM " . _TBL_GUILDMEMB_ . " WHERE " . _CLMN_GUILDMEMB_CHAR_ . " = ?",
-            [$this->_request]
+            [$this->_request],
         );
-        if ($guildData) $guild = $guildData[_CLMN_GUILDMEMB_NAME_];
+        if ($guildData) {
+            $guild = $guildData[_CLMN_GUILDMEMB_NAME_];
+        }
 
         $data = [
             time(),
@@ -201,4 +228,3 @@ class ProfileRepository
         fclose($fp);
     }
 }
-

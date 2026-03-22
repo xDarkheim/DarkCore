@@ -1,8 +1,8 @@
 <?php
 
-use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Cron\CronManager;
+use Darkheim\Infrastructure\Database\Connection;
 
 // File Name
 $file_name = basename(__FILE__);
@@ -13,32 +13,40 @@ $me = Connection::Database('MuOnline');
 
 // total accounts
 $totalAccounts = 0;
-$countAccounts = $me->query_fetch_single("SELECT COUNT(*) as totalAccounts FROM "._TBL_MI_);
-if(is_array($countAccounts)) $totalAccounts = $countAccounts['totalAccounts'];
+$countAccounts = $me->query_fetch_single("SELECT COUNT(*) as totalAccounts FROM " . _TBL_MI_);
+if (is_array($countAccounts)) {
+    $totalAccounts = $countAccounts['totalAccounts'];
+}
 $serverInfo[] = $totalAccounts;
 
 // total characters
 $totalCharacters = 0;
-$countCharacters = $mu->query_fetch_single("SELECT COUNT(*) as totalCharacters FROM "._TBL_CHR_);
-if(is_array($countCharacters)) $totalCharacters = $countCharacters['totalCharacters'];
+$countCharacters = $mu->query_fetch_single("SELECT COUNT(*) as totalCharacters FROM " . _TBL_CHR_);
+if (is_array($countCharacters)) {
+    $totalCharacters = $countCharacters['totalCharacters'];
+}
 $serverInfo[] = $totalCharacters;
 
 // total guilds
 $totalGuilds = 0;
-$countGuilds = $mu->query_fetch_single("SELECT COUNT(*) as totalGuilds FROM "._TBL_GUILD_);
-if(is_array($countGuilds)) $totalGuilds = $countGuilds['totalGuilds'];
+$countGuilds = $mu->query_fetch_single("SELECT COUNT(*) as totalGuilds FROM " . _TBL_GUILD_);
+if (is_array($countGuilds)) {
+    $totalGuilds = $countGuilds['totalGuilds'];
+}
 $serverInfo[] = $totalGuilds;
 
 // total online
 $totalOnline = 0;
-$countOnline = $me->query_fetch_single("SELECT COUNT(*) as totalOnline FROM "._TBL_MS_." WHERE "._CLMN_CONNSTAT_." = 1");
-if(is_array($countOnline)) $totalOnline = $countOnline['totalOnline'];
+$countOnline = $me->query_fetch_single("SELECT COUNT(*) as totalOnline FROM " . _TBL_MS_ . " WHERE " . _CLMN_CONNSTAT_ . " = 1");
+if (is_array($countOnline)) {
+    $totalOnline = $countOnline['totalOnline'];
+}
 $serverInfo[] = $totalOnline;
-	
-if(is_array($serverInfo)) {
-	$cacheDATA = implode("|",$serverInfo);
-	CacheBuilder::writeTimestamped(__PATH_CACHE__ . 'server_info.cache', $cacheDATA);
+
+if (is_array($serverInfo)) {
+    $cacheDATA = implode("|", $serverInfo);
+    CacheBuilder::writeTimestamped(__PATH_CACHE__ . 'server_info.cache', $cacheDATA);
 }
 
 // UPDATE CRON
-(new CronManager())->updateLastRun($file_name);
+new CronManager()->updateLastRun($file_name);

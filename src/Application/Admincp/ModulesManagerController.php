@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
-use Darkheim\Application\Vote\VoteSiteRepository;
 use Darkheim\Application\Credits\CreditSystem;
+use Darkheim\Application\Vote\VoteSiteRepository;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -35,11 +35,11 @@ final class ModulesManagerController
             ],
         ];
 
-        $configKey = null;
+        $configKey      = null;
         $configFilePath = null;
         if (isset($_GET['config'])) {
             $usercpModules = ['addstats', 'buyzen', 'clearpk', 'clearskilltree', 'myaccount', 'myemail', 'mypassword', 'reset', 'resetstats', 'unstick', 'vote'];
-            $configKey = preg_replace('/[^a-z0-9_-]/', '', strtolower((string) $_GET['config']));
+            $configKey     = preg_replace('/[^a-z0-9_-]/', '', strtolower((string) $_GET['config']));
 
             $this->handleConfigActions($configKey);
             $this->handleSimpleConfigSave($configKey);
@@ -47,7 +47,7 @@ final class ModulesManagerController
             $moduleConfigName = $this->moduleConfigNameFromKey($configKey);
             loadModuleConfigs($moduleConfigName);
 
-            $subDir = in_array($configKey, $usercpModules, true) ? 'usercp/' : '';
+            $subDir   = in_array($configKey, $usercpModules, true) ? 'usercp/' : '';
             $filePath = __PATH_VIEWS__ . 'admincp/mconfig/' . $subDir . $configKey . '.php';
             if (is_file($filePath)) {
                 $configFilePath = $filePath;
@@ -59,9 +59,9 @@ final class ModulesManagerController
         $mconfigData = $this->prepareMconfigData($configKey);
 
         $this->view->render('admincp/modulesmanager', [
-            'globalModules' => $cmsModules['_global'],
-            'usercpModules' => $cmsModules['_usercp'],
-            'selectedConfigKey' => $configKey,
+            'globalModules'          => $cmsModules['_global'],
+            'usercpModules'          => $cmsModules['_usercp'],
+            'selectedConfigKey'      => $configKey,
             'selectedConfigFilePath' => $configFilePath,
             ...$mconfigData,
         ]);
@@ -69,13 +69,14 @@ final class ModulesManagerController
 
     /**
      * @return array<string,mixed>
+     * @throws \Exception
      */
     private function prepareMconfigData(?string $configKey): array
     {
         $data = [];
 
         if ($configKey === 'downloads') {
-            $data['downloadsList'] = getDownloadsList();
+            $data['downloadsList'] = new DownloadLinkService()->all();
         }
 
         if ($configKey === 'vote') {
@@ -124,7 +125,7 @@ final class ModulesManagerController
 
         if ($configKey === 'rankings') {
             $xmlPath = __PATH_MODULE_CONFIGS__ . 'rankings.xml';
-            $xmlRaw = file_get_contents($xmlPath);
+            $xmlRaw  = file_get_contents($xmlPath);
             if ($xmlRaw !== false) {
                 $data['rankingsModuleConfig'] = simplexml_load_string($xmlRaw);
             }
@@ -152,7 +153,7 @@ final class ModulesManagerController
      */
     private function addCreditConfigSelect(array &$data, string $viewKey, string $settingName, string $mconfigKey): void
     {
-        $creditSystem = new CreditSystem();
+        $creditSystem   = new CreditSystem();
         $data[$viewKey] = $creditSystem->buildSelectInput($settingName, mconfig($mconfigKey), 'form-control');
     }
 
@@ -184,7 +185,7 @@ final class ModulesManagerController
                 (string) ($_POST['downloads_add_link'] ?? ''),
                 (string) ($_POST['downloads_add_desc'] ?? ''),
                 (string) ($_POST['downloads_add_size'] ?? ''),
-                (string) ($_POST['downloads_add_type'] ?? '')
+                (string) ($_POST['downloads_add_type'] ?? ''),
             );
             $action ? message('success', 'Your download link has been successfully added!') : message('error', 'There was an error adding the download link.');
         }
@@ -196,7 +197,7 @@ final class ModulesManagerController
                 (string) ($_POST['downloads_edit_link'] ?? ''),
                 (string) ($_POST['downloads_edit_desc'] ?? ''),
                 (string) ($_POST['downloads_edit_size'] ?? ''),
-                (string) ($_POST['downloads_edit_type'] ?? '')
+                (string) ($_POST['downloads_edit_type'] ?? ''),
             );
             $action ? message('success', 'Your download link has been successfully updated!') : message('error', 'There was an error updating the download link.');
         }
@@ -216,7 +217,7 @@ final class ModulesManagerController
                 (string) ($_POST['votesite_add_title'] ?? ''),
                 (string) ($_POST['votesite_add_link'] ?? ''),
                 (string) ($_POST['votesite_add_reward'] ?? ''),
-                (string) ($_POST['votesite_add_time'] ?? '')
+                (string) ($_POST['votesite_add_time'] ?? ''),
             );
             $add ? message('success', 'Votesite successfully added.') : message('error', 'There has been an error while adding the topsite.');
         }
@@ -229,47 +230,47 @@ final class ModulesManagerController
 
     private function handleCastleSiegeActions(): void
     {
-        if (!isset($_POST['submit_changes'])) {
+        if (! isset($_POST['submit_changes'])) {
             return;
         }
 
         try {
             $cfgFile = __PATH_CONFIGS__ . 'castle-siege.json';
-            if (!is_writable($cfgFile)) {
+            if (! is_writable($cfgFile)) {
                 throw new \RuntimeException('The configuration file is not writable.');
             }
 
             $raw = file_get_contents($cfgFile);
             $cfg = json_decode((string) $raw, true, 512, JSON_THROW_ON_ERROR);
-            if (!is_array($cfg)) {
+            if (! is_array($cfg)) {
                 throw new \RuntimeException('Error loading config file.');
             }
 
             foreach (range(1, 14) as $i) {
                 $key = 'setting_' . $i;
-                if (!isset($_POST[$key]) || !Validator::UnsignedNumber($_POST[$key]) || !in_array($_POST[$key], ['0', '1', 0, 1], true)) {
+                if (! isset($_POST[$key]) || ! Validator::UnsignedNumber($_POST[$key]) || ! in_array($_POST[$key], ['0', '1', 0, 1], true)) {
                     throw new \RuntimeException('Submitted setting is not valid (' . $key . ')');
                 }
             }
 
-            $cfg['active'] = $_POST['setting_1'];
-            $cfg['hide_idle'] = $_POST['setting_2'];
-            $cfg['live_data'] = $_POST['setting_3'];
-            $cfg['show_castle_owner'] = $_POST['setting_4'];
+            $cfg['active']                     = $_POST['setting_1'];
+            $cfg['hide_idle']                  = $_POST['setting_2'];
+            $cfg['live_data']                  = $_POST['setting_3'];
+            $cfg['show_castle_owner']          = $_POST['setting_4'];
             $cfg['show_castle_owner_alliance'] = $_POST['setting_5'];
-            $cfg['show_battle_countdown'] = $_POST['setting_6'];
-            $cfg['show_castle_information'] = $_POST['setting_7'];
-            $cfg['show_current_stage'] = $_POST['setting_8'];
-            $cfg['show_next_stage'] = $_POST['setting_9'];
-            $cfg['show_battle_duration'] = $_POST['setting_10'];
-            $cfg['show_registered_guilds'] = $_POST['setting_11'];
-            $cfg['show_schedule'] = $_POST['setting_12'];
-            $cfg['schedule_date_format'] = (string) ($_POST['setting_13'] ?? '');
-            $cfg['show_widget'] = $_POST['setting_14'];
+            $cfg['show_battle_countdown']      = $_POST['setting_6'];
+            $cfg['show_castle_information']    = $_POST['setting_7'];
+            $cfg['show_current_stage']         = $_POST['setting_8'];
+            $cfg['show_next_stage']            = $_POST['setting_9'];
+            $cfg['show_battle_duration']       = $_POST['setting_10'];
+            $cfg['show_registered_guilds']     = $_POST['setting_11'];
+            $cfg['show_schedule']              = $_POST['setting_12'];
+            $cfg['schedule_date_format']       = (string) ($_POST['setting_13'] ?? '');
+            $cfg['show_widget']                = $_POST['setting_14'];
 
             $stageCount = is_array($cfg['stages'] ?? null) ? count($cfg['stages']) : 0;
             foreach (['setting_stage_startday', 'setting_stage_starttime', 'setting_stage_endday', 'setting_stage_endtime'] as $arrKey) {
-                if (!isset($_POST[$arrKey]) || !is_array($_POST[$arrKey]) || count($_POST[$arrKey]) !== $stageCount) {
+                if (! isset($_POST[$arrKey]) || ! is_array($_POST[$arrKey]) || count($_POST[$arrKey]) !== $stageCount) {
                     throw new \RuntimeException('Schedule stages settings array size is not valid.');
                 }
             }
@@ -300,27 +301,27 @@ final class ModulesManagerController
 
     private function handleSimpleConfigSave(?string $configKey): void
     {
-        if (!isset($_POST['submit_changes']) || !is_string($configKey) || $configKey === '') {
+        if (! isset($_POST['submit_changes']) || ! is_string($configKey) || $configKey === '') {
             return;
         }
 
         $simpleMap = [
             'contact' => [
-                'xml' => 'contact.xml',
+                'xml'    => 'contact.xml',
                 'fields' => ['setting_1' => 'active', 'setting_2' => 'subject', 'setting_3' => 'sendto'],
             ],
             'donation' => [
-                'xml' => 'donation.xml',
-                'fields' => ['setting_1' => 'active'],
+                'xml'     => 'donation.xml',
+                'fields'  => ['setting_1' => 'active'],
                 'success' => '[Donation] Settings successfully saved.',
-                'error' => '[Donation] There has been an error while saving changes.',
+                'error'   => '[Donation] There has been an error while saving changes.',
             ],
             'forgotpassword' => [
-                'xml' => 'forgot-password.xml',
+                'xml'    => 'forgot-password.xml',
                 'fields' => ['setting_1' => 'active'],
             ],
             'login' => [
-                'xml' => 'login.xml',
+                'xml'    => 'login.xml',
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'enable_session_timeout',
@@ -330,7 +331,7 @@ final class ModulesManagerController
                 ],
             ],
             'news' => [
-                'xml' => 'news.xml',
+                'xml'    => 'news.xml',
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'news_expanded',
@@ -340,28 +341,28 @@ final class ModulesManagerController
                 ],
             ],
             'paypal' => [
-                'xml' => 'donation-paypal.xml',
+                'xml'    => 'donation-paypal.xml',
                 'fields' => [
-                    'setting_2' => 'active',
-                    'setting_3' => 'paypal_enable_sandbox',
-                    'setting_4' => 'paypal_email',
-                    'setting_5' => 'paypal_title',
-                    'setting_6' => 'paypal_currency',
-                    'setting_7' => 'paypal_return_url',
-                    'setting_8' => 'paypal_notify_url',
-                    'setting_9' => 'paypal_conversion_rate',
+                    'setting_2'  => 'active',
+                    'setting_3'  => 'paypal_enable_sandbox',
+                    'setting_4'  => 'paypal_email',
+                    'setting_5'  => 'paypal_title',
+                    'setting_6'  => 'paypal_currency',
+                    'setting_7'  => 'paypal_return_url',
+                    'setting_8'  => 'paypal_notify_url',
+                    'setting_9'  => 'paypal_conversion_rate',
                     'setting_10' => 'credit_config',
                 ],
                 'success' => '[PayPal] Settings successfully saved.',
-                'error' => '[PayPal] There has been an error while saving changes.',
+                'error'   => '[PayPal] There has been an error while saving changes.',
             ],
             'profiles' => [
-                'xml' => 'profiles.xml',
+                'xml'    => 'profiles.xml',
                 'fields' => ['setting_1' => 'active', 'setting_2' => 'encode'],
             ],
             'email' => [
-                'xml' => 'email-templates.xml',
-                'base' => __PATH_CONFIGS__,
+                'xml'    => 'email-templates.xml',
+                'base'   => __PATH_CONFIGS__,
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'send_from',
@@ -374,17 +375,17 @@ final class ModulesManagerController
                 ],
             ],
             'rankings' => [
-                'xml' => 'rankings.xml',
+                'xml'    => 'rankings.xml',
                 'fields' => [
-                    'setting_1' => 'active',
-                    'setting_2' => 'rankings_results',
-                    'setting_3' => 'rankings_show_date',
-                    'setting_4' => 'rankings_show_default',
-                    'setting_5' => 'rankings_show_place_number',
-                    'setting_6' => 'rankings_enable_level',
-                    'setting_7' => 'rankings_enable_resets',
-                    'setting_8' => 'rankings_enable_pk',
-                    'setting_9' => 'rankings_enable_gr',
+                    'setting_1'  => 'active',
+                    'setting_2'  => 'rankings_results',
+                    'setting_3'  => 'rankings_show_date',
+                    'setting_4'  => 'rankings_show_default',
+                    'setting_5'  => 'rankings_show_place_number',
+                    'setting_6'  => 'rankings_enable_level',
+                    'setting_7'  => 'rankings_enable_resets',
+                    'setting_8'  => 'rankings_enable_pk',
+                    'setting_9'  => 'rankings_enable_gr',
                     'setting_10' => 'rankings_enable_online',
                     'setting_11' => 'rankings_enable_guilds',
                     'setting_12' => 'rankings_enable_master',
@@ -402,8 +403,8 @@ final class ModulesManagerController
                 ],
             ],
             'clearpk' => [
-                'xml' => 'clear-pk.xml',
-                'base' => __PATH_MODULE_CONFIGS_USERCP__,
+                'xml'    => 'clear-pk.xml',
+                'base'   => __PATH_MODULE_CONFIGS_USERCP__,
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'zen_cost',
@@ -412,8 +413,8 @@ final class ModulesManagerController
                 ],
             ],
             'buyzen' => [
-                'xml' => 'buy-zen.xml',
-                'base' => __PATH_MODULE_CONFIGS_USERCP__,
+                'xml'    => 'buy-zen.xml',
+                'base'   => __PATH_MODULE_CONFIGS_USERCP__,
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'max_zen',
@@ -423,23 +424,23 @@ final class ModulesManagerController
                 ],
             ],
             'myaccount' => [
-                'xml' => 'my-account.xml',
-                'base' => __PATH_MODULE_CONFIGS_USERCP__,
+                'xml'    => 'my-account.xml',
+                'base'   => __PATH_MODULE_CONFIGS_USERCP__,
                 'fields' => [
                     'setting_1' => 'active',
                 ],
             ],
             'myemail' => [
-                'xml' => 'my-email.xml',
-                'base' => __PATH_MODULE_CONFIGS_USERCP__,
+                'xml'    => 'my-email.xml',
+                'base'   => __PATH_MODULE_CONFIGS_USERCP__,
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'require_verification',
                 ],
             ],
             'mypassword' => [
-                'xml' => 'my-password.xml',
-                'base' => __PATH_MODULE_CONFIGS_USERCP__,
+                'xml'    => 'my-password.xml',
+                'base'   => __PATH_MODULE_CONFIGS_USERCP__,
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'change_password_email_verification',
@@ -447,8 +448,8 @@ final class ModulesManagerController
                 ],
             ],
             'resetstats' => [
-                'xml' => 'reset-stats.xml',
-                'base' => __PATH_MODULE_CONFIGS_USERCP__,
+                'xml'    => 'reset-stats.xml',
+                'base'   => __PATH_MODULE_CONFIGS_USERCP__,
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'zen_cost',
@@ -457,8 +458,8 @@ final class ModulesManagerController
                 ],
             ],
             'unstick' => [
-                'xml' => 'unstick.xml',
-                'base' => __PATH_MODULE_CONFIGS_USERCP__,
+                'xml'    => 'unstick.xml',
+                'base'   => __PATH_MODULE_CONFIGS_USERCP__,
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'zen_cost',
@@ -467,7 +468,7 @@ final class ModulesManagerController
                 ],
             ],
             'register' => [
-                'xml' => 'register.xml',
+                'xml'    => 'register.xml',
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'register_enable_recaptcha',
@@ -480,7 +481,7 @@ final class ModulesManagerController
                 ],
             ],
             'downloads' => [
-                'xml' => 'downloads.xml',
+                'xml'    => 'downloads.xml',
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'show_client_downloads',
@@ -489,8 +490,8 @@ final class ModulesManagerController
                 ],
             ],
             'vote' => [
-                'xml' => 'vote.xml',
-                'base' => __PATH_MODULE_CONFIGS_USERCP__,
+                'xml'    => 'vote.xml',
+                'base'   => __PATH_MODULE_CONFIGS_USERCP__,
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'vote_save_logs',
@@ -498,8 +499,8 @@ final class ModulesManagerController
                 ],
             ],
             'addstats' => [
-                'xml' => 'add-stats.xml',
-                'base' => __PATH_MODULE_CONFIGS_USERCP__,
+                'xml'    => 'add-stats.xml',
+                'base'   => __PATH_MODULE_CONFIGS_USERCP__,
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'zen_cost',
@@ -512,8 +513,8 @@ final class ModulesManagerController
                 ],
             ],
             'clearskilltree' => [
-                'xml' => 'clear-skill-tree.xml',
-                'base' => __PATH_MODULE_CONFIGS_USERCP__,
+                'xml'    => 'clear-skill-tree.xml',
+                'base'   => __PATH_MODULE_CONFIGS_USERCP__,
                 'fields' => [
                     'setting_1' => 'active',
                     'setting_2' => 'zen_cost',
@@ -524,18 +525,18 @@ final class ModulesManagerController
                 ],
             ],
             'reset' => [
-                'xml' => 'reset.xml',
-                'base' => __PATH_MODULE_CONFIGS_USERCP__,
+                'xml'    => 'reset.xml',
+                'base'   => __PATH_MODULE_CONFIGS_USERCP__,
                 'fields' => [
-                    'setting_1' => 'active',
-                    'setting_2' => 'zen_cost',
-                    'setting_3' => 'credit_config',
-                    'setting_4' => 'credit_cost',
-                    'setting_5' => 'required_level',
-                    'setting_6' => 'maximum_resets',
-                    'setting_7' => 'keep_stats',
-                    'setting_8' => 'points_reward',
-                    'setting_9' => 'multiply_points_by_resets',
+                    'setting_1'  => 'active',
+                    'setting_2'  => 'zen_cost',
+                    'setting_3'  => 'credit_config',
+                    'setting_4'  => 'credit_cost',
+                    'setting_5'  => 'required_level',
+                    'setting_6'  => 'maximum_resets',
+                    'setting_7'  => 'keep_stats',
+                    'setting_8'  => 'points_reward',
+                    'setting_9'  => 'multiply_points_by_resets',
                     'setting_10' => 'clear_inventory',
                     'setting_11' => 'revert_class_evolution',
                     'setting_12' => 'credit_reward',
@@ -544,12 +545,12 @@ final class ModulesManagerController
             ],
         ];
 
-        if (!isset($simpleMap[$configKey])) {
+        if (! isset($simpleMap[$configKey])) {
             return;
         }
 
         foreach ($_POST as $setting) {
-            if (!check_value($setting)) {
+            if (! check_value($setting)) {
                 message('error', 'Missing data (complete all fields).');
                 return;
             }
@@ -560,11 +561,11 @@ final class ModulesManagerController
             return;
         }
 
-        $map = $simpleMap[$configKey];
+        $map      = $simpleMap[$configKey];
         $basePath = $map['base'] ?? __PATH_MODULE_CONFIGS__;
-        $xmlPath = $basePath . $map['xml'];
-        $xml = simplexml_load_string((string) file_get_contents($xmlPath));
-        if (!$xml) {
+        $xmlPath  = $basePath . $map['xml'];
+        $xml      = simplexml_load_string((string) file_get_contents($xmlPath));
+        if (! $xml) {
             message('error', 'There has been an error while loading module settings.');
             return;
         }
@@ -584,16 +585,16 @@ final class ModulesManagerController
     private function moduleConfigNameFromKey(string $configKey): string
     {
         $map = [
-            'buyzen' => 'buy-zen',
-            'clearpk' => 'clear-pk',
+            'buyzen'         => 'buy-zen',
+            'clearpk'        => 'clear-pk',
             'clearskilltree' => 'clear-skill-tree',
             'forgotpassword' => 'forgot-password',
-            'myaccount' => 'my-account',
-            'myemail' => 'my-email',
-            'mypassword' => 'my-password',
-            'paypal' => 'donation-paypal',
-            'addstats' => 'add-stats',
-            'resetstats' => 'reset-stats',
+            'myaccount'      => 'my-account',
+            'myemail'        => 'my-email',
+            'mypassword'     => 'my-password',
+            'paypal'         => 'donation-paypal',
+            'addstats'       => 'add-stats',
+            'resetstats'     => 'reset-stats',
         ];
 
         return $map[$configKey] ?? $configKey;

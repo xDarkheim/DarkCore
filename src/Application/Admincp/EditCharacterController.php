@@ -7,6 +7,7 @@ namespace Darkheim\Application\Admincp;
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Character\Character;
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -51,7 +52,7 @@ final class EditCharacterController
                 ? $db->query_fetch_single('SELECT * FROM ' . _TBL_MASTERLVL_ . ' WHERE ' . _CLMN_ML_NAME_ . ' = ?', [$charData[_CLMN_CHR_NAME_]])
                 : null;
 
-            $custom       = customData();
+            $custom       = BootstrapContext::runtimeState()?->customConfig() ?? [];
             $classOptions = [];
             if (isset($custom['character_class']) && is_array($custom['character_class'])) {
                 foreach ($custom['character_class'] as $classId => $classInfo) {

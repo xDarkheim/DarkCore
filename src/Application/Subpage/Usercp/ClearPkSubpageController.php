@@ -5,12 +5,22 @@ declare(strict_types=1);
 namespace Darkheim\Application\Subpage\Usercp;
 
 use Darkheim\Application\Character\Character;
+use Darkheim\Application\Game\GameHelper;
 
 final class ClearPkSubpageController extends AbstractCharacterActionTableSubpageController
 {
-    protected function pageTitle(): string { return lang('module_titles_txt_13', true); }
-    protected function cardTitle(): string { return lang('module_titles_txt_13', true); }
-    protected function cardIconClass(): string { return 'bi bi-shield-x'; }
+    protected function pageTitle(): string
+    {
+        return lang('module_titles_txt_13', true);
+    }
+    protected function cardTitle(): string
+    {
+        return lang('module_titles_txt_13', true);
+    }
+    protected function cardIconClass(): string
+    {
+        return 'bi bi-shield-x';
+    }
 
     protected function tableHeaders(): array
     {
@@ -20,17 +30,17 @@ final class ClearPkSubpageController extends AbstractCharacterActionTableSubpage
     protected function buildRow(Character $characterService, string $characterName): ?array
     {
         $data = $characterService->CharacterData($characterName);
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return null;
         }
 
         return [
             'character' => (string) $data[_CLMN_CHR_NAME_],
-            'cells' => [
+            'cells'     => [
                 $characterService->GenerateCharacterClassAvatar((int) $data[_CLMN_CHR_CLASS_]),
                 htmlspecialchars((string) $data[_CLMN_CHR_NAME_], ENT_QUOTES, 'UTF-8'),
                 number_format((float) $data[_CLMN_CHR_ZEN_]),
-                returnPkLevel((int) $data[_CLMN_CHR_PK_LEVEL_]),
+                GameHelper::pkLevel((int) $data[_CLMN_CHR_PK_LEVEL_]),
             ],
             'buttonLabel' => lang('clearpk_txt_4', true),
         ];
@@ -53,4 +63,3 @@ final class ClearPkSubpageController extends AbstractCharacterActionTableSubpage
         return $lines;
     }
 }
-

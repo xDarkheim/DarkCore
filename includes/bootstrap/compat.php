@@ -17,13 +17,8 @@
  */
 
 use Darkheim\Application\Admincp\AdmincpUrlGenerator;
-use Darkheim\Application\Admincp\DownloadLinkService;
 use Darkheim\Application\Auth\AdminGuard;
 use Darkheim\Application\Auth\SessionManager;
-use Darkheim\Application\Game\GameHelper;
-use Darkheim\Application\Helpers\Encoder;
-use Darkheim\Application\Helpers\TimeHelper;
-use Darkheim\Application\Language\LanguageRepository;
 use Darkheim\Application\Language\Translator;
 use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
@@ -32,9 +27,6 @@ use Darkheim\Infrastructure\Bootstrap\ConfigProvider;
 use Darkheim\Infrastructure\Bootstrap\RuntimeState;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Cache\CacheRepository;
-use Darkheim\Infrastructure\Cron\CronManager;
-use Darkheim\Infrastructure\Helpers\FileHelper;
-use Darkheim\Infrastructure\Http\GeoIpService;
 use Darkheim\Infrastructure\Http\Redirector;
 
 // ---------------------------------------------------------------------------
@@ -72,7 +64,7 @@ function isLoggedIn(): ?bool
         && ($loginConfigs['enable_session_timeout'] ?? false)
         && $session->hasTimedOut((int) ($loginConfigs['session_timeout'] ?? 0))
     ) {
-        logOutUser();
+        $session->clearSession();
         return null;
     }
 
@@ -80,10 +72,6 @@ function isLoggedIn(): ?bool
     return true;
 }
 
-function logOutUser(): void
-{
-    new SessionManager()->clearSession();
-}
 
 function canAccessAdminCP($username): bool
 {
@@ -108,11 +96,6 @@ function enabledisableCheckboxes($name, $checked, $e_txt, $d_txt): void
     echo $d_txt;
     echo '</label>';
     echo '</div>';
-}
-
-function getDownloadsList(): ?array
-{
-    return new DownloadLinkService()->all();
 }
 
 function weekDaySelectOptions($selected = 'Monday'): string
@@ -291,11 +274,6 @@ function loadConfig($name = 'cms'): ?array
 // Cache
 // ---------------------------------------------------------------------------
 
-function LoadCacheData($file_name): ?array
-{
-    return new CacheRepository(__PATH_CACHE__)->loadLegacyText((string) $file_name);
-}
-
 function encodeCache($data, $pretty = false): string
 {
     return CacheBuilder::encode($data, (bool) $pretty);
@@ -305,11 +283,6 @@ function encodeCache($data, $pretty = false): string
 // Time
 // ---------------------------------------------------------------------------
 
-function sec_to_dhms($input_seconds = 0): array
-{
-    return TimeHelper::secToDhms((int) $input_seconds);
-}
-
 // ---------------------------------------------------------------------------
 // Cron
 // ---------------------------------------------------------------------------
@@ -318,20 +291,6 @@ function sec_to_dhms($input_seconds = 0): array
 // Game helpers
 // ---------------------------------------------------------------------------
 
-function getPlayerClass($class = 0): string
-{
-    return GameHelper::playerClass((int) $class);
-}
-
-function returnMapName($id = 0): string
-{
-    return GameHelper::mapName((int) $id);
-}
-
-function returnPkLevel($id): ?string
-{
-    return GameHelper::pkLevel((int) $id);
-}
 
 // ---------------------------------------------------------------------------
 // Profiles
@@ -346,55 +305,18 @@ function returnPkLevel($id): ?string
 // Geo / flags
 // ---------------------------------------------------------------------------
 
-function getCountryFlag($countryCode = 'default'): string
-{
-    return GeoIpService::flagUrl((string) $countryCode);
-}
-
 // ---------------------------------------------------------------------------
 // File / filesystem
 // ---------------------------------------------------------------------------
-
-function readableFileSize($bytes, $decimals = 2): string
-{
-    return FileHelper::readableSize((int) $bytes, (int) $decimals);
-}
-
-
-function getInstalledLanguagesList(): ?array
-{
-    return LanguageRepository::getInstalled();
-}
 
 // ---------------------------------------------------------------------------
 // XML / JSON
 // ---------------------------------------------------------------------------
 
-function convertXML($object)
-{
-    return json_decode(json_encode($object, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
-}
-
 // ---------------------------------------------------------------------------
 // Custom / runtime data
 // ---------------------------------------------------------------------------
 
-function custom($index)
-{
-    $data = customData();
-    return $data[$index] ?? null;
-}
-
-function customData(): array
-{
-    return BootstrapContext::runtimeState()?->customConfig() ?? [];
-}
-
-function getRankingMenuLinks(): ?array
-{
-    global $rankingMenuLinks;
-    return is_array($rankingMenuLinks) ? $rankingMenuLinks : null;
-}
 
 // ---------------------------------------------------------------------------
 // Encoding
@@ -402,10 +324,6 @@ function getRankingMenuLinks(): ?array
 
 // https://base64.guru/developers/php/examples/base64url
 
-function base64url_decode($data, $strict = false): ?string
-{
-    return Encoder::base64urlDecode((string) $data, (bool) $strict);
-}
 
 // ---------------------------------------------------------------------------
 // Debug

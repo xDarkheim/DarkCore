@@ -24,39 +24,39 @@ final class MyAccountSubpageController
 
     public function render(): void
     {
-        if (!isLoggedIn()) {
+        if (! isLoggedIn()) {
             redirect(1, 'login');
             return;
         }
 
-        if (!mconfig('active')) {
+        if (! mconfig('active')) {
             inline_message('error', lang('error_12'));
             return;
         }
 
-        $common = new Common();
+        $common      = new Common();
         $accountInfo = $common->accountInformation($_SESSION['userid']);
-        if (!is_array($accountInfo)) {
+        if (! is_array($accountInfo)) {
             inline_message('error', lang('error_12'));
             return;
         }
 
         $isOnlineAccount = $common->accountOnline($_SESSION['username']);
-        $isBlocked = ((int) ($accountInfo[_CLMN_BLOCCODE_] ?? 0) === 1);
+        $isBlocked       = ((int) ($accountInfo[_CLMN_BLOCCODE_] ?? 0) === 1);
 
-        $characterService = new Character();
+        $characterService  = new Character();
         $accountCharacters = $characterService->AccountCharacter($_SESSION['username']);
         $accountCharacters = is_array($accountCharacters) ? $accountCharacters : [];
-        $onlineCharacters = (new CacheRepository(__PATH_CACHE__))->load('online_characters.cache');
-        $onlineCharacters = is_array($onlineCharacters) ? $onlineCharacters : [];
+        $onlineCharacters  = new CacheRepository(__PATH_CACHE__)->load('online_characters.cache');
+        $onlineCharacters  = is_array($onlineCharacters) ? $onlineCharacters : [];
 
         $creditRows = [];
         try {
-            $creditSystem = new CreditSystem();
+            $creditSystem     = new CreditSystem();
             $creditConfigList = $creditSystem->showConfigs();
             if (is_array($creditConfigList)) {
                 foreach ($creditConfigList as $creditCfg) {
-                    if (!is_array($creditCfg) || empty($creditCfg['config_display'])) {
+                    if (! is_array($creditCfg) || empty($creditCfg['config_display'])) {
                         continue;
                     }
                     $creditSystem->setConfigId((int) $creditCfg['config_id']);
@@ -86,7 +86,7 @@ final class MyAccountSubpageController
         $characterCards = [];
         foreach ($accountCharacters as $characterName) {
             $cd = $characterService->CharacterData((string) $characterName);
-            if (!is_array($cd)) {
+            if (! is_array($cd)) {
                 continue;
             }
 
@@ -107,12 +107,12 @@ final class MyAccountSubpageController
                 'nameHtml'   => ProfileRenderer::player((string) $characterName),
                 'className'  => GameHelper::playerClass((int) ($cd[_CLMN_CHR_CLASS_] ?? 0)),
                 'level'      => $displayLevel,
-                'location'   => returnMapName((int) ($cd[_CLMN_CHR_MAP_] ?? 0)),
+                'location'   => GameHelper::mapName((int) ($cd[_CLMN_CHR_MAP_] ?? 0)),
             ];
         }
 
         $connectionHistoryRows = [];
-        $hasConnectionHistory = defined('_TBL_CH_')
+        $hasConnectionHistory  = defined('_TBL_CH_')
             && defined('_CLMN_CH_ACCID_')
             && defined('_CLMN_CH_ID_')
             && defined('_CLMN_CH_DATE_')
@@ -121,10 +121,10 @@ final class MyAccountSubpageController
             && defined('_CLMN_CH_STATE_');
 
         if ($hasConnectionHistory) {
-            $db = Connection::Database('MuOnline');
+            $db   = Connection::Database('MuOnline');
             $rows = $db->query_fetch(
                 'SELECT TOP 10 * FROM ' . constant('_TBL_CH_') . ' WHERE ' . constant('_CLMN_CH_ACCID_') . ' = ? ORDER BY ' . constant('_CLMN_CH_ID_') . ' DESC',
-                [$_SESSION['username']]
+                [$_SESSION['username']],
             );
             if (is_array($rows)) {
                 foreach ($rows as $row) {
@@ -139,20 +139,20 @@ final class MyAccountSubpageController
         }
 
         $this->view->render('subpages/usercp/myaccount', [
-            'username'              => htmlspecialchars((string) ($accountInfo[_CLMN_USERNM_] ?? ''), ENT_QUOTES, 'UTF-8'),
-            'statusPillClass'       => $isBlocked ? 'ma-pill-banned' : 'ma-pill-active',
-            'statusPillText'        => $isBlocked ? lang('myaccount_txt_8') : lang('myaccount_txt_7'),
-            'onlinePillClass'       => $isOnlineAccount ? 'ma-pill-online' : 'ma-pill-offline',
-            'onlinePillText'        => $isOnlineAccount ? lang('myaccount_txt_9') : lang('myaccount_txt_10'),
-            'email'                 => htmlspecialchars((string) ($accountInfo[_CLMN_EMAIL_] ?? ''), ENT_QUOTES, 'UTF-8'),
-            'creditRows'            => $creditRows,
-            'myEmailUrl'            => __BASE_URL__ . 'usercp/myemail/',
-            'myPasswordUrl'         => __BASE_URL__ . 'usercp/mypassword/',
-            'characterCards'        => $characterCards,
-            'hasCharacters'         => $characterCards !== [],
-            'emptyCharactersMessage'=> lang('error_46', true),
-            'hasConnectionHistory'  => $hasConnectionHistory,
-            'connectionHistoryRows' => $connectionHistoryRows,
+            'username'               => htmlspecialchars((string) ($accountInfo[_CLMN_USERNM_] ?? ''), ENT_QUOTES, 'UTF-8'),
+            'statusPillClass'        => $isBlocked ? 'ma-pill-banned' : 'ma-pill-active',
+            'statusPillText'         => $isBlocked ? lang('myaccount_txt_8') : lang('myaccount_txt_7'),
+            'onlinePillClass'        => $isOnlineAccount ? 'ma-pill-online' : 'ma-pill-offline',
+            'onlinePillText'         => $isOnlineAccount ? lang('myaccount_txt_9') : lang('myaccount_txt_10'),
+            'email'                  => htmlspecialchars((string) ($accountInfo[_CLMN_EMAIL_] ?? ''), ENT_QUOTES, 'UTF-8'),
+            'creditRows'             => $creditRows,
+            'myEmailUrl'             => __BASE_URL__ . 'usercp/myemail/',
+            'myPasswordUrl'          => __BASE_URL__ . 'usercp/mypassword/',
+            'characterCards'         => $characterCards,
+            'hasCharacters'          => $characterCards !== [],
+            'emptyCharactersMessage' => lang('error_46', true),
+            'hasConnectionHistory'   => $hasConnectionHistory,
+            'connectionHistoryRows'  => $connectionHistoryRows,
         ]);
     }
 }

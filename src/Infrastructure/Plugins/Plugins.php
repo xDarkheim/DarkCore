@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Plugins;
 
+use Darkheim\Infrastructure\Cache\CacheBuilder;
+use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\Runtime\NativeSessionStore;
 use Darkheim\Infrastructure\Runtime\SessionStore;
-use Darkheim\Infrastructure\Cache\CacheBuilder;
-use Darkheim\Infrastructure\Cache\CacheRepository;
 
 /**
  * Plugin installation, activation, cache rebuild.
@@ -20,7 +20,7 @@ class Plugins
 
     public function __construct(?SessionStore $session = null)
     {
-        $this->db = Connection::Database('MuOnline');
+        $this->db      = Connection::Database('MuOnline');
         $this->session = $session ?? new NativeSessionStore();
     }
 
@@ -28,7 +28,7 @@ class Plugins
     {
         if ($_FILE["file"]["type"] == "text/xml") {
             $xml        = simplexml_load_string(file_get_contents($_FILE["file"]["tmp_name"]));
-            $pluginDATA = convertXML($xml->children());
+            $pluginDATA = self::xmlToArray($xml->children());
             if ($this->checkXML($pluginDATA)) {
                 if ($this->checkCompatibility($pluginDATA['compatibility'])) {
                     if ($this->checkPluginDirectory($pluginDATA['folder'])) {
@@ -39,14 +39,24 @@ class Plugins
                             } else {
                                 message('error', 'Could not import plugin.');
                             }
-                            if (!$this->rebuildPluginsCache()) {
+                            if (! $this->rebuildPluginsCache()) {
                                 message('error', 'Could not update plugins cache data, make sure the file exists and it\'s writable!');
                             }
-                        } else { message('error', 'Plugin file(s) missing.'); }
-                    } else { message('error', 'Plugin folder not found, please make sure you upload it to the correct path.'); }
-                } else { message('error', 'The plugin is not compatible with your current version.'); }
-            } else { message('error', 'Invalid file or missing data.'); }
-        } else { message('error', 'Invalid file type (only XML).'); }
+                        } else {
+                            message('error', 'Plugin file(s) missing.');
+                        }
+                    } else {
+                        message('error', 'Plugin folder not found, please make sure you upload it to the correct path.');
+                    }
+                } else {
+                    message('error', 'The plugin is not compatible with your current version.');
+                }
+            } else {
+                message('error', 'Invalid file or missing data.');
+            }
+        } else {
+            message('error', 'Invalid file type (only XML).');
+        }
     }
 
     private function checkXML($array): bool
@@ -67,7 +77,9 @@ class Plugins
 
     private function checkCompatibility($array): bool
     {
-        if (!array_key_exists('darkheim', $array)) return false;
+        if (! array_key_exists('darkheim', $array)) {
+            return false;
+        }
         if (is_array($array['darkheim'])) {
             return in_array(__CMS_VERSION__, $array['darkheim'], true);
         }
@@ -81,13 +93,15 @@ class Plugins
 
     private function checkFiles($array, $plugin_name): bool
     {
-        if (!array_key_exists('file', $array)) return false;
+        if (! array_key_exists('file', $array)) {
+            return false;
+        }
         if (is_array($array['file'])) {
             return array_all(
                 $array['file'],
                 fn($thisFile) => file_exists(
-                    $this->pluginPath($plugin_name).$thisFile
-                )
+                    $this->pluginPath($plugin_name) . $thisFile,
+                ),
             );
         }
         return file_exists($this->pluginPath($plugin_name) . $array['file']);
@@ -96,6 +110,13 @@ class Plugins
     private function pluginPath($name): string
     {
         return __PATH_PLUGINS__ . $name . '/';
+    }
+
+    /** @return array<string, mixed> */
+    private static function xmlToArray(
+        \SimpleXMLElement $object,
+    ): array {
+        return json_decode(json_encode($object, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
     }
 
     private function installPlugin($pluginDATA): bool
@@ -108,7 +129,7 @@ class Plugins
         if (is_array($pluginDATA['files']['file'])) {
             $files = implode("", $pluginDATA['files']['file']);
         }
-        $data  = [
+        $data = [
             $pluginDATA['name'], $pluginDATA['author'], $pluginDATA['version'],
             $compatibility, $pluginDATA['folder'], $files, 1, time(), (string) $this->session()->get('username', ''),
         ];
@@ -123,28 +144,30 @@ class Plugins
 
     public function updatePluginStatus($plugin_id, $new_status): void
     {
-        $this->db->query("UPDATE " . Plugins . " SET status = ? WHERE id = ?", array($new_status, $plugin_id));
-        if (!$this->rebuildPluginsCache()) {
+        $this->db->query("UPDATE " . Plugins . " SET status = ? WHERE id = ?", [$new_status, $plugin_id]);
+        if (! $this->rebuildPluginsCache()) {
             message('error', 'Could not update plugins cache data, make sure the file exists and it\'s writable!');
         }
     }
 
     public function uninstallPlugin($plugin_id): bool
     {
-        return $this->db->query("DELETE FROM " . Plugins . " WHERE id = ?", array($plugin_id));
+        return $this->db->query("DELETE FROM " . Plugins . " WHERE id = ?", [$plugin_id]);
     }
 
     public function rebuildPluginsCache(): bool
     {
-        $cache = new CacheRepository(__PATH_CACHE__);
+        $cache   = new CacheRepository(__PATH_CACHE__);
         $plugins = $this->db->query_fetch("SELECT * FROM " . Plugins . " WHERE status = 1 ORDER BY id");
-        if (!is_array($plugins)) {
+        if (! is_array($plugins)) {
             return $cache->save('plugins.cache', '');
         }
         foreach ($plugins as $key => $row) {
             $compatibility = explode(',', $row['compatibility']);
-            if (!in_array(__CMS_VERSION__, $compatibility)) continue;
-            $files = explode(',', $row['files']);
+            if (! in_array(__CMS_VERSION__, $compatibility)) {
+                continue;
+            }
+            $files                          = explode(',', $row['files']);
             $plugins[$key]['compatibility'] = $compatibility;
             $plugins[$key]['files']         = $files;
         }
@@ -153,11 +176,10 @@ class Plugins
 
     private function session(): SessionStore
     {
-        if (!$this->session instanceof SessionStore) {
+        if (! $this->session instanceof SessionStore) {
             $this->session = new NativeSessionStore();
         }
 
         return $this->session;
     }
 }
-

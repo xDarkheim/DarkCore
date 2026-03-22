@@ -350,19 +350,11 @@ one-to-three-line wrapper that casts arguments and delegates to the matching `sr
 | `isLoggedIn()` / `logOutUser()`                                                                                                                           | `SessionManager`                                              |
 | `canAccessAdminCP()`                                                                                                                                      | `AdminGuard::canAccess()`                                     |
 | `admincp_base()`                                                                                                                                          | `AdmincpUrlGenerator::base()`                                 |
-| `getDownloadsList()`                                                                                                                                        | `DownloadLinkService`                                         |
 | `message()` / `inline_message()`                                                                                                                          | `MessageRenderer::toast()` / `::inline()`                     |
 | `lang()` / `langf()`                                                                                                                                      | `Translator::phrase()` / `::phraseFmt()`                      |
 | `config()` / `cmsConfigs()`                                                                                                                               | `ConfigProvider::cms()` via `bootstrapConfigProvider()`       |
 | `loadConfigurations()` / `loadConfig()` / `mconfig()` / `gconfig()`                                                                                       | `ConfigProvider` + `RuntimeState`                             |
 | `encodeCache()`                                                                                                                                            | `CacheBuilder`                                                |
-| `LoadCacheData()`                                                                                                                                          | `CacheRepository`                                             |
-| `sec_to_dhms()`                                                                                                                                            | `TimeHelper`                                                  |
-| `getPlayerClass()` / `returnMapName()` / `returnPkLevel()`                                                                                                | `GameHelper`                                                  |
-| `getCountryFlag()`                                                                                                                                         | `GeoIpService`                                                |
-| `readableFileSize()`                                                                                                                                       | `FileHelper`                                                  |
-| `getInstalledLanguagesList()`                                                                                                                             | `LanguageRepository::getInstalled()`                          |
-| `base64url_decode()`                                                                                                                                       | `Encoder`                                                     |
 | `enabledisableCheckboxes()` / `weekDaySelectOptions()`                                                                                                    | compatibility-only HTML helpers for remaining config partials |
 
 ## What to edit vs. what not to touch
