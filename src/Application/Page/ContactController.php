@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Page;
 
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Email\Email;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -32,7 +33,7 @@ final class ContactController
                     if (!Validator::Email($emailVal))           throw new \Exception(lang('error_9',  true));
                     if (!Validator::Length($msgVal, 300, 10))   throw new \Exception(lang('error_57', true));
 
-                    $emailConfigs = gconfig('email-templates', true);
+                    $emailConfigs = BootstrapContext::configProvider()?->globalXml('email-templates');
                     if (!is_array($emailConfigs)) throw new \Exception(lang('error_21', true));
 
                     $mail = new Email();

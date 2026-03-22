@@ -23,7 +23,6 @@ use Darkheim\Application\Language\Translator;
 use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
-use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Http\Redirector;
 
 // ---------------------------------------------------------------------------
@@ -172,19 +171,6 @@ function mconfig($configuration)
     return $mconfig[$configuration]                              ?? null;
 }
 
-function gconfig($config_file, $return = true): ?array
-{
-    $result = BootstrapContext::configProvider()?->globalXml((string) $config_file);
-    if (! is_array($result)) {
-        return null;
-    }
-    if ($return) {
-        return $result;
-    }
-    BootstrapContext::runtimeState()?->setGlobalConfig($result);
-    return null;
-}
-
 function loadConfigurations($file): ?array
 {
     if (! check_value($file)) {
@@ -194,23 +180,6 @@ function loadConfigurations($file): ?array
     $result = BootstrapContext::configProvider()?->moduleConfig((string) $file);
 
     return is_array($result) ? $result : null;
-}
-
-function loadConfig($name = 'cms'): ?array
-{
-    if (! check_value($name)) {
-        return null;
-    }
-    return BootstrapContext::configProvider()?->config((string) $name);
-}
-
-// ---------------------------------------------------------------------------
-// Cache
-// ---------------------------------------------------------------------------
-
-function encodeCache($data, $pretty = false): string
-{
-    return CacheBuilder::encode($data, (bool) $pretty);
 }
 
 // ---------------------------------------------------------------------------
@@ -263,14 +232,3 @@ function encodeCache($data, $pretty = false): string
 // Debug
 // ---------------------------------------------------------------------------
 
-function debug($value): void
-{
-    // Intentional legacy helper for manual local diagnostics.
-    $output = is_scalar($value) || $value === null
-        ? (string) $value
-        : var_export($value, true);
-
-    echo '<pre>';
-    echo htmlspecialchars($output, ENT_QUOTES, 'UTF-8');
-    echo '</pre>';
-}

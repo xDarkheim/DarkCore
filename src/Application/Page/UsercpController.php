@@ -8,6 +8,7 @@ use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Character\Character;
 use Darkheim\Application\Credits\CreditSystem;
 use Darkheim\Application\Game\GameHelper;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -27,7 +28,7 @@ final class UsercpController
             return;
         }
 
-        $cfg = loadConfig('usercp');
+        $cfg = BootstrapContext::configProvider()?->config('usercp');
         if (!is_array($cfg)) {
             inline_message('error', 'Could not load usercp, please contact support.');
             return;

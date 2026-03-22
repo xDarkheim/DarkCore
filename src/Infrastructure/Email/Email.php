@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Infrastructure\Email;
 
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use PHPMailer\PHPMailer\PHPMailer;
 
 /**
@@ -46,7 +47,7 @@ class Email
 
     public function __construct()
     {
-        $configs = gconfig('email-templates', true);
+        $configs = BootstrapContext::configProvider()?->globalXml('email-templates');
         if (! is_array($configs)) {
             throw new \Exception(lang('error_90'));
         }

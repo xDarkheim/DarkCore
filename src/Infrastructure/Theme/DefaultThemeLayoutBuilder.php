@@ -7,6 +7,7 @@ namespace Darkheim\Infrastructure\Theme;
 use Darkheim\Application\CastleSiege\CastleSiege;
 use Darkheim\Application\Game\GameHelper;
 use Darkheim\Application\Profile\ProfileRenderer;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\Http\GeoIpService;
 
@@ -231,7 +232,7 @@ final class DefaultThemeLayoutBuilder
 
     private function renderMenuHtml(string $configName, bool $withIcons = false): string
     {
-        $config = loadConfig($configName);
+        $config = BootstrapContext::configProvider()?->config($configName);
         if (! is_array($config)) {
             return '';
         }

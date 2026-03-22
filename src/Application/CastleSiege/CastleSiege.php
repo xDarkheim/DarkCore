@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\CastleSiege;
 
 use Darkheim\Application\Helpers\TimeHelper;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\Database\Connection;
@@ -54,7 +55,7 @@ class CastleSiege
 
     public function __construct()
     {
-        $cfg = loadConfig($this->_configFileName);
+        $cfg = BootstrapContext::configProvider()?->config($this->_configFileName);
         if (! $cfg) {
             throw new \Exception('Could not load castle siege configuration file.');
         }

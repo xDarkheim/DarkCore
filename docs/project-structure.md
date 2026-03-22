@@ -353,8 +353,7 @@ one-to-three-line wrapper that casts arguments and delegates to the matching `sr
 | `message()` / `inline_message()`                                                                                                                          | `MessageRenderer::toast()` / `::inline()`                     |
 | `lang()` / `langf()`                                                                                                                                      | `Translator::phrase()` / `::phraseFmt()`                      |
 | `config()` / `cmsConfigs()`                                                                                                                               | `ConfigProvider::cms()`                                       |
-| `loadConfigurations()` / `loadConfig()` / `mconfig()` / `gconfig()`                                                                                       | `ConfigProvider` + `RuntimeState`                             |
-| `encodeCache()`                                                                                                                                            | `CacheBuilder`                                                |
+| `loadConfigurations()` / `mconfig()`                                                                                                                      | `ConfigProvider` + `RuntimeState`                             |
 | `enabledisableCheckboxes()`                                                                                                                                | compatibility-only HTML helper for remaining config partials  |
 
 ## What to edit vs. what not to touch
