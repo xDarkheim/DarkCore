@@ -30,15 +30,15 @@ class Email
             $this->_message = $value;
         }
     }
-    private $_to           = [];
-    private $_replyTo      = null;
+    private $_to      = [];
+    private $_replyTo = null;
     public $_subject {
         set {
             $this->_subject = $value;
         }
     }
-    private $_variables    = [];
-    private $_values       = [];
+    private $_variables = [];
+    private $_values    = [];
 
     private $_isCustomTemplate = false;
 
@@ -47,18 +47,22 @@ class Email
     public function __construct()
     {
         $configs = gconfig('email-templates', true);
-        if (!is_array($configs)) throw new \Exception(lang('error_90'));
+        if (! is_array($configs)) {
+            throw new \Exception(lang('error_90'));
+        }
 
-        $this->_active    = $configs['active'];
-        $this->_smtp      = $configs['smtp_active'];
-        $this->_from      = $configs['send_from'];
-        $this->_name      = $configs['send_name'];
-        $this->_smtpHost  = $configs['smtp_host'];
-        $this->_smtpPort  = $configs['smtp_port'];
-        $this->_smtpUser  = $configs['smtp_user'];
-        $this->_smtpPass  = $configs['smtp_pass'];
+        $this->_active   = $configs['active'];
+        $this->_smtp     = $configs['smtp_active'];
+        $this->_from     = $configs['send_from'];
+        $this->_name     = $configs['send_name'];
+        $this->_smtpHost = $configs['smtp_host'];
+        $this->_smtpPort = $configs['smtp_port'];
+        $this->_smtpUser = $configs['smtp_user'];
+        $this->_smtpPass = $configs['smtp_pass'];
 
-        if (!is_array($configs['email_templates']['template'])) throw new \Exception();
+        if (! is_array($configs['email_templates']['template'])) {
+            throw new \Exception();
+        }
 
         $templates = [];
         foreach ($configs['email_templates']['template'] as $template) {
@@ -70,11 +74,17 @@ class Email
         $this->mail       = new PHPMailer(true);
     }
 
-    public function setFrom($email, $name = "Unknown"): void { $this->_from = $email; $this->_name = $name; }
+    public function setFrom($email, $name = "Unknown"): void
+    {
+        $this->_from = $email;
+        $this->_name = $name;
+    }
 
     public function setTemplate($template): void
     {
-        if (!array_key_exists($template, $this->_templates)) throw new \Exception(lang('error_91'));
+        if (! array_key_exists($template, $this->_templates)) {
+            throw new \Exception(lang('error_91'));
+        }
         $this->_template = $template;
         $this->_subject  = $this->_templates[$template];
     }
@@ -87,24 +97,34 @@ class Email
 
     public function addAddress($email): void
     {
-        if (!Validator::Email($email)) throw new \Exception(lang('error_92'));
+        if (! Validator::Email($email)) {
+            throw new \Exception(lang('error_92'));
+        }
         $this->_to[] = $email;
     }
 
     public function setReplyTo($email, $name = ''): void
     {
-        if (!Validator::Email($email)) throw new \Exception(lang('error_92'));
+        if (! Validator::Email($email)) {
+            throw new \Exception(lang('error_92'));
+        }
         $this->_replyTo = [$email, $name];
     }
 
     private function _loadTemplate(): string
     {
-        if (!$this->_template) throw new \Exception(lang('error_93'));
+        if (! $this->_template) {
+            throw new \Exception(lang('error_93'));
+        }
         if ($this->_isCustomTemplate) {
-            if (!file_exists($this->_template)) throw new \Exception(lang('error_94'));
+            if (! file_exists($this->_template)) {
+                throw new \Exception(lang('error_94'));
+            }
             return file_get_contents($this->_template);
         }
-        if (!file_exists($this->_templatesPath . $this->_template . '.txt')) throw new \Exception(lang('error_91'));
+        if (! file_exists($this->_templatesPath . $this->_template . '.txt')) {
+            throw new \Exception(lang('error_91'));
+        }
         return file_get_contents($this->_templatesPath . $this->_template . '.txt');
     }
 
@@ -115,9 +135,15 @@ class Email
 
     public function send(): bool
     {
-        if (!$this->_active) throw new \Exception(lang('error_48', true));
-        if (!$this->_message && !$this->_template) throw new \Exception(lang('error_95'));
-        if (!is_array($this->_to)) throw new \Exception(lang('error_96'));
+        if (! $this->_active) {
+            throw new \Exception(lang('error_48', true));
+        }
+        if (! $this->_message && ! $this->_template) {
+            throw new \Exception(lang('error_95'));
+        }
+        if (! is_array($this->_to)) {
+            throw new \Exception(lang('error_96'));
+        }
 
         if ($this->_smtp) {
             $this->mail->IsSMTP();
@@ -134,10 +160,12 @@ class Email
             $this->mail->AddAddress($address);
         }
 
-        if (!$this->_subject) throw new \Exception(lang('error_97'));
+        if (! $this->_subject) {
+            throw new \Exception(lang('error_97'));
+        }
         $this->mail->Subject = $this->_subject;
 
-        if (!$this->_message) {
+        if (! $this->_message) {
             $this->mail->MsgHTML($this->_prepareTemplate());
         } else {
             $this->mail->MsgHTML($this->_message);
@@ -150,4 +178,3 @@ class Email
         return $this->mail->Send();
     }
 }
-

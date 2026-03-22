@@ -57,8 +57,10 @@
         ],
         "test": "phpunit --no-coverage",
         "analyse": "phpstan analyse --memory-limit=256M",
-        "fix": "php-cs-fixer fix --diff",
-        "check": "php-cs-fixer fix --dry-run --diff"
+        "fix": "php-cs-fixer fix --sequential --show-progress=none --diff --config=.php-cs-fixer.php",
+        "check": "php-cs-fixer fix --sequential --show-progress=none --dry-run --stop-on-violation --config=.php-cs-fixer.php",
+        "fix:risky": "php-cs-fixer fix --sequential --show-progress=none --diff --config=.php-cs-fixer-risky.php",
+        "check:risky": "php-cs-fixer fix --sequential --show-progress=none --dry-run --stop-on-violation --config=.php-cs-fixer-risky.php"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.94",
