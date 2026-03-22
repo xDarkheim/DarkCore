@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Admincp;
 
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Config\ConfigRepository;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -56,15 +57,15 @@ final class WebsiteSettingsController
             try {
                 $setting = $this->validatedSettingsFromPost();
 
-                $cmsConfigurations = cmsConfigs();
+                $cmsConfigurations = BootstrapContext::configProvider()?->cms() ?? [];
                 foreach (array_keys($setting) as $settingName) {
-                    if (!in_array($settingName, $this->allowedSettings, true)) {
+                    if (! in_array($settingName, $this->allowedSettings, true)) {
                         throw new \RuntimeException('One or more submitted setting is not editable.');
                     }
                     $cmsConfigurations[$settingName] = $setting[$settingName];
                 }
 
-                (new ConfigRepository(__PATH_CONFIGS__))->saveCms($cmsConfigurations);
+                new ConfigRepository(__PATH_CONFIGS__)->saveCms($cmsConfigurations);
 
                 message('success', 'Settings successfully saved!');
             } catch (\Exception $ex) {
@@ -93,63 +94,63 @@ final class WebsiteSettingsController
     {
         $setting = [];
 
-        $setting['system_active'] = $this->expectBool('system_active', 'Invalid Website Status setting.');
+        $setting['system_active']   = $this->expectBool('system_active', 'Invalid Website Status setting.');
         $setting['error_reporting'] = $this->expectBool('error_reporting', 'Invalid Error Reporting setting.');
 
-        if (!isset($_POST['website_theme'])) {
+        if (! isset($_POST['website_theme'])) {
             throw new \RuntimeException('Invalid Default Template setting.');
         }
-        if (!file_exists(__PATH_THEMES__ . $_POST['website_theme'] . '/index.php')) {
+        if (! file_exists(__PATH_THEMES__ . $_POST['website_theme'] . '/index.php')) {
             throw new \RuntimeException('The selected theme doesn\'t exist.');
         }
         $setting['website_theme'] = (string) $_POST['website_theme'];
 
-        if (!isset($_POST['maintenance_page']) || !Validator::Url($_POST['maintenance_page'])) {
+        if (! isset($_POST['maintenance_page']) || ! Validator::Url($_POST['maintenance_page'])) {
             throw new \RuntimeException('The maintenance page setting is not a valid URL.');
         }
         $setting['maintenance_page'] = (string) $_POST['maintenance_page'];
 
         foreach (['server_name', 'website_title', 'website_meta_description', 'website_meta_keywords'] as $name) {
-            if (!isset($_POST[$name])) {
+            if (! isset($_POST[$name])) {
                 throw new \RuntimeException('Invalid setting (' . $name . ')');
             }
             $setting[$name] = (string) $_POST[$name];
         }
 
-        if (!isset($_POST['website_forum_link']) || !Validator::Url($_POST['website_forum_link'])) {
+        if (! isset($_POST['website_forum_link']) || ! Validator::Url($_POST['website_forum_link'])) {
             throw new \RuntimeException('The forum link setting is not a valid URL.');
         }
         $setting['website_forum_link'] = (string) $_POST['website_forum_link'];
 
         $setting['language_switch_active'] = $this->expectBool('language_switch_active', 'Invalid Language Switch setting.');
 
-        if (!isset($_POST['language_default'])) {
+        if (! isset($_POST['language_default'])) {
             throw new \RuntimeException('Invalid Default Language setting.');
         }
-        if (!file_exists(__PATH_LANGUAGES__ . $_POST['language_default'] . '/language.php')) {
+        if (! file_exists(__PATH_LANGUAGES__ . $_POST['language_default'] . '/language.php')) {
             throw new \RuntimeException('The default language doesn\'t exist.');
         }
         $setting['language_default'] = (string) $_POST['language_default'];
 
-        $setting['language_debug'] = $this->expectBool('language_debug', 'Invalid Language Debug setting.');
-        $setting['plugins_system_enable'] = $this->expectBool('plugins_system_enable', 'Invalid Plugin System setting.');
+        $setting['language_debug']         = $this->expectBool('language_debug', 'Invalid Language Debug setting.');
+        $setting['plugins_system_enable']  = $this->expectBool('plugins_system_enable', 'Invalid Plugin System setting.');
         $setting['ip_block_system_enable'] = $this->expectBool('ip_block_system_enable', 'Invalid IP Block System setting.');
-        $setting['player_profiles'] = $this->expectBool('player_profiles', 'Invalid setting (player_profiles)');
-        $setting['guild_profiles'] = $this->expectBool('guild_profiles', 'Invalid setting (guild_profiles)');
+        $setting['player_profiles']        = $this->expectBool('player_profiles', 'Invalid setting (player_profiles)');
+        $setting['guild_profiles']         = $this->expectBool('guild_profiles', 'Invalid setting (guild_profiles)');
 
         foreach (['username_min_len', 'username_max_len', 'password_min_len', 'password_max_len'] as $numSetting) {
-            if (!isset($_POST[$numSetting]) || !Validator::UnsignedNumber($_POST[$numSetting])) {
+            if (! isset($_POST[$numSetting]) || ! Validator::UnsignedNumber($_POST[$numSetting])) {
                 throw new \RuntimeException('Invalid setting (' . $numSetting . ')');
             }
             $setting[$numSetting] = (string) $_POST[$numSetting];
         }
 
         foreach ([
-            'social_link_facebook' => 'The facebook link setting is not a valid URL.',
+            'social_link_facebook'  => 'The facebook link setting is not a valid URL.',
             'social_link_instagram' => 'The instagram link setting is not a valid URL.',
-            'social_link_discord' => 'The discord link setting is not a valid URL.',
+            'social_link_discord'   => 'The discord link setting is not a valid URL.',
         ] as $key => $errorMessage) {
-            if (isset($_POST[$key]) && check_value($_POST[$key]) && !Validator::Url($_POST[$key])) {
+            if (isset($_POST[$key]) && check_value($_POST[$key]) && ! Validator::Url($_POST[$key])) {
                 throw new \RuntimeException($errorMessage);
             }
             $setting[$key] = (string) ($_POST[$key] ?? '');
@@ -159,7 +160,7 @@ final class WebsiteSettingsController
             $setting[$name] = (string) ($_POST[$name] ?? '');
         }
 
-        if (isset($_POST['maximum_online']) && check_value($_POST['maximum_online']) && !Validator::UnsignedNumber($_POST['maximum_online'])) {
+        if (isset($_POST['maximum_online']) && check_value($_POST['maximum_online']) && ! Validator::UnsignedNumber($_POST['maximum_online'])) {
             throw new \RuntimeException('Invalid setting (maximum_online)');
         }
         $setting['maximum_online'] = (string) ($_POST['maximum_online'] ?? '');
@@ -169,7 +170,7 @@ final class WebsiteSettingsController
 
     private function expectBool(string $key, string $errorMessage): bool
     {
-        if (!isset($_POST[$key]) || !in_array($_POST[$key], ['0', '1', 0, 1], true)) {
+        if (! isset($_POST[$key]) || ! in_array($_POST[$key], ['0', '1', 0, 1], true)) {
             throw new \RuntimeException($errorMessage);
         }
 

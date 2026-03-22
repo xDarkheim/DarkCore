@@ -62,14 +62,14 @@ class Handler
     public function loadPage(): void
     {
         $config    = cmsConfigs();
-        $custom    = BootstrapContext::runtimeState()?->customConfig() ?? [];
-        $lang      = getLanguagePhrases();
+        $custom    = BootstrapContext::runtimeState()?->customConfig()    ?? [];
+        $lang      = BootstrapContext::runtimeState()?->languagePhrases() ?? [];
         $tSettings = [];
         $handler   = $this;
 
         $this->languageBootstrapper->bootstrap($this->session, $config);
 
-        $lang = getLanguagePhrases();
+        $lang = BootstrapContext::runtimeState()?->languagePhrases() ?? [];
 
         $currentPage = isset($_REQUEST['page'])
             ? $this->routeInputSanitizer->sanitize((string) $_REQUEST['page'])
@@ -105,9 +105,9 @@ class Handler
     public function loadModule(?string $page = 'news', ?string $subpage = 'home'): void
     {
         $config    = cmsConfigs();
-        $custom    = BootstrapContext::runtimeState()?->customConfig() ?? [];
-        $lang      = getLanguagePhrases();
-        $mconfig   = moduleConfigData();
+        $custom    = BootstrapContext::runtimeState()?->customConfig()    ?? [];
+        $lang      = BootstrapContext::runtimeState()?->languagePhrases() ?? [];
+        $mconfig   = BootstrapContext::runtimeState()?->moduleConfig()    ?? [];
         $tSettings = [];
         try {
             $handler = $this;
@@ -140,7 +140,7 @@ class Handler
                 $this->module404();
             } else {
                 if ($this->subpageRouteDispatcher->dispatch($resolved['page'], (string) ($resolved['subpage'] ?? ''))) {
-                    $mconfig = moduleConfigData();
+                    $mconfig = BootstrapContext::runtimeState()?->moduleConfig() ?? [];
                 } else {
                     $this->module404();
                 }
@@ -153,10 +153,10 @@ class Handler
     public function loadAdminCPModule($module = 'home'): void
     {
         $config  = cmsConfigs();
-        $lang    = getLanguagePhrases();
-        $custom  = BootstrapContext::runtimeState()?->customConfig() ?? [];
+        $lang    = BootstrapContext::runtimeState()?->languagePhrases() ?? [];
+        $custom  = BootstrapContext::runtimeState()?->customConfig()    ?? [];
         $handler = $this;
-        $mconfig = moduleConfigData();
+        $mconfig = BootstrapContext::runtimeState()?->moduleConfig() ?? [];
         $gconfig = [];
         $cms     = null;
 

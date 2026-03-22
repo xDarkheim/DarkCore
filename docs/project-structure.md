@@ -347,15 +347,15 @@ one-to-three-line wrapper that casts arguments and delegates to the matching `sr
 |:----------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------|
 | `check_value()`                                                                                                                                           | `Validator::hasValue()`                                       |
 | `redirect()`                                                                                                                                              | `Redirector::go()`                                            |
-| `isLoggedIn()` / `logOutUser()`                                                                                                                           | `SessionManager`                                              |
+| `isLoggedIn()`                                                                                                                                             | `SessionManager`                                              |
 | `canAccessAdminCP()`                                                                                                                                      | `AdminGuard::canAccess()`                                     |
 | `admincp_base()`                                                                                                                                          | `AdmincpUrlGenerator::base()`                                 |
 | `message()` / `inline_message()`                                                                                                                          | `MessageRenderer::toast()` / `::inline()`                     |
 | `lang()` / `langf()`                                                                                                                                      | `Translator::phrase()` / `::phraseFmt()`                      |
-| `config()` / `cmsConfigs()`                                                                                                                               | `ConfigProvider::cms()` via `bootstrapConfigProvider()`       |
+| `config()` / `cmsConfigs()`                                                                                                                               | `ConfigProvider::cms()`                                       |
 | `loadConfigurations()` / `loadConfig()` / `mconfig()` / `gconfig()`                                                                                       | `ConfigProvider` + `RuntimeState`                             |
 | `encodeCache()`                                                                                                                                            | `CacheBuilder`                                                |
-| `enabledisableCheckboxes()` / `weekDaySelectOptions()`                                                                                                    | compatibility-only HTML helpers for remaining config partials |
+| `enabledisableCheckboxes()`                                                                                                                                | compatibility-only HTML helper for remaining config partials  |
 
 ## What to edit vs. what not to touch
 

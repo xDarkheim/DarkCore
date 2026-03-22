@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class PhrasesController
@@ -17,7 +18,7 @@ final class PhrasesController
 
     public function render(): void
     {
-        $lang  = getLanguagePhrases();
+        $lang  = BootstrapContext::runtimeState()?->languagePhrases() ?? [];
         $rows  = [];
 
         foreach ($lang as $key => $value) {

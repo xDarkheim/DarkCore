@@ -7,6 +7,7 @@ namespace Darkheim\Application\Admincp;
 use Darkheim\Application\Credits\CreditSystem;
 use Darkheim\Application\Vote\VoteSiteRepository;
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class ModulesManagerController
@@ -120,7 +121,8 @@ final class ModulesManagerController
         }
 
         if ($configKey === 'email') {
-            $data['emailConfigs'] = gconfig('email-templates');
+            $emailConfigs         = BootstrapContext::configProvider()?->globalXml('email-templates');
+            $data['emailConfigs'] = is_array($emailConfigs) ? $emailConfigs : null;
         }
 
         if ($configKey === 'rankings') {

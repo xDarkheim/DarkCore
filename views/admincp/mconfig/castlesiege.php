@@ -1,9 +1,9 @@
 <?php
 echo '<h2>Castle Siege Settings</h2>';
 $cfg = $castleSiegeConfig ?? null;
-if(!is_array($cfg)) {
-	message('error', 'Error loading config file.');
-	return;
+if (! is_array($cfg)) {
+    message('error', 'Error loading config file.');
+    return;
 }
 ?>
 <form action="" method="post">
@@ -109,17 +109,28 @@ if(!is_array($cfg)) {
 			</tr>
 		</thead>
 		<tbody>
-		<?php
-		foreach($cfg['stages'] as $stageIndex => $stageData) {
-			echo '<tr>';
-				echo '<td>'.lang($stageData['title']).'</td>';
-				echo '<td><select name="setting_stage_startday[]" class="form-control">'.weekDaySelectOptions($stageData['start_day']).'</select></td>';
-				echo '<td><input class="form-control" type="text" name="setting_stage_starttime[]" value="'.$stageData['start_time'].'"/></td>';
-				echo '<td><select name="setting_stage_endday[]" class="form-control">'.weekDaySelectOptions($stageData['end_day']).'</select></td>';
-				echo '<td><input class="form-control" type="text" name="setting_stage_endtime[]" value="'.$stageData['end_time'].'"/></td>';
-			echo '</tr>';
-		}
-		?>
+        <?php
+        $weekDays     = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+$renderWeekDayOptions = static function (string $selectedDay) use ($weekDays): string {
+    $options = '';
+    foreach ($weekDays as $day) {
+        $selected = ($day === $selectedDay) ? ' selected' : '';
+        $options .= '<option value="' . $day . '"' . $selected . '>' . $day . '</option>';
+    }
+
+    return $options;
+};
+
+foreach ($cfg['stages'] as $stageIndex => $stageData) {
+    echo '<tr>';
+    echo '<td>' . lang($stageData['title']) . '</td>';
+    echo '<td><select name="setting_stage_startday[]" class="form-control">' . $renderWeekDayOptions((string) $stageData['start_day']) . '</select></td>';
+    echo '<td><input class="form-control" type="text" name="setting_stage_starttime[]" value="' . $stageData['start_time'] . '"/></td>';
+    echo '<td><select name="setting_stage_endday[]" class="form-control">' . $renderWeekDayOptions((string) $stageData['end_day']) . '</select></td>';
+    echo '<td><input class="form-control" type="text" name="setting_stage_endtime[]" value="' . $stageData['end_time'] . '"/></td>';
+    echo '</tr>';
+}
+?>
 		</tbody>
 	</table>
 	

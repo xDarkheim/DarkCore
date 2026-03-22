@@ -9,6 +9,7 @@ use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Application\Language\LanguageRepository;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 
 /**
  * NewsService — full CRUD, caching, translation management for news articles.
@@ -29,7 +30,7 @@ class NewsService
 
     public function __construct()
     {
-        $config = loadConfigurations($this->_configFile);
+        $config = BootstrapContext::configProvider()?->moduleConfig($this->_configFile);
         $this->_enableShortNews    = (bool) ($config['news_short'] ?? false);
         $this->_shortNewsCharLimit = (int)  ($config['news_short_char_limit'] ?? 100);
     }

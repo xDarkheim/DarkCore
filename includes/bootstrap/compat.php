@@ -23,10 +23,7 @@ use Darkheim\Application\Language\Translator;
 use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
-use Darkheim\Infrastructure\Bootstrap\ConfigProvider;
-use Darkheim\Infrastructure\Bootstrap\RuntimeState;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
-use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\Http\Redirector;
 
 // ---------------------------------------------------------------------------
@@ -98,17 +95,6 @@ function enabledisableCheckboxes($name, $checked, $e_txt, $d_txt): void
     echo '</div>';
 }
 
-function weekDaySelectOptions($selected = 'Monday'): string
-{
-    $days   = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    $result = '';
-    foreach ($days as $day) {
-        $isSelected = ((string) $selected === $day) ? ' selected' : '';
-        $result .= '<option value="' . $day . '"' . $isSelected . '>' . $day . '</option>';
-    }
-    return $result;
-}
-
 // ---------------------------------------------------------------------------
 // UI messages
 // ---------------------------------------------------------------------------
@@ -147,55 +133,13 @@ function langf($phrase, $args = [], $print = false): ?string
     return $result;
 }
 
-function setLanguagePhrases(array $phrases): void
-{
-    BootstrapContext::runtimeState()?->setLanguagePhrases($phrases);
-}
-
-function getLanguagePhrases(): array
-{
-    return BootstrapContext::runtimeState()?->languagePhrases() ?? [];
-}
-
-// ---------------------------------------------------------------------------
-// Bootstrap context helpers
-// ---------------------------------------------------------------------------
-
-function bootstrapConfigProvider(): ConfigProvider
-{
-    $provider = BootstrapContext::configProvider();
-    if ($provider instanceof ConfigProvider) {
-        return $provider;
-    }
-
-    static $fallback = null;
-    if (! $fallback instanceof ConfigProvider) {
-        $fallback = new ConfigProvider(__PATH_CONFIGS__);
-    }
-    return $fallback;
-}
-
-function bootstrapRuntimeState(): RuntimeState
-{
-    $state = BootstrapContext::runtimeState();
-    if ($state instanceof RuntimeState) {
-        return $state;
-    }
-
-    static $fallback = null;
-    if (! $fallback instanceof RuntimeState) {
-        $fallback = new RuntimeState();
-    }
-    return $fallback;
-}
-
 // ---------------------------------------------------------------------------
 // Config accessors
 // ---------------------------------------------------------------------------
 
 function cmsConfigs(): array
 {
-    return bootstrapConfigProvider()->cms();
+    return BootstrapContext::configProvider()?->cms() ?? [];
 }
 
 function config($config_name, $return = false)
@@ -213,53 +157,43 @@ function config($config_name, $return = false)
 
 function loadModuleConfigs($module): void
 {
-    if (! moduleConfigExists($module)) {
-        bootstrapRuntimeState()->setModuleConfig([]);
+    if (! check_value($module)) {
+        BootstrapContext::runtimeState()?->setModuleConfig([]);
         return;
     }
-    $result = bootstrapConfigProvider()->moduleConfig((string) $module);
-    bootstrapRuntimeState()->setModuleConfig(is_array($result) ? $result : []);
-}
 
-function moduleConfigExists($module): bool
-{
-    if (! check_value($module)) {
-        return false;
-    }
-
-    return bootstrapConfigProvider()->moduleConfig((string) $module) !== null;
+    $result = BootstrapContext::configProvider()?->moduleConfig((string) $module);
+    BootstrapContext::runtimeState()?->setModuleConfig(is_array($result) ? $result : []);
 }
 
 function mconfig($configuration)
 {
-    $mconfig = moduleConfigData();
-    return $mconfig[$configuration] ?? null;
-}
-
-function moduleConfigData(): array
-{
-    return bootstrapRuntimeState()->moduleConfig();
+    $mconfig = BootstrapContext::runtimeState()?->moduleConfig() ?? [];
+    return $mconfig[$configuration]                              ?? null;
 }
 
 function gconfig($config_file, $return = true): ?array
 {
-    $result = bootstrapConfigProvider()->globalXml((string) $config_file);
+    $result = BootstrapContext::configProvider()?->globalXml((string) $config_file);
     if (! is_array($result)) {
         return null;
     }
     if ($return) {
         return $result;
     }
-    bootstrapRuntimeState()->setGlobalConfig($result);
+    BootstrapContext::runtimeState()?->setGlobalConfig($result);
     return null;
 }
 
 function loadConfigurations($file): ?array
 {
-    if (! check_value($file) || ! moduleConfigExists($file)) {
+    if (! check_value($file)) {
         return null;
     }
-    return bootstrapConfigProvider()->moduleConfig((string) $file);
+
+    $result = BootstrapContext::configProvider()?->moduleConfig((string) $file);
+
+    return is_array($result) ? $result : null;
 }
 
 function loadConfig($name = 'cms'): ?array
@@ -267,7 +201,7 @@ function loadConfig($name = 'cms'): ?array
     if (! check_value($name)) {
         return null;
     }
-    return bootstrapConfigProvider()->config((string) $name);
+    return BootstrapContext::configProvider()?->config((string) $name);
 }
 
 // ---------------------------------------------------------------------------

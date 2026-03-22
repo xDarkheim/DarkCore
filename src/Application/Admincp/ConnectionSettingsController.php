@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Admincp;
 
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Config\ConfigRepository;
 use Darkheim\Infrastructure\Database\dB;
 use Darkheim\Infrastructure\View\ViewRenderer;
@@ -24,12 +25,22 @@ final class ConnectionSettingsController
 
         if (isset($_POST['settings_submit'])) {
             try {
-                if (!isset($_POST['SQL_DB_HOST'])) throw new \RuntimeException('Invalid Host setting.');
-                if (!isset($_POST['SQL_DB_NAME'])) throw new \RuntimeException('Invalid Database setting.');
-                if (!isset($_POST['SQL_DB_USER'])) throw new \RuntimeException('Invalid User setting.');
-                if (!isset($_POST['SQL_DB_PASS'])) throw new \RuntimeException('Invalid Password setting.');
-                if (!isset($_POST['SQL_DB_PORT']) || !Validator::UnsignedNumber($_POST['SQL_DB_PORT'])) throw new \RuntimeException('Invalid Port setting.');
-                if (!isset($_POST['SQL_PASSWORD_ENCRYPTION']) || !in_array($_POST['SQL_PASSWORD_ENCRYPTION'], ['none', 'wzmd5', 'phpmd5', 'sha256'])) {
+                if (! isset($_POST['SQL_DB_HOST'])) {
+                    throw new \RuntimeException('Invalid Host setting.');
+                }
+                if (! isset($_POST['SQL_DB_NAME'])) {
+                    throw new \RuntimeException('Invalid Database setting.');
+                }
+                if (! isset($_POST['SQL_DB_USER'])) {
+                    throw new \RuntimeException('Invalid User setting.');
+                }
+                if (! isset($_POST['SQL_DB_PASS'])) {
+                    throw new \RuntimeException('Invalid Password setting.');
+                }
+                if (! isset($_POST['SQL_DB_PORT']) || ! Validator::UnsignedNumber($_POST['SQL_DB_PORT'])) {
+                    throw new \RuntimeException('Invalid Port setting.');
+                }
+                if (! isset($_POST['SQL_PASSWORD_ENCRYPTION']) || ! in_array($_POST['SQL_PASSWORD_ENCRYPTION'], ['none', 'wzmd5', 'phpmd5', 'sha256'])) {
                     throw new \RuntimeException('Invalid password encryption setting.');
                 }
                 $setting = [
@@ -46,15 +57,15 @@ final class ConnectionSettingsController
                     throw new \RuntimeException('The connection to database was unsuccessful, settings not saved.');
                 }
 
-                $cmsConfigurations = cmsConfigs();
+                $cmsConfigurations = BootstrapContext::configProvider()?->cms() ?? [];
                 foreach (array_keys($setting) as $k) {
-                    if (!in_array($k, $allowedSettings, true)) {
+                    if (! in_array($k, $allowedSettings, true)) {
                         throw new \RuntimeException('One or more submitted setting is not editable.');
                     }
                     $cmsConfigurations[$k] = $setting[$k];
                 }
 
-                (new ConfigRepository(__PATH_CONFIGS__))->saveCms($cmsConfigurations);
+                new ConfigRepository(__PATH_CONFIGS__)->saveCms($cmsConfigurations);
                 message('success', 'Settings successfully saved!');
             } catch (\Exception $ex) {
                 message('error', $ex->getMessage());
@@ -71,4 +82,3 @@ final class ConnectionSettingsController
         ]);
     }
 }
-

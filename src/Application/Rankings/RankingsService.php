@@ -32,7 +32,7 @@ class RankingsService
     public function __construct(?RequestStore $request = null)
     {
         $this->request = $request ?? new NativeRequestStore();
-        $this->config  = cmsConfigs();
+        $this->config  = BootstrapContext::configProvider()?->cms() ?? [];
 
         loadModuleConfigs('rankings');
         $this->_results = check_value(mconfig('rankings_results')) ? (int) mconfig('rankings_results') : 25;

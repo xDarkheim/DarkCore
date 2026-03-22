@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class UsercpMenuController
@@ -30,27 +31,27 @@ final class UsercpMenuController
                 $this->upsertEntry(false);
             }
 
-            $cfg = loadConfig('usercp');
-            if (!is_array($cfg)) {
+            $cfg = BootstrapContext::configProvider()?->config('usercp');
+            if (! is_array($cfg)) {
                 throw new \RuntimeException('Usercp configs empty.');
             }
 
             $rows = [];
             foreach ($cfg as $id => $element) {
-                if (!is_array($element)) {
+                if (! is_array($element)) {
                     continue;
                 }
                 $rows[] = [
-                    'id' => (string) $id,
-                    'order' => (string) ($element['order'] ?? ''),
-                    'active' => (bool) ($element['active'] ?? false),
-                    'type' => (string) ($element['type'] ?? 'internal'),
-                    'link' => (string) ($element['link'] ?? ''),
-                    'phrase' => (string) ($element['phrase'] ?? ''),
-                    'icon' => (string) ($element['icon'] ?? 'usercp_default.png'),
+                    'id'         => (string) $id,
+                    'order'      => (string) ($element['order'] ?? ''),
+                    'active'     => (bool) ($element['active'] ?? false),
+                    'type'       => (string) ($element['type'] ?? 'internal'),
+                    'link'       => (string) ($element['link'] ?? ''),
+                    'phrase'     => (string) ($element['phrase'] ?? ''),
+                    'icon'       => (string) ($element['icon'] ?? 'usercp_default.png'),
                     'visibility' => (string) ($element['visibility'] ?? 'user'),
-                    'newtab' => (bool) ($element['newtab'] ?? false),
-                    'deleteUrl' => '?module=usercp&delete=' . urlencode((string) $id),
+                    'newtab'     => (bool) ($element['newtab'] ?? false),
+                    'deleteUrl'  => '?module=usercp&delete=' . urlencode((string) $id),
                 ];
             }
 
@@ -65,11 +66,11 @@ final class UsercpMenuController
     private function deleteEntry(string $id): void
     {
         try {
-            $cfg = loadConfig('usercp');
-            if (!is_array($cfg)) {
+            $cfg = BootstrapContext::configProvider()?->config('usercp');
+            if (! is_array($cfg)) {
                 throw new \RuntimeException('Usercp configs empty.');
             }
-            if (!array_key_exists($id, $cfg)) {
+            if (! array_key_exists($id, $cfg)) {
                 throw new \RuntimeException('Invalid id.');
             }
             unset($cfg[$id]);
@@ -83,33 +84,33 @@ final class UsercpMenuController
     private function upsertEntry(bool $isEdit): void
     {
         try {
-            $cfg = loadConfig('usercp');
-            if (!is_array($cfg)) {
+            $cfg = BootstrapContext::configProvider()?->config('usercp');
+            if (! is_array($cfg)) {
                 throw new \RuntimeException('Usercp configs empty.');
             }
 
-            if ($isEdit && !isset($_POST['usercp_id'])) {
+            if ($isEdit && ! isset($_POST['usercp_id'])) {
                 throw new \RuntimeException('Please fill all the form fields.');
             }
-            if (!isset($_POST['usercp_type'], $_POST['usercp_phrase'], $_POST['usercp_link'])) {
+            if (! isset($_POST['usercp_type'], $_POST['usercp_phrase'], $_POST['usercp_link'])) {
                 throw new \RuntimeException('Please fill all the form fields.');
             }
-            if (!in_array($_POST['usercp_type'], ['internal', 'external'], true)) {
+            if (! in_array($_POST['usercp_type'], ['internal', 'external'], true)) {
                 throw new \RuntimeException('Link type is not valid.');
             }
-            if (!in_array($_POST['usercp_visibility'], ['user', 'guest', 'always'], true)) {
+            if (! in_array($_POST['usercp_visibility'], ['user', 'guest', 'always'], true)) {
                 throw new \RuntimeException('Link visibility is not a valid option.');
             }
 
             $newElementData = [
-                'active' => ($_POST['usercp_status'] ?? '0') == 1,
-                'type' => (string) $_POST['usercp_type'],
-                'phrase' => (string) $_POST['usercp_phrase'],
-                'link' => (string) $_POST['usercp_link'],
-                'icon' => (string) ($_POST['usercp_icon'] ?? 'usercp_default.png'),
+                'active'     => ($_POST['usercp_status'] ?? '0') == 1,
+                'type'       => (string) $_POST['usercp_type'],
+                'phrase'     => (string) $_POST['usercp_phrase'],
+                'link'       => (string) $_POST['usercp_link'],
+                'icon'       => (string) ($_POST['usercp_icon'] ?? 'usercp_default.png'),
                 'visibility' => (string) $_POST['usercp_visibility'],
-                'newtab' => ($_POST['usercp_newtab'] ?? '0') == 1,
-                'order' => (int) ($_POST['usercp_order'] ?? 0),
+                'newtab'     => ($_POST['usercp_newtab'] ?? '0') == 1,
+                'order'      => (int) ($_POST['usercp_order'] ?? 0),
             ];
 
             if ($isEdit) {
@@ -129,13 +130,12 @@ final class UsercpMenuController
     /** @param array<int|string,mixed> $cfg */
     private function saveConfig(array $cfg): void
     {
-        $json = json_encode($cfg, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
+        $json    = json_encode($cfg, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
         $cfgFile = fopen(__PATH_CONFIGS__ . 'usercp-menu.json', 'wb');
-        if (!$cfgFile) {
+        if (! $cfgFile) {
             throw new \RuntimeException('There was a problem opening the usercp file.');
         }
         fwrite($cfgFile, $json);
         fclose($cfgFile);
     }
 }
-

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class NavbarController
@@ -30,26 +31,26 @@ final class NavbarController
                 $this->upsertEntry(false);
             }
 
-            $cfg = loadConfig('navbar');
-            if (!is_array($cfg)) {
+            $cfg = BootstrapContext::configProvider()?->config('navbar');
+            if (! is_array($cfg)) {
                 throw new \RuntimeException('Navbar configs empty.');
             }
 
             $rows = [];
             foreach ($cfg as $id => $element) {
-                if (!is_array($element)) {
+                if (! is_array($element)) {
                     continue;
                 }
                 $rows[] = [
-                    'id' => (string) $id,
-                    'order' => (string) ($element['order'] ?? ''),
-                    'active' => (bool) ($element['active'] ?? false),
-                    'type' => (string) ($element['type'] ?? 'internal'),
-                    'link' => (string) ($element['link'] ?? ''),
-                    'phrase' => (string) ($element['phrase'] ?? ''),
+                    'id'         => (string) $id,
+                    'order'      => (string) ($element['order'] ?? ''),
+                    'active'     => (bool) ($element['active'] ?? false),
+                    'type'       => (string) ($element['type'] ?? 'internal'),
+                    'link'       => (string) ($element['link'] ?? ''),
+                    'phrase'     => (string) ($element['phrase'] ?? ''),
                     'visibility' => (string) ($element['visibility'] ?? 'user'),
-                    'newtab' => (bool) ($element['newtab'] ?? false),
-                    'deleteUrl' => '?module=navbar&delete=' . urlencode((string) $id),
+                    'newtab'     => (bool) ($element['newtab'] ?? false),
+                    'deleteUrl'  => '?module=navbar&delete=' . urlencode((string) $id),
                 ];
             }
 
@@ -64,11 +65,11 @@ final class NavbarController
     private function deleteEntry(string $id): void
     {
         try {
-            $cfg = loadConfig('navbar');
-            if (!is_array($cfg)) {
+            $cfg = BootstrapContext::configProvider()?->config('navbar');
+            if (! is_array($cfg)) {
                 throw new \RuntimeException('Navbar configs empty.');
             }
-            if (!array_key_exists($id, $cfg)) {
+            if (! array_key_exists($id, $cfg)) {
                 throw new \RuntimeException('Invalid id.');
             }
             unset($cfg[$id]);
@@ -82,32 +83,32 @@ final class NavbarController
     private function upsertEntry(bool $isEdit): void
     {
         try {
-            $cfg = loadConfig('navbar');
-            if (!is_array($cfg)) {
+            $cfg = BootstrapContext::configProvider()?->config('navbar');
+            if (! is_array($cfg)) {
                 throw new \RuntimeException('Navbar configs empty.');
             }
 
-            if ($isEdit && !isset($_POST['navbar_id'])) {
+            if ($isEdit && ! isset($_POST['navbar_id'])) {
                 throw new \RuntimeException('Please fill all the form fields.');
             }
-            if (!isset($_POST['navbar_type'], $_POST['navbar_phrase'])) {
+            if (! isset($_POST['navbar_type'], $_POST['navbar_phrase'])) {
                 throw new \RuntimeException('Please fill all the form fields.');
             }
-            if (!in_array($_POST['navbar_type'], ['internal', 'external'], true)) {
+            if (! in_array($_POST['navbar_type'], ['internal', 'external'], true)) {
                 throw new \RuntimeException('Link type is not valid.');
             }
-            if (!in_array($_POST['navbar_visibility'], ['user', 'guest', 'always'], true)) {
+            if (! in_array($_POST['navbar_visibility'], ['user', 'guest', 'always'], true)) {
                 throw new \RuntimeException('Link visibility is not a valid option.');
             }
 
             $newElementData = [
-                'active' => ($_POST['navbar_status'] ?? '0') == 1,
-                'type' => (string) $_POST['navbar_type'],
-                'phrase' => (string) $_POST['navbar_phrase'],
-                'link' => (string) ($_POST['navbar_link'] ?? ''),
+                'active'     => ($_POST['navbar_status'] ?? '0') == 1,
+                'type'       => (string) $_POST['navbar_type'],
+                'phrase'     => (string) $_POST['navbar_phrase'],
+                'link'       => (string) ($_POST['navbar_link'] ?? ''),
                 'visibility' => (string) $_POST['navbar_visibility'],
-                'newtab' => ($_POST['navbar_newtab'] ?? '0') == 1,
-                'order' => (int) ($_POST['navbar_order'] ?? 0),
+                'newtab'     => ($_POST['navbar_newtab'] ?? '0') == 1,
+                'order'      => (int) ($_POST['navbar_order'] ?? 0),
             ];
 
             if ($isEdit) {
@@ -127,13 +128,12 @@ final class NavbarController
     /** @param array<int|string,mixed> $cfg */
     private function saveConfig(array $cfg): void
     {
-        $json = json_encode($cfg, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
+        $json    = json_encode($cfg, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
         $cfgFile = fopen(__PATH_CONFIGS__ . 'navigation.json', 'wb');
-        if (!$cfgFile) {
+        if (! $cfgFile) {
             throw new \RuntimeException('There was a problem opening the navbar file.');
         }
         fwrite($cfgFile, $json);
         fclose($cfgFile);
     }
 }
-

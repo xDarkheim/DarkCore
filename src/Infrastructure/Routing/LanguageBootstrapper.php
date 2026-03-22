@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Routing;
 
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Runtime\SessionStore;
 
 final class LanguageBootstrapper
@@ -33,13 +34,12 @@ final class LanguageBootstrapper
     private function loadLanguagePhrases(string $language): void
     {
         $langFile = __PATH_LANGUAGES__ . $language . '/language.php';
-        if (!file_exists($langFile)) {
+        if (! file_exists($langFile)) {
             return;
         }
 
-        $lang = getLanguagePhrases();
+        $lang = BootstrapContext::runtimeState()?->languagePhrases() ?? [];
         include $langFile;
-        setLanguagePhrases($lang);
+        BootstrapContext::runtimeState()?->setLanguagePhrases($lang);
     }
 }
-

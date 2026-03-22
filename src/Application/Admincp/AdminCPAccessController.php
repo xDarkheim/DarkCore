@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Admincp;
 
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Config\ConfigRepository;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -21,20 +22,20 @@ final class AdminCPAccessController
     {
         if (isset($_POST['settings_submit'])) {
             try {
-                $cmsConfigurations = cmsConfigs();
+                $cmsConfigurations = BootstrapContext::configProvider()?->cms() ?? [];
                 $newAdminUser      = $_POST['new_admin'];
                 $newAdminLevel     = $_POST['new_access'];
                 unset($_POST['settings_submit'], $_POST['new_admin'], $_POST['new_access']);
 
                 $adminAccounts = [];
                 foreach ($_POST as $adminUsername => $accessLevel) {
-                    if (!Validator::AlphaNumeric($adminUsername) || !Validator::UsernameLength($adminUsername)) {
+                    if (! Validator::AlphaNumeric($adminUsername) || ! Validator::UsernameLength($adminUsername)) {
                         throw new \RuntimeException('Invalid username.');
                     }
-                    if (!array_key_exists($adminUsername, config('admins', true))) {
+                    if (! array_key_exists($adminUsername, config('admins', true))) {
                         continue;
                     }
-                    if (!Validator::UnsignedNumber($accessLevel) || !Validator::Number($accessLevel, 100)) {
+                    if (! Validator::UnsignedNumber($accessLevel) || ! Validator::Number($accessLevel, 100)) {
                         throw new \RuntimeException('Access level must be 0–100.');
                     }
                     if ($accessLevel == 0) {
@@ -50,14 +51,14 @@ final class AdminCPAccessController
                     if (array_key_exists($newAdminUser, config('admins', true))) {
                         throw new \RuntimeException('Admin already exists.');
                     }
-                    if (!Validator::UnsignedNumber($newAdminLevel)) {
+                    if (! Validator::UnsignedNumber($newAdminLevel)) {
                         throw new \RuntimeException('Access level must be 1–100.');
                     }
                     $adminAccounts[$newAdminUser] = (int) $newAdminLevel;
                 }
 
                 $cmsConfigurations['admins'] = $adminAccounts;
-                (new ConfigRepository(__PATH_CONFIGS__))->saveCms($cmsConfigurations);
+                new ConfigRepository(__PATH_CONFIGS__)->saveCms($cmsConfigurations);
                 message('success', 'Settings saved!');
             } catch (\Exception $ex) {
                 message('error', $ex->getMessage());
@@ -81,4 +82,3 @@ final class AdminCPAccessController
         ]);
     }
 }
-

@@ -8,6 +8,7 @@ use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Character\Character;
 use Darkheim\Application\Helpers\Encoder;
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Database\Connection;
 
 /**
@@ -40,7 +41,7 @@ class ProfileRepository
         $this->_checkCacheDir($this->_guildsCachePath);
         $this->_checkCacheDir($this->_playersCachePath);
 
-        $profileConfig = loadConfigurations('profiles');
+        $profileConfig = BootstrapContext::configProvider()?->moduleConfig('profiles');
         if (! is_array($profileConfig)) {
             throw new \Exception(lang('error_25', true));
         }
