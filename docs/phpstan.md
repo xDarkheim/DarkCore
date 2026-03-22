@@ -25,12 +25,12 @@ docker compose exec web composer analyse
 
 **`phpstan.neon`** — level 5, analyses `src/` only.
 
-| Parameter | Value |
-| :--- | :--- |
-| `level` | 5 |
-| `phpVersion` | 80400 |
-| `paths` | `src/` |
-| `bootstrapFiles` | `includes/bootstrap/compat.php`, `includes/config/cms.tables.php`, `includes/config/custom.tables.php` |
+| Parameter        | Value                                                                            |
+|:-----------------|:---------------------------------------------------------------------------------|
+| `level`          | 5                                                                                |
+| `phpVersion`     | 80400                                                                            |
+| `paths`          | `src/`                                                                           |
+| `bootstrapFiles` | `includes/bootstrap/compat.php`, `config/tables.php`, `config/tables.custom.php` |
 
 Bootstrap files make global helpers (`lang()`, `config()`) and DB constants (`_TBL_CHR_`, `_CLMN_CHR_LVL_`)
 visible to PHPStan without a live database.
@@ -55,9 +55,9 @@ visible to PHPStan without a live database.
 
 ### Global suppression (`phpstan.neon`)
 
-| Pattern | Reason |
-| :--- | :--- |
-| `Constant [A-Za-z0-9_]+ not found` | DB table/column constants are defined at runtime by `custom.tables.php`. Bootstrap files load it, but a suppression prevents false positives if a constant is still missing. |
+| Pattern                            | Reason                                                                                                                                                                       |
+|:-----------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Constant [A-Za-z0-9_]+ not found` | DB table/column constants are defined at runtime by `tables.custom.php`. Bootstrap files load it, but a suppression prevents false positives if a constant is still missing. |
 
 ### Inline suppressions
 
@@ -65,15 +65,15 @@ A small number of intentional constructs require `@phpstan-ignore` annotations.
 
 **`_TBL_CHR_ == _TBL_MASTERLVL_` comparisons**
 
-`custom.tables.php` defines these as two different string literals — PHPStan flags
+`tables.custom.php` defines these as two different string literals — PHPStan flags
 the equality check as always-false. The check is intentional: some configurations store
 character and master-level data in the same table, making it runtime-conditional.
 
-| File | Methods | Identifier |
-| :--- | :--- | :---: |
-| `src/Application/Character/Character.php` | `CharacterClearSkillTree`, `CharacterAddStats` | `notEqual.alwaysTrue` |
-| `src/Application/Profile/ProfileRepository.php` | `_cachePlayerData` | `equal.alwaysFalse` |
-| `src/Application/Rankings/RankingsService.php` | `_masterlevelRanking`, `_getLevelRankingData`, `_getResetRankingData`, `_getKillersRankingData` | `equal.alwaysFalse` |
+| File                                            | Methods                                                                                         |      Identifier       |
+|:------------------------------------------------|:------------------------------------------------------------------------------------------------|:---------------------:|
+| `src/Application/Character/Character.php`       | `CharacterClearSkillTree`, `CharacterAddStats`                                                  | `notEqual.alwaysTrue` |
+| `src/Application/Profile/ProfileRepository.php` | `_cachePlayerData`                                                                              |  `equal.alwaysFalse`  |
+| `src/Application/Rankings/RankingsService.php`  | `_masterlevelRanking`, `_getLevelRankingData`, `_getResetRankingData`, `_getKillersRankingData` |  `equal.alwaysFalse`  |
 
 Example annotation:
 
@@ -86,12 +86,12 @@ if (_TBL_CHR_ == _TBL_MASTERLVL_) {
 
 ## Common errors and fixes
 
-| Error | Cause | Fix |
-| :--- | :--- | :--- |
-| `Loose comparison … will always evaluate to true/false` | Two constant string literals compared with `==` / `!=` | If intentional, add `@phpstan-ignore` with a comment. Otherwise rewrite the logic. |
-| `Parameter … expects bool, int given` | Passing `1` / `0` to a bool parameter (e.g. `curl_setopt`) | Use `true` / `false` literals |
-| `Call to is_array() with array will always evaluate to true` | Return type is already `array` | Remove the redundant `is_array()` guard |
-| `Offset … always exists and is not nullable` | `?? null` after array access on a non-empty result | Remove the `?? null` fallback |
-| `Parameter … expects string, int given` | Passing a typed `int` to `str_replace` | Cast explicitly: `(string) $value` |
-| `Undefined variable` | Variable only declared inside an `if` branch PHPStan treats as dead | Declare the variable before the conditional block |
-| `Constant … not found` | DB constant not loaded | Ensure `bootstrapFiles` in `phpstan.neon` includes the relevant tables file |
+| Error                                                        | Cause                                                               | Fix                                                                                |
+|:-------------------------------------------------------------|:--------------------------------------------------------------------|:-----------------------------------------------------------------------------------|
+| `Loose comparison … will always evaluate to true/false`      | Two constant string literals compared with `==` / `!=`              | If intentional, add `@phpstan-ignore` with a comment. Otherwise rewrite the logic. |
+| `Parameter … expects bool, int given`                        | Passing `1` / `0` to a bool parameter (e.g. `curl_setopt`)          | Use `true` / `false` literals                                                      |
+| `Call to is_array() with array will always evaluate to true` | Return type is already `array`                                      | Remove the redundant `is_array()` guard                                            |
+| `Offset … always exists and is not nullable`                 | `?? null` after array access on a non-empty result                  | Remove the `?? null` fallback                                                      |
+| `Parameter … expects string, int given`                      | Passing a typed `int` to `str_replace`                              | Cast explicitly: `(string) $value`                                                 |
+| `Undefined variable`                                         | Variable only declared inside an `if` branch PHPStan treats as dead | Declare the variable before the conditional block                                  |
+| `Constant … not found`                                       | DB constant not loaded                                              | Ensure `bootstrapFiles` in `phpstan.neon` includes the relevant tables file        |

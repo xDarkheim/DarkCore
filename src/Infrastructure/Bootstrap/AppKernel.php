@@ -21,7 +21,8 @@ final class AppKernel
         ?RuntimeState $runtimeState = null,
     ) {
         $this->includesDir = rtrim(str_replace('\\', '/', $includesDir), '/') . '/';
-        $this->configProvider = $configProvider ?? new ConfigProvider($this->includesDir . 'config/');
+        $rootDir = dirname($this->includesDir);
+        $this->configProvider = $configProvider ?? new ConfigProvider($rootDir . '/config/');
         $this->runtimeState = $runtimeState ?? new RuntimeState();
         $this->handler = $handler ?? new Handler();
     }
@@ -42,8 +43,8 @@ final class AppKernel
         $this->definePathConstants();
         $this->configureErrorLogging();
 
-        $this->requireSupportFile(__PATH_CONFIGS__ . 'cms.tables.php', 'Could not load Darkheim CMS table definitions.');
-        $this->requireSupportFile(__PATH_CONFIGS__ . 'timezone.php', 'Could not load timezone.');
+        $this->requireSupportFile(__PATH_CONFIGS__ . 'tables.php', 'Could not load Darkheim CMS table definitions.');
+        $this->requireSupportFile(__PATH_CONFIGS__ . 'timezone-config.php', 'Could not load timezone.');
         $this->requireSupportFile(__PATH_INCLUDES__ . 'bootstrap/compat.php', 'Could not load functions.');
 
         $config = $this->configProvider->cms();
@@ -63,7 +64,7 @@ final class AppKernel
         }
 
         $this->loadPlugins($config);
-        $this->defineTemplatePathConstants((string) $config['website_template']);
+        $this->defineThemePathConstants((string) $config['website_theme']);
         $this->handler->loadPage();
     }
 
@@ -85,7 +86,7 @@ final class AppKernel
     private function defineVersion(): void
     {
         if (!defined('__CMS_VERSION__')) {
-            define('__CMS_VERSION__', '1.0.0');
+            define('__CMS_VERSION__', '1.1.0');
         }
     }
 
@@ -121,44 +122,56 @@ final class AppKernel
     private function definePathConstants(): void
     {
         $httpHost = $_SERVER['HTTP_HOST'] ?? 'CLI';
-        $serverProtocol = (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) === 'on') ? 'https://' : 'https://';
+        $serverProtocol = (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) === 'on') ? 'https://' : 'http://';
         $rootDir = str_replace('\\', '/', dirname($this->includesDir)) . '/';
-        $relativeRoot = (!empty($_SERVER['SCRIPT_NAME']))
-            ? str_ireplace(
-                rtrim(str_replace('\\', '/', (string) realpath(str_replace((string) $_SERVER['SCRIPT_NAME'], '', (string) ($_SERVER['SCRIPT_FILENAME'] ?? '')))), '/'),
-                '',
-                $rootDir,
-            )
+        $publicDir = is_dir($rootDir . 'public') ? $rootDir . 'public/' : $rootDir;
+
+        $access = defined('access') ? (string) access : '';
+        $rootDepth = match ($access) {
+            'admincp', 'api', 'cron', 'install' => 2,
+            default => 1,
+        };
+
+        // Derive the site-root URL path from SCRIPT_NAME.
+        // Examples:
+        //   /index.php               -> /
+        //   /cms/index.php           -> /cms/
+        //   /cms/admincp/index.php   -> /cms/
+        //   /cms/api/version.php     -> /cms/
+        $relativeRoot = !empty($_SERVER['SCRIPT_NAME'])
+            ? rtrim(str_replace('\\', '/', dirname((string) $_SERVER['SCRIPT_NAME'], $rootDepth)), '/') . '/'
             : '/';
+
         $baseUrl = $serverProtocol . $httpHost . $relativeRoot;
 
         $constants = [
             'HTTP_HOST' => $httpHost,
             'SERVER_PROTOCOL' => $serverProtocol,
             '__ROOT_DIR__' => $rootDir,
+            '__PUBLIC_DIR__' => $publicDir,
+            '__PATH_THEMES__' => $publicDir . 'themes/',
+            // Legacy WebEngine alias
+            '__PATH_TEMPLATES__' => $publicDir . 'themes/',
             '__RELATIVE_ROOT__' => $relativeRoot,
             '__BASE_URL__' => $baseUrl,
             '__PATH_INCLUDES__' => $rootDir . 'includes/',
-            '__PATH_TEMPLATES__' => $rootDir . 'templates/',
             '__PATH_LANGUAGES__' => $rootDir . 'includes/languages/',
-            '__PATH_CLASSES__' => $rootDir . 'includes/classes/',
-            '__PATH_FUNCTIONS__' => $rootDir . 'includes/functions/',
-            '__PATH_MODULES__' => $rootDir . 'modules/',
-            '__PATH_MODULES_USERCP__' => $rootDir . 'modules/usercp/',
+            '__PATH_VIEWS__' => $rootDir . 'views/',
             '__PATH_EMAILS__' => $rootDir . 'includes/emails/',
-            '__PATH_CACHE__' => $rootDir . 'includes/cache/',
-            '__PATH_ADMINCP__' => $rootDir . 'admincp/',
-            '__PATH_ADMINCP_INC__' => $rootDir . 'admincp/inc/',
-            '__PATH_ADMINCP_MODULES__' => $rootDir . 'admincp/modules/',
-            '__PATH_NEWS_CACHE__' => $rootDir . 'includes/cache/news/',
-            '__PATH_NEWS_TRANSLATIONS_CACHE__' => $rootDir . 'includes/cache/news/translations/',
+            '__PATH_CACHE__' => $rootDir . 'var/cache/',
+            '__PATH_ADMINCP__' => $publicDir . 'admincp/',
+            '__PATH_ADMINCP_INC__' => $publicDir . 'admincp/inc/',
+            '__PATH_ADMINCP_MODULES__' => $publicDir . 'admincp/modules/',
+            '__PATH_NEWS_CACHE__' => $rootDir . 'var/cache/news/',
+            '__PATH_NEWS_TRANSLATIONS_CACHE__' => $rootDir . 'var/cache/news/translations/',
             '__PATH_PLUGINS__' => $rootDir . 'includes/plugins/',
-            '__PATH_CONFIGS__' => $rootDir . 'includes/config/',
-            '__PATH_MODULE_CONFIGS__' => $rootDir . 'includes/config/modules/',
+            '__PATH_CONFIGS__' => $rootDir . 'config/',
+            '__PATH_MODULE_CONFIGS__' => $rootDir . 'config/modules/',
+            '__PATH_MODULE_CONFIGS_USERCP__' => $rootDir . 'config/modules/usercp/',
             '__PATH_CRON__' => $rootDir . 'includes/cron/',
-            '__PATH_LOGS__' => $rootDir . 'includes/logs/',
-            '__PATH_GUILD_PROFILES_CACHE__' => $rootDir . 'includes/cache/profiles/guilds/',
-            '__PATH_PLAYER_PROFILES_CACHE__' => $rootDir . 'includes/cache/profiles/players/',
+            '__PATH_LOGS__' => $rootDir . 'var/logs/',
+            '__PATH_GUILD_PROFILES_CACHE__' => $rootDir . 'var/cache/profiles/guilds/',
+            '__PATH_PLAYER_PROFILES_CACHE__' => $rootDir . 'var/cache/profiles/players/',
             '__PATH_MODULES_RANKINGS__' => $baseUrl . 'rankings/',
             '__PATH_ADMINCP_HOME__' => $baseUrl . 'admincp/',
             '__PATH_IMG__' => $baseUrl . 'img/',
@@ -169,9 +182,9 @@ final class AppKernel
             '__PATH_ASSETS__' => $baseUrl . 'assets/',
             '__PATH_ASSETS_CSS__' => $baseUrl . 'assets/css/',
             '__PATH_ASSETS_JS__' => $baseUrl . 'assets/js/',
-            'DARKHEIM_DATABASE_ERRORLOG' => $rootDir . 'includes/logs/database_errors.log',
-            'DARKHEIM_WRITABLE_PATHS' => $rootDir . 'includes/config/writable.paths.json',
-            'DARKHEIM_PHP_ERRORLOG' => $rootDir . 'includes/logs/php_errors.log',
+            'DARKHEIM_DATABASE_ERRORLOG' => $rootDir . 'var/logs/database_errors.log',
+            'DARKHEIM_WRITABLE_PATHS' => $rootDir . 'config/writable.json',
+            'DARKHEIM_PHP_ERRORLOG' => $rootDir . 'var/logs/php_errors.log',
         ];
 
         foreach ($constants as $name => $value) {
@@ -183,8 +196,12 @@ final class AppKernel
 
     private function configureErrorLogging(): void
     {
+        if (defined('__PATH_LOGS__') && !is_dir(__PATH_LOGS__) && !mkdir(__PATH_LOGS__, 0775, true) && !is_dir(__PATH_LOGS__)) {
+            throw new \RuntimeException('Could not create log directory: ' . __PATH_LOGS__);
+        }
+
         ini_set('log_errors', '1');
-        ini_set('error_log', $this->includesDir . 'logs/php_errors.log');
+        ini_set('error_log', DARKHEIM_PHP_ERRORLOG);
     }
 
     /**
@@ -193,12 +210,11 @@ final class AppKernel
     private function loadCustomTables(): void
     {
         $custom = [];
-        if (!@include(__PATH_CONFIGS__ . 'custom.tables.php')) {
+        if (!@include(__PATH_CONFIGS__ . 'tables.custom.php')) {
             throw new Exception('Could not load the table definitions.');
         }
 
         $this->runtimeState->setCustomConfig($custom);
-        $GLOBALS['custom'] = $custom;
     }
 
     /**
@@ -229,8 +245,8 @@ final class AppKernel
      */
     private function validateConfiguration(array $config): void
     {
-        if (!file_exists(__PATH_TEMPLATES__ . (string) $config['website_template'])) {
-            throw new Exception('The default template doesn\'t exist.');
+        if (!file_exists(__PATH_THEMES__ . (string) $config['website_theme'])) {
+            throw new Exception('The default theme doesn\'t exist.');
         }
 
         if (!check_value($config['SQL_DB_HOST'] ?? null)) {
@@ -318,15 +334,22 @@ final class AppKernel
         }
     }
 
-    private function defineTemplatePathConstants(string $template): void
+    private function defineThemePathConstants(string $theme): void
     {
         $constants = [
-            '__PATH_TEMPLATE_ROOT__' => __PATH_TEMPLATES__ . $template . '/',
-            '__PATH_TEMPLATE__' => __BASE_URL__ . 'templates/' . $template . '/',
-            '__PATH_TEMPLATE_IMG__' => __BASE_URL__ . 'templates/' . $template . '/img/',
-            '__PATH_TEMPLATE_CSS__' => __BASE_URL__ . 'templates/' . $template . '/css/',
-            '__PATH_TEMPLATE_JS__' => __BASE_URL__ . 'templates/' . $template . '/js/',
-            '__PATH_TEMPLATE_FONTS__' => __BASE_URL__ . 'templates/' . $template . '/fonts/',
+            '__PATH_THEME_ROOT__'   => __PATH_THEMES__ . $theme . '/',
+            '__PATH_THEME__'        => __BASE_URL__ . 'themes/' . $theme . '/',
+            '__PATH_THEME_IMG__'    => __BASE_URL__ . 'themes/' . $theme . '/img/',
+            '__PATH_THEME_CSS__'    => __BASE_URL__ . 'themes/' . $theme . '/css/',
+            '__PATH_THEME_JS__'     => __BASE_URL__ . 'themes/' . $theme . '/js/',
+            '__PATH_THEME_FONTS__'  => __BASE_URL__ . 'themes/' . $theme . '/fonts/',
+            // Legacy WebEngine template aliases
+            '__PATH_TEMPLATE_ROOT__'  => __PATH_THEMES__ . $theme . '/',
+            '__PATH_TEMPLATE__'       => __BASE_URL__ . 'themes/' . $theme . '/',
+            '__PATH_TEMPLATE_IMG__'   => __BASE_URL__ . 'themes/' . $theme . '/img/',
+            '__PATH_TEMPLATE_CSS__'   => __BASE_URL__ . 'themes/' . $theme . '/css/',
+            '__PATH_TEMPLATE_JS__'    => __BASE_URL__ . 'themes/' . $theme . '/js/',
+            '__PATH_TEMPLATE_FONTS__' => __BASE_URL__ . 'themes/' . $theme . '/fonts/',
         ];
 
         foreach ($constants as $name => $value) {

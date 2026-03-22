@@ -30,7 +30,7 @@ Microsoft SQL Server  (external — your MuOnline game database)
 
  File  Contains  Git-tracked 
  :---  :---  :---: 
- `includes/config/cms.json`  Database, site settings, features  No 
+ `config/config.json`  Database, site settings, features  No 
  `docker/config.env`  Docker runtime: domain, timezone, cron, Xdebug  No 
 
 Both have committed example/default files to copy from.
@@ -38,33 +38,34 @@ Both have committed example/default files to copy from.
 ### 1. Copy config files
 
 ```bash
-cp includes/config/cms.json.default includes/config/cms.json
+cp config/config.default.json config/config.json
 cp docker/config.env.example docker/config.env
 ```
 
-### 2. Fill in `includes/config/cms.json`
+### 2. Fill in `config/config.json`
 
-| Key | Example | Description |
-| :--- | :---: | :--- |
+| Key           |     Example      | Description               |
+|:--------------|:----------------:|:--------------------------|
 | `SQL_DB_HOST` | `"192.168.1.56"` | SQL Server IP or hostname |
-| `SQL_DB_NAME` | `"MuOnline"` | Database name |
-| `SQL_DB_USER` | `"sa"` | Database user |
-| `SQL_DB_PASS` | `"yourpassword"` | Database password |
-| `SQL_DB_PORT` | `"1433"` | SQL Server port |
+| `SQL_DB_NAME` |   `"MuOnline"`   | Database name             |
+| `SQL_DB_USER` |      `"sa"`      | Database user             |
+| `SQL_DB_PASS` | `"yourpassword"` | Database password         |
+| `SQL_DB_PORT` |     `"1433"`     | SQL Server port           |
 
 See [Configuration](configuration.md) for all available keys.
 
 ### 3. Fill in `docker/config.env`
 
-| Variable | Local default | Production example |
-| :--- | :---: | :--- |
-| `DOCKER_SERVER_NAME` | `localhost` | `mu.example.com` |
-| `DOCKER_TIMEZONE` | `UTC` | `Europe/Moscow` |
-| `DOCKER_CRON_URL` | `http://localhost:8081/api/cron.php?key=123456` | `https://mu.example.com/api/cron.php?key=SECRET` |
-| `DOCKER_XDEBUG_MODE` | `off` | `off` |
+| Variable              |                  Local default                  | Production example                              |
+|:----------------------|:-----------------------------------------------:|:------------------------------------------------|
+| `DOCKER_SERVER_NAME`  |                   `localhost`                   | `mu.example.com`                                |
+| `DOCKER_TIMEZONE`     |                      `UTC`                      | `Europe/Moscow`                                 |
+| `DOCKER_CRON_COMMAND` | `/usr/local/bin/php /var/www/html/bin/cron.php` | `/usr/local/bin/php /var/www/html/bin/cron.php` |
+| `DOCKER_XDEBUG_MODE`  |                      `off`                      | `off`                                           |
 
 > **`DOCKER_SERVER_NAME`** is injected into the Apache `VirtualHost` as `ServerName` at container start.
-> Changing `docker/config.env` only requires `docker compose restart` — no rebuild needed.
+> Changing `docker/config.env` requires container recreation: `docker compose up -d --force-recreate`.
+> Changing `docker/Dockerfile` or `docker/entrypoint.sh` requires rebuild + recreation: `docker compose up -d --build --force-recreate`.
 
 The default container name is **`cms_darkcore`**. To change it, edit `docker-compose.yml`:
 
@@ -84,9 +85,9 @@ git clone <your-repo-url> DarkCore
 cd DarkCore
 
 # 2. Copy and configure both files
-cp includes/config/cms.json.default includes/config/cms.json
+cp config/config.default.json config/config.json
 cp docker/config.env.example docker/config.env
-# → Edit cms.json with your SQL Server credentials
+# → Edit config.json with your SQL Server credentials
 # → Edit docker/config.env with your domain and timezone
 
 # 3. Create the shared proxy network (once per Docker host — skip if it already exists)
@@ -97,11 +98,11 @@ docker compose up -d --build
 
 # 5. Run the web installer (first time only)
 # Open https://your-domain/install/ in a browser
-# → Delete the install/ directory after setup is complete
+# → Delete the public/install/ directory after setup is complete
 ```
 
 > **Rebuilding the image is required** when you change `docker/Dockerfile` or
-> `docker/entrypoint.sh`. For `cms.json` changes only — `docker compose restart` is enough.
+> `docker/entrypoint.sh`. For `config.json` changes only — `docker compose restart` is enough.
 
 ## Reverse proxy setup (Nginx Proxy Manager)
 
@@ -113,26 +114,26 @@ docker network create proxy
 
 Then configure a **Proxy Host** in Nginx Proxy Manager:
 
-| Field | Value |
-| :--- | :--- |
-| Domain Names | `your-domain.com` |
-| Scheme | `http` |
+| Field                 | Value                                  |
+|:----------------------|:---------------------------------------|
+| Domain Names          | `your-domain.com`                      |
+| Scheme                | `http`                                 |
 | Forward Hostname / IP | `cms_darkcore` *(your container name)* |
-| Forward Port | `8081` |
- Block Common Exploits  Yes 
+| Forward Port          | `8081`                                 |
+| Block Common Exploits | `Yes`                                  |
 
 SSL → **Request a new SSL Certificate** (Let's Encrypt).
 
 ## Docker files
 
-| File | Purpose |
-| :--- | :--- |
-| `docker/Dockerfile` | Builds the image: PHP 8.4 + Apache + FreeTDS + Xdebug + all required extensions |
-| `docker/config.env.example` | **Commit this.** Template for `docker/config.env` with local-dev defaults |
-| `docker/config.env` | **Git-ignored.** Your actual runtime config (domain, timezone, cron, Xdebug) |
-| `docker/xdebug.ini` | Xdebug 3 config: port 9003, `host.docker.internal`, idekey `PHPSTORM` |
-| `docker/entrypoint.sh` | Runs on every container start |
-| `docker-compose.yml` | Service definition — image build, volume mount, proxy network, healthcheck |
+| File                        | Purpose                                                                         |
+|:----------------------------|:--------------------------------------------------------------------------------|
+| `docker/Dockerfile`         | Builds the image: PHP 8.4 + Apache + FreeTDS + Xdebug + all required extensions |
+| `docker/config.env.example` | **Commit this.** Template for `docker/config.env` with local-dev defaults       |
+| `docker/config.env`         | **Git-ignored.** Your actual runtime config (domain, timezone, cron, Xdebug)    |
+| `docker/xdebug.ini`         | Xdebug 3 config: port 9003, `host.docker.internal`, idekey `PHPSTORM`           |
+| `docker/entrypoint.sh`      | Runs on every container start                                                   |
+| `docker-compose.yml`        | Service definition — image build, volume mount, proxy network, healthcheck      |
 
 ### What the Dockerfile builds
 
@@ -146,13 +147,13 @@ SSL → **Request a new SSL Certificate** (Let's Encrypt).
 ### What entrypoint.sh does on each start
 
 1. Reads `DOCKER_*` variables from the container environment
-2. Creates all required directories (`includes/cache/` subtree, `includes/logs/`, `includes/config/`)
+2. Creates all required directories (`var/cache/` subtree, `var/logs/`, `config/`)
 3. Creates all required cache and log files if missing
-4. Drops `Deny from all` `.htaccess` into `cache/`, `logs/`, `config/`
+4. Drops `Deny from all` `.htaccess` into `var/cache/`, `var/logs/`, and `config/`
 5. Fixes ownership/permissions: `www-data:www-data`, mode `775`
 6. Runs `composer install --no-interaction --optimize-autoloader`
 7. Applies timezone from `DOCKER_TIMEZONE`
-8. Writes `/etc/cron.d/cms-cron` from `DOCKER_CRON_URL`
+8. Writes `/etc/cron.d/cms-cron` from `DOCKER_CRON_COMMAND`
 9. Starts the cron service
 10. Exports `DOCKER_SERVER_NAME`, `XDEBUG_MODE`, `PHP_IDE_CONFIG`
 11. Starts Apache via `exec apache2-foreground`
@@ -179,7 +180,7 @@ The override file:
 
 ```bash
 docker compose up -d --build   # first start / rebuild
-docker compose restart         # restart after cms.json changes
+docker compose restart         # restart after config.json changes
 docker compose down            # stop and remove containers
 docker compose logs -f web     # follow logs
 docker compose exec web bash   # open shell in container

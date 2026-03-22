@@ -8,9 +8,9 @@ if [ -z "$DOCKER_SERVER_NAME" ] && [ -z "$DOCKER_TIMEZONE" ]; then
     echo "[startup]          Continuing with empty defaults — the site may not work correctly."
 fi
 
-CMS_JSON="/var/www/html/includes/config/cms.json"
+CMS_JSON="/var/www/html/config/config.json"
 
-# ── Helper: read a key from cms.json via PHP (safe, no jq dependency) ─────────
+# ── Helper: read a key from config.json via PHP (safe, no jq dependency) ─────────
 cms_get() {
     php -r "
         \$f = '${CMS_JSON}';
@@ -22,11 +22,11 @@ cms_get() {
 
 # ── 1. Create required directories if they don't exist (fresh clone) ──────────
 echo "[startup] Creating required directories..."
-mkdir -p /var/www/html/includes/cache/news/translations \
-         /var/www/html/includes/cache/profiles/guilds \
-         /var/www/html/includes/cache/profiles/players \
-         /var/www/html/includes/logs \
-         /var/www/html/includes/config
+mkdir -p /var/www/html/var/cache/news/translations \
+         /var/www/html/var/cache/profiles/guilds \
+         /var/www/html/var/cache/profiles/players \
+         /var/www/html/var/logs \
+         /var/www/html/config
 
 # ── 1a. Touch required cache & log files ──────────────────────────────────────
 echo "[startup] Creating required cache and log files..."
@@ -49,32 +49,32 @@ for f in \
     rankings_votes.cache \
     server_info.cache
 do
-    touch "/var/www/html/includes/cache/${f}"
+    touch "/var/www/html/var/cache/${f}"
 done
 
-touch /var/www/html/includes/logs/database_errors.log \
-      /var/www/html/includes/logs/php_errors.log
+touch /var/www/html/var/logs/database_errors.log \
+      /var/www/html/var/logs/php_errors.log
 
 # ── 2. Protect sensitive directories with .htaccess (if not already present) ──
-echo "[startup] Securing directories..."
-for dir in cache logs config; do
-    htfile="/var/www/html/includes/${dir}/.htaccess"
+echo "[startup] Securing runtime and config directories..."
+for path in /var/www/html/var/cache /var/www/html/var/logs /var/www/html/config; do
+    htfile="${path}/.htaccess"
     if [ ! -f "$htfile" ]; then
         echo "Deny from all" > "$htfile"
-        echo "[startup] Created .htaccess in includes/${dir}"
+        echo "[startup] Created .htaccess in ${path}"
     fi
 done
 
 # ── 3. Fix permissions ────────────────────────────────────────────────────────
 echo "[startup] Setting up permissions..."
 chown -R www-data:www-data \
-    /var/www/html/includes/cache \
-    /var/www/html/includes/logs \
-    /var/www/html/includes/config 2>/dev/null || true
+    /var/www/html/var/cache \
+    /var/www/html/var/logs \
+    /var/www/html/config 2>/dev/null || true
 chmod -R 775 \
-    /var/www/html/includes/cache \
-    /var/www/html/includes/logs \
-    /var/www/html/includes/config 2>/dev/null || true
+    /var/www/html/var/cache \
+    /var/www/html/var/logs \
+    /var/www/html/config 2>/dev/null || true
 
 # ── 4. Composer — install dependencies and regenerate autoloader ──────────────
 echo "[startup] Running composer install..."
@@ -94,13 +94,19 @@ if [ -n "$DOCKER_TIMEZONE" ]; then
 fi
 
 # ── 6. Setup cron ─────────────────────────────────────────────────────────────
-if [ -n "$DOCKER_CRON_URL" ]; then
-    echo "[startup] Configuring CMS cron..."
-    echo "* * * * * root curl -s \"${DOCKER_CRON_URL}\" >> /var/log/cron.log 2>&1" > /etc/cron.d/cms-cron
+CRON_COMMAND="${DOCKER_CRON_COMMAND:-/usr/local/bin/php /var/www/html/bin/cron.php}"
+
+if [ -n "$CRON_COMMAND" ]; then
+    echo "[startup] Configuring CMS cron (command mode)..."
+    {
+        echo "SHELL=/bin/sh"
+        echo "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        echo "* * * * * root cd /var/www/html && ${CRON_COMMAND} >> /var/log/cron.log 2>&1"
+    } > /etc/cron.d/cms-cron
     chmod 0644 /etc/cron.d/cms-cron
-    echo "[startup] Cron configured: ${DOCKER_CRON_URL}"
+    echo "[startup] Cron configured (command): ${CRON_COMMAND}"
 else
-    echo "[startup] WARNING: DOCKER_CRON_URL not set in docker/config.env — cron job skipped."
+    echo "[startup] WARNING: DOCKER_CRON_COMMAND is not set in docker/config.env — cron job skipped."
 fi
 
 # ── 7. Start cron service ─────────────────────────────────────────────────────
