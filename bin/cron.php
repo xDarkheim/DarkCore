@@ -15,7 +15,7 @@ define('access', 'cron');
 
 $rootPath = rtrim(str_replace('\\', '/', dirname(__DIR__)), '/');
 $bootPath = $rootPath . '/includes/bootstrap/boot.php';
-if (!@include $bootPath) {
+if (! @include $bootPath) {
     fwrite(STDERR, "Could not load Darkheim CMS.\n");
     exit(1);
 }
@@ -31,7 +31,7 @@ if (isset($options['help'])) {
 $singleCronId = null;
 if (isset($options['id'])) {
     $id = (string) $options['id'];
-    if (!Validator::UnsignedNumber($id)) {
+    if (! Validator::UnsignedNumber($id)) {
         fwrite(STDERR, "Invalid --id value.\n");
         exit(1);
     }
@@ -43,16 +43,17 @@ try {
     $executed = $executor->execute($singleCronId);
 
     echo json_encode([
-        'code' => 200,
-        'message' => 'Crons successfully executed.',
+        'code'     => 200,
+        'message'  => 'Crons successfully executed.',
         'executed' => $executed,
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
+    ], JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+            . PHP_EOL;
     exit(0);
 } catch (Throwable $e) {
     fwrite(STDERR, json_encode([
-        'code' => 500,
+        'code'  => 500,
         'error' => $e->getMessage(),
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL);
+    ], JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+            . PHP_EOL);
     exit(1);
 }
-

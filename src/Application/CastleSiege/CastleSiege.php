@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Darkheim\Application\CastleSiege;
 
 use Darkheim\Infrastructure\Database\Connection;
+use Darkheim\Application\Helpers\TimeHelper;
+use Darkheim\Infrastructure\Cache\CacheBuilder;
+use Darkheim\Infrastructure\Cache\CacheRepository;
 
 /**
  * Castle Siege — schedule generation, stage management, live/cached siege data.
@@ -154,7 +157,7 @@ class CastleSiege
     {
         $warfareStage = $this->getWarfareStage();
         $warfareDurationSeconds = $warfareStage['end_timestamp'] - $warfareStage['start_timestamp'];
-        $warfareDuration = sec_to_hms($warfareDurationSeconds);
+        $warfareDuration = TimeHelper::secToHms($warfareDurationSeconds);
         return langf('castlesiege_battle_duration', [$warfareDuration[0], $warfareDuration[1]]);
     }
 
@@ -366,13 +369,13 @@ class CastleSiege
             'castle_owner_alliance' => $this->getCastleOwnerAlliance(),
             'registered_guilds'     => $this->getRegisteredGuildsAndAlliances(),
         ];
-        $encoded = encodeCache($data, true);
-        return (bool) updateCacheFile($this->_cacheFileName, $encoded);
+        $encoded = CacheBuilder::encode($data, true);
+        return (new CacheRepository(__PATH_CACHE__))->save($this->_cacheFileName, $encoded);
     }
 
     protected function _loadCacheSiegeData(): void
     {
-        $data = loadCache($this->_cacheFileName);
+        $data = (new CacheRepository(__PATH_CACHE__))->load($this->_cacheFileName);
         if (is_array($data)) {
             $this->_cacheSiegeData = $data;
         }

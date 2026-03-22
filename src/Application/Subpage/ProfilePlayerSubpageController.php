@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Darkheim\Application\Subpage;
 
 use Darkheim\Application\Profile\ProfileRepository;
+use Darkheim\Application\Profile\ProfileRenderer;
+use Darkheim\Application\Game\GameHelper;
+use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class ProfilePlayerSubpageController
@@ -39,12 +42,12 @@ final class ProfilePlayerSubpageController
             $classId = (int) ($cData[2] ?? 0);
             $classMeta = $GLOBALS['custom']['character_class'][$classId] ?? [];
 
-            $onlineCharactersCache = loadCache('online_characters.cache');
+            $onlineCharactersCache = (new CacheRepository(__PATH_CACHE__))->load('online_characters.cache');
             $isOnline = is_array($onlineCharactersCache) && in_array($playerName, $onlineCharactersCache, true);
 
             $className   = (string) ($classMeta[0] ?? '—');
             $classCss    = (string) ($classMeta[1] ?? '');
-            $classAvatar = getPlayerClassAvatar($classId, false);
+            $classAvatar = GameHelper::playerClassAvatar($classId, false);
 
             $hasCmd = isset($classMeta['base_stats']['cmd']) && $classMeta['base_stats']['cmd'] > 0;
             $guildName = (string) ($cData[12] ?? '');
@@ -112,7 +115,7 @@ final class ProfilePlayerSubpageController
                 'grandResets'   => number_format($grandResets),
                 'pkKills'       => number_format($pkKills),
                 'hasGuild'      => $hasGuild,
-                'guildHtml'     => $hasGuild ? guildProfile($guildName) : '',
+                'guildHtml'     => $hasGuild ? ProfileRenderer::guild($guildName) : '',
                 'baseStats'     => $baseStats,
             ]);
         } catch (\Exception $e) {

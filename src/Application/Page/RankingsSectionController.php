@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Page;
 
+use Darkheim\Application\Game\GameHelper;
+use Darkheim\Application\Profile\ProfileRenderer;
 use Darkheim\Application\Rankings\RankingCache;
 use Darkheim\Application\Rankings\RankingRepository;
 use Darkheim\Application\Rankings\RankingsService;
@@ -23,23 +25,23 @@ final class RankingsSectionController
     {
         try {
             $subpage = (string) ($_REQUEST['subpage'] ?? '');
-            $config = $this->subpageConfig($subpage);
+            $config  = $this->subpageConfig($subpage);
             if ($config === null) {
                 throw new \Exception(lang('error_58', true));
             }
 
-            if (!mconfig('active') || !mconfig($config['featureFlag'])) {
+            if (! mconfig('active') || ! mconfig($config['featureFlag'])) {
                 throw new \Exception(lang('error_44', true));
             }
 
-            $rankings = new RankingsService();
+            $rankings   = new RankingsService();
             $repository = new RankingRepository(new CacheRepository(__PATH_CACHE__));
-            $rankCache = $repository->load($config['cacheFile']);
-            if (!$rankCache instanceof RankingCache) {
+            $rankCache  = $repository->load($config['cacheFile']);
+            if (! $rankCache instanceof RankingCache) {
                 throw new \Exception(lang('error_58', true));
             }
 
-            $showCountry = $config['supportsCountry'] && (bool) mconfig('show_country_flags');
+            $showCountry        = $config['supportsCountry'] && (bool) mconfig('show_country_flags');
             $characterCountries = $showCountry ? $repository->loadCharacterCountries() : [];
             if ($characterCountries === []) {
                 $showCountry = false;
@@ -47,16 +49,16 @@ final class RankingsSectionController
 
             $showOnlineStatus = (bool) mconfig('show_online_status');
             $onlineCharacters = $showOnlineStatus ? $repository->loadOnlineCharacters() : [];
-            $showPlaceNumber = (bool) mconfig('rankings_show_place_number');
-            $showLocation = $config['supportsLocation'] && (bool) mconfig('show_location');
-            $showFilter = $config['supportsFilter'] && (bool) mconfig('rankings_class_filter');
+            $showPlaceNumber  = (bool) mconfig('rankings_show_place_number');
+            $showLocation     = $config['supportsLocation'] && (bool) mconfig('show_location');
+            $showFilter       = $config['supportsFilter']   && (bool) mconfig('rankings_class_filter');
 
             $this->view->render('ranking', [
-                'pageTitle' => lang('module_titles_txt_10', true),
-                'menuItems' => $rankings->menuItems($subpage),
-                'filterItems' => $showFilter ? $this->buildFilterItems($rankings) : [],
+                'pageTitle'    => lang('module_titles_txt_10', true),
+                'menuItems'    => $rankings->menuItems($subpage),
+                'filterItems'  => $showFilter ? $this->buildFilterItems($rankings) : [],
                 'tableHeaders' => $this->buildHeaders($config['columns'], $showPlaceNumber, $showCountry, $showLocation),
-                'rows' => $this->buildRows(
+                'rows'         => $this->buildRows(
                     $subpage,
                     $rankCache,
                     $showPlaceNumber,
@@ -64,7 +66,7 @@ final class RankingsSectionController
                     $showLocation,
                     $showOnlineStatus,
                     $characterCountries,
-                    $onlineCharacters
+                    $onlineCharacters,
                 ),
                 'updatedAtText' => (bool) mconfig('rankings_show_date')
                     ? lang('rankings_txt_20', true) . ' ' . date('m/d/Y - h:i A', $rankCache->timestamp)
@@ -82,76 +84,76 @@ final class RankingsSectionController
     {
         return match ($subpage) {
             'level' => [
-                'featureFlag' => 'rankings_enable_level',
-                'cacheFile' => 'rankings_level.cache',
-                'columns' => ['avatar', 'player', 'level'],
-                'supportsCountry' => true,
+                'featureFlag'      => 'rankings_enable_level',
+                'cacheFile'        => 'rankings_level.cache',
+                'columns'          => ['avatar', 'player', 'level'],
+                'supportsCountry'  => true,
                 'supportsLocation' => true,
-                'supportsFilter' => true,
+                'supportsFilter'   => true,
             ],
             'resets' => [
-                'featureFlag' => 'rankings_enable_resets',
-                'cacheFile' => 'rankings_resets.cache',
-                'columns' => ['avatar', 'player', 'level', 'resets'],
-                'supportsCountry' => true,
+                'featureFlag'      => 'rankings_enable_resets',
+                'cacheFile'        => 'rankings_resets.cache',
+                'columns'          => ['avatar', 'player', 'level', 'resets'],
+                'supportsCountry'  => true,
                 'supportsLocation' => true,
-                'supportsFilter' => true,
+                'supportsFilter'   => true,
             ],
             'killers' => [
-                'featureFlag' => 'rankings_enable_pk',
-                'cacheFile' => 'rankings_pk.cache',
-                'columns' => ['avatar', 'player', 'level', 'pk_status', 'kills'],
-                'supportsCountry' => true,
+                'featureFlag'      => 'rankings_enable_pk',
+                'cacheFile'        => 'rankings_pk.cache',
+                'columns'          => ['avatar', 'player', 'level', 'pk_status', 'kills'],
+                'supportsCountry'  => true,
                 'supportsLocation' => true,
-                'supportsFilter' => true,
+                'supportsFilter'   => true,
             ],
             'guilds' => [
-                'featureFlag' => 'rankings_enable_guilds',
-                'cacheFile' => 'rankings_guilds.cache',
-                'columns' => ['guild', 'logo', 'master', 'score'],
-                'supportsCountry' => false,
+                'featureFlag'      => 'rankings_enable_guilds',
+                'cacheFile'        => 'rankings_guilds.cache',
+                'columns'          => ['guild', 'logo', 'master', 'score'],
+                'supportsCountry'  => false,
                 'supportsLocation' => false,
-                'supportsFilter' => false,
+                'supportsFilter'   => false,
             ],
             'grandresets' => [
-                'featureFlag' => 'rankings_enable_gr',
-                'cacheFile' => 'rankings_gr.cache',
-                'columns' => ['avatar', 'player', 'resets', 'grand_resets'],
-                'supportsCountry' => true,
+                'featureFlag'      => 'rankings_enable_gr',
+                'cacheFile'        => 'rankings_gr.cache',
+                'columns'          => ['avatar', 'player', 'resets', 'grand_resets'],
+                'supportsCountry'  => true,
                 'supportsLocation' => true,
-                'supportsFilter' => true,
+                'supportsFilter'   => true,
             ],
             'online' => [
-                'featureFlag' => 'rankings_enable_online',
-                'cacheFile' => 'rankings_online.cache',
-                'columns' => ['avatar', 'player', 'hours'],
-                'supportsCountry' => true,
+                'featureFlag'      => 'rankings_enable_online',
+                'cacheFile'        => 'rankings_online.cache',
+                'columns'          => ['avatar', 'player', 'hours'],
+                'supportsCountry'  => true,
                 'supportsLocation' => true,
-                'supportsFilter' => true,
+                'supportsFilter'   => true,
             ],
             'votes' => [
-                'featureFlag' => 'rankings_enable_votes',
-                'cacheFile' => 'rankings_votes.cache',
-                'columns' => ['avatar', 'player', 'votes'],
-                'supportsCountry' => true,
+                'featureFlag'      => 'rankings_enable_votes',
+                'cacheFile'        => 'rankings_votes.cache',
+                'columns'          => ['avatar', 'player', 'votes'],
+                'supportsCountry'  => true,
                 'supportsLocation' => true,
-                'supportsFilter' => true,
+                'supportsFilter'   => true,
             ],
             'gens' => [
-                'featureFlag' => 'rankings_enable_gens',
-                'cacheFile' => 'rankings_gens.cache',
-                'columns' => ['avatar', 'gens', 'player', 'rank', 'contribution'],
-                'supportsCountry' => true,
+                'featureFlag'      => 'rankings_enable_gens',
+                'cacheFile'        => 'rankings_gens.cache',
+                'columns'          => ['avatar', 'gens', 'player', 'rank', 'contribution'],
+                'supportsCountry'  => true,
                 'supportsLocation' => true,
-                'supportsFilter' => true,
+                'supportsFilter'   => true,
             ],
             'master' => [
-                'featureFlag' => 'rankings_enable_master',
-                'cacheFile' => 'rankings_master.cache',
-                'columns' => ['avatar', 'player', 'level', 'master_level'],
-                'supportsCountry' => true,
+                'featureFlag'      => 'rankings_enable_master',
+                'cacheFile'        => 'rankings_master.cache',
+                'columns'          => ['avatar', 'player', 'level', 'master_level'],
+                'supportsCountry'  => true,
                 'supportsLocation' => true,
-                'supportsFilter' => true,
+                'supportsFilter'   => true,
             ],
             default => null,
         };
@@ -173,24 +175,24 @@ final class RankingsSectionController
 
         foreach ($columns as $column) {
             $headers[] = match ($column) {
-                'avatar' => lang('rankings_txt_11'),
-                'player' => lang('rankings_txt_10'),
-                'level' => lang('rankings_txt_12'),
-                'resets' => lang('rankings_txt_13'),
-                'kills' => lang('rankings_txt_14'),
-                'hours' => lang('rankings_txt_15'),
-                'guild' => lang('rankings_txt_17', true),
-                'master' => lang('rankings_txt_18', true),
-                'score' => lang('rankings_txt_19', true),
+                'avatar'       => lang('rankings_txt_11'),
+                'player'       => lang('rankings_txt_10'),
+                'level'        => lang('rankings_txt_12'),
+                'resets'       => lang('rankings_txt_13'),
+                'kills'        => lang('rankings_txt_14'),
+                'hours'        => lang('rankings_txt_15'),
+                'guild'        => lang('rankings_txt_17', true),
+                'master'       => lang('rankings_txt_18', true),
+                'score'        => lang('rankings_txt_19', true),
                 'grand_resets' => lang('rankings_txt_21'),
                 'master_level' => lang('rankings_txt_23'),
-                'gens' => lang('rankings_txt_29'),
-                'rank' => lang('rankings_txt_30'),
+                'gens'         => lang('rankings_txt_29'),
+                'rank'         => lang('rankings_txt_30'),
                 'contribution' => lang('rankings_txt_31'),
-                'votes' => lang('rankings_txt_32', true),
-                'pk_status' => lang('rankings_txt_35'),
-                'logo' => lang('rankings_txt_28', true),
-                default => $column,
+                'votes'        => lang('rankings_txt_32', true),
+                'pk_status'    => lang('rankings_txt_35'),
+                'logo'         => lang('rankings_txt_28', true),
+                default        => $column,
             };
         }
 
@@ -207,18 +209,18 @@ final class RankingsSectionController
     private function buildFilterItems(RankingsService $rankings): array
     {
         $items = [[
-            'onclick' => 'rankingsFilterRemove()',
-            'avatarHtml' => getPlayerClassAvatar(-1, true, false, 'rankings-class-filter-image'),
-            'label' => lang('rankings_filter_1'),
-            'linkClass' => 'rankings-class-filter-selection',
+            'onclick'    => 'rankingsFilterRemove()',
+            'avatarHtml' => GameHelper::playerClassAvatar(-1, true, false, 'rankings-class-filter-image'),
+            'label'      => lang('rankings_filter_1'),
+            'linkClass'  => 'rankings-class-filter-selection',
         ]];
 
         foreach ($rankings->filterItems() as $item) {
             $items[] = [
-                'onclick' => 'rankingsFilterByClass(' . $item['classIds'] . ')',
-                'avatarHtml' => getPlayerClassAvatar($item['classGroup'], true, false, 'rankings-class-filter-image'),
-                'label' => $item['label'],
-                'linkClass' => 'rankings-class-filter-selection rankings-class-filter-grayscale',
+                'onclick'    => 'rankingsFilterByClass(' . $item['classIds'] . ')',
+                'avatarHtml' => GameHelper::playerClassAvatar($item['classGroup'], true, false, 'rankings-class-filter-image'),
+                'label'      => $item['label'],
+                'linkClass'  => 'rankings-class-filter-selection rankings-class-filter-grayscale',
             ];
         }
 
@@ -240,25 +242,25 @@ final class RankingsSectionController
         array $characterCountries,
         array $onlineCharacters,
     ): array {
-        $rows = [];
+        $rows     = [];
         $position = 1;
 
         foreach ($rankCache->entries as $entry) {
-            if (!is_array($entry)) {
+            if (! is_array($entry)) {
                 continue;
             }
 
             $row = match ($subpage) {
-                'level' => $this->buildLevelRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
-                'resets' => $this->buildResetsRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
-                'killers' => $this->buildKillersRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
-                'guilds' => $this->buildGuildsRow($entry, $position, $showPlaceNumber, $showOnlineStatus, $onlineCharacters),
+                'level'       => $this->buildLevelRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
+                'resets'      => $this->buildResetsRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
+                'killers'     => $this->buildKillersRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
+                'guilds'      => $this->buildGuildsRow($entry, $position, $showPlaceNumber, $showOnlineStatus, $onlineCharacters),
                 'grandresets' => $this->buildGrandResetsRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
-                'online' => $this->buildOnlineRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
-                'votes' => $this->buildVotesRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
-                'gens' => $this->buildGensRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
-                'master' => $this->buildMasterRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
-                default => null,
+                'online'      => $this->buildOnlineRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
+                'votes'       => $this->buildVotesRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
+                'gens'        => $this->buildGensRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
+                'master'      => $this->buildMasterRow($entry, $position, $showPlaceNumber, $showCountry, $showLocation, $showOnlineStatus, $characterCountries, $onlineCharacters),
+                default       => null,
             };
 
             if ($row !== null) {
@@ -273,13 +275,13 @@ final class RankingsSectionController
     /** @param array<int|string,mixed> $entry */
     private function buildLevelRow(array $entry, int $position, bool $showPlaceNumber, bool $showCountry, bool $showLocation, bool $showOnlineStatus, array $characterCountries, array $onlineCharacters): ?array
     {
-        if (!isset($entry[0], $entry[1], $entry[2])) {
+        if (! isset($entry[0], $entry[1], $entry[2])) {
             return null;
         }
 
-        $name = (string) $entry[0];
+        $name    = (string) $entry[0];
         $classId = (int) $entry[1];
-        $cells = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
+        $cells   = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
         $cells[] = number_format((int) $entry[2]);
         if ($showLocation) {
             $cells[] = returnMapName((int) ($entry[3] ?? 0));
@@ -291,13 +293,13 @@ final class RankingsSectionController
     /** @param array<int|string,mixed> $entry */
     private function buildResetsRow(array $entry, int $position, bool $showPlaceNumber, bool $showCountry, bool $showLocation, bool $showOnlineStatus, array $characterCountries, array $onlineCharacters): ?array
     {
-        if (!isset($entry[0], $entry[1], $entry[2], $entry[3])) {
+        if (! isset($entry[0], $entry[1], $entry[2], $entry[3])) {
             return null;
         }
 
-        $name = (string) $entry[0];
+        $name    = (string) $entry[0];
         $classId = (int) $entry[1];
-        $cells = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
+        $cells   = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
         $cells[] = number_format((int) $entry[3]);
         $cells[] = number_format((int) $entry[2]);
         if ($showLocation) {
@@ -310,13 +312,13 @@ final class RankingsSectionController
     /** @param array<int|string,mixed> $entry */
     private function buildKillersRow(array $entry, int $position, bool $showPlaceNumber, bool $showCountry, bool $showLocation, bool $showOnlineStatus, array $characterCountries, array $onlineCharacters): ?array
     {
-        if (!isset($entry[0], $entry[1], $entry[2], $entry[3], $entry[5])) {
+        if (! isset($entry[0], $entry[1], $entry[2], $entry[3], $entry[5])) {
             return null;
         }
 
-        $name = (string) $entry[0];
+        $name    = (string) $entry[0];
         $classId = (int) $entry[1];
-        $cells = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
+        $cells   = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
         $cells[] = number_format((int) $entry[3]);
         $cells[] = returnPkLevel((int) $entry[5]);
         $cells[] = number_format((int) $entry[2]);
@@ -330,37 +332,37 @@ final class RankingsSectionController
     /** @param array<int|string,mixed> $entry */
     private function buildGuildsRow(array $entry, int $position, bool $showPlaceNumber, bool $showOnlineStatus, array $onlineCharacters): ?array
     {
-        if (!isset($entry[0], $entry[1], $entry[2], $entry[3])) {
+        if (! isset($entry[0], $entry[1], $entry[2], $entry[3])) {
             return null;
         }
 
         $multiplier = (int) mconfig('guild_score_formula') === 1 ? 1 : (int) mconfig('guild_score_multiplier');
-        $cells = [];
+        $cells      = [];
         if ($showPlaceNumber) {
             $cells[] = '<span class="rankings-table-place">' . $position . '</span>';
         }
-        $cells[] = guildProfile((string) $entry[0]);
-        $cells[] = returnGuildLogo((string) $entry[3], 40);
-        $cells[] = playerProfile((string) $entry[1]) . $this->onlineStatusHtml((string) $entry[1], $showOnlineStatus, $onlineCharacters);
+        $cells[] = ProfileRenderer::guild((string) $entry[0]);
+        $cells[] = GameHelper::guildLogo((string) $entry[3], 40);
+        $cells[] = ProfileRenderer::player((string) $entry[1]) . $this->onlineStatusHtml((string) $entry[1], $showOnlineStatus, $onlineCharacters);
         $cells[] = number_format((int) floor((float) $entry[2] * $multiplier));
 
         return [
-            'rowClass' => $this->rankClass($position),
+            'rowClass'    => $this->rankClass($position),
             'dataClassId' => null,
-            'cells' => $cells,
+            'cells'       => $cells,
         ];
     }
 
     /** @param array<int|string,mixed> $entry */
     private function buildGrandResetsRow(array $entry, int $position, bool $showPlaceNumber, bool $showCountry, bool $showLocation, bool $showOnlineStatus, array $characterCountries, array $onlineCharacters): ?array
     {
-        if (!isset($entry[0], $entry[1], $entry[2], $entry[3])) {
+        if (! isset($entry[0], $entry[1], $entry[2], $entry[3])) {
             return null;
         }
 
-        $name = (string) $entry[0];
+        $name    = (string) $entry[0];
         $classId = (int) $entry[3];
-        $cells = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
+        $cells   = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
         $cells[] = number_format((int) $entry[2]);
         $cells[] = number_format((int) $entry[1]);
         if ($showLocation) {
@@ -373,13 +375,13 @@ final class RankingsSectionController
     /** @param array<int|string,mixed> $entry */
     private function buildOnlineRow(array $entry, int $position, bool $showPlaceNumber, bool $showCountry, bool $showLocation, bool $showOnlineStatus, array $characterCountries, array $onlineCharacters): ?array
     {
-        if (!isset($entry[0], $entry[1], $entry[2])) {
+        if (! isset($entry[0], $entry[1], $entry[2])) {
             return null;
         }
 
-        $name = (string) $entry[0];
+        $name    = (string) $entry[0];
         $classId = (int) $entry[2];
-        $cells = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
+        $cells   = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
         $cells[] = number_format((int) round(((float) $entry[1]) / 60 / 60)) . ' ' . lang('rankings_txt_16', true);
         if ($showLocation) {
             $cells[] = returnMapName((int) ($entry[3] ?? 0));
@@ -391,13 +393,13 @@ final class RankingsSectionController
     /** @param array<int|string,mixed> $entry */
     private function buildVotesRow(array $entry, int $position, bool $showPlaceNumber, bool $showCountry, bool $showLocation, bool $showOnlineStatus, array $characterCountries, array $onlineCharacters): ?array
     {
-        if (!isset($entry[0], $entry[1], $entry[2])) {
+        if (! isset($entry[0], $entry[1], $entry[2])) {
             return null;
         }
 
-        $name = (string) $entry[0];
+        $name    = (string) $entry[0];
         $classId = (int) $entry[2];
-        $cells = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
+        $cells   = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
         $cells[] = number_format((int) $entry[1]);
         if ($showLocation) {
             $cells[] = returnMapName((int) ($entry[3] ?? 0));
@@ -409,13 +411,13 @@ final class RankingsSectionController
     /** @param array<int|string,mixed> $entry */
     private function buildGensRow(array $entry, int $position, bool $showPlaceNumber, bool $showCountry, bool $showLocation, bool $showOnlineStatus, array $characterCountries, array $onlineCharacters): ?array
     {
-        if (!isset($entry[0], $entry[1], $entry[2], $entry[3], $entry[5])) {
+        if (! isset($entry[0], $entry[1], $entry[2], $entry[3], $entry[5])) {
             return null;
         }
 
-        $name = (string) $entry[0];
-        $classId = (int) $entry[5];
-        $cells = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
+        $name       = (string) $entry[0];
+        $classId    = (int) $entry[5];
+        $cells      = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
         $playerCell = array_pop($cells);
         if ($playerCell === null) {
             return null;
@@ -425,12 +427,12 @@ final class RankingsSectionController
             return null;
         }
         $prefixCells = $cells;
-        $cells = $prefixCells;
-        $cells[] = $avatarCell;
-        $cells[] = $this->gensTypeHtml((int) $entry[1]);
-        $cells[] = $playerCell;
-        $cells[] = (string) $entry[3];
-        $cells[] = number_format((int) $entry[2]);
+        $cells       = $prefixCells;
+        $cells[]     = $avatarCell;
+        $cells[]     = $this->gensTypeHtml((int) $entry[1]);
+        $cells[]     = $playerCell;
+        $cells[]     = (string) $entry[3];
+        $cells[]     = number_format((int) $entry[2]);
         if ($showLocation) {
             $cells[] = returnMapName((int) ($entry[6] ?? 0));
         }
@@ -441,13 +443,13 @@ final class RankingsSectionController
     /** @param array<int|string,mixed> $entry */
     private function buildMasterRow(array $entry, int $position, bool $showPlaceNumber, bool $showCountry, bool $showLocation, bool $showOnlineStatus, array $characterCountries, array $onlineCharacters): ?array
     {
-        if (!isset($entry[0], $entry[1], $entry[2], $entry[3])) {
+        if (! isset($entry[0], $entry[1], $entry[2], $entry[3])) {
             return null;
         }
 
-        $name = (string) $entry[0];
+        $name    = (string) $entry[0];
         $classId = (int) $entry[2];
-        $cells = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
+        $cells   = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
         $cells[] = number_format((int) $entry[3]);
         $cells[] = number_format((int) $entry[1]);
         if ($showLocation) {
@@ -470,10 +472,10 @@ final class RankingsSectionController
         }
         if ($showCountry) {
             $countryCode = $characterCountries[$name] ?? 'default';
-            $cells[] = '<img src="' . getCountryFlag($countryCode) . '" alt="' . htmlspecialchars($countryCode, ENT_QUOTES, 'UTF-8') . '" />';
+            $cells[]     = '<img src="' . getCountryFlag($countryCode) . '" alt="' . htmlspecialchars($countryCode, ENT_QUOTES, 'UTF-8') . '" />';
         }
-        $cells[] = getPlayerClassAvatar($classId, true, true, 'rankings-class-image');
-        $cells[] = playerProfile($name) . $this->onlineStatusHtml($name, $showOnlineStatus, $onlineCharacters);
+        $cells[] = GameHelper::playerClassAvatar($classId, true, true, 'rankings-class-image');
+        $cells[] = ProfileRenderer::player($name) . $this->onlineStatusHtml($name, $showOnlineStatus, $onlineCharacters);
 
         return $cells;
     }
@@ -481,7 +483,7 @@ final class RankingsSectionController
     /** @param array<int,string> $onlineCharacters */
     private function onlineStatusHtml(string $characterName, bool $showOnlineStatus, array $onlineCharacters): string
     {
-        if (!$showOnlineStatus) {
+        if (! $showOnlineStatus) {
             return '';
         }
 
@@ -491,7 +493,7 @@ final class RankingsSectionController
 
     private function gensTypeHtml(int $influence): string
     {
-        $duprian = htmlspecialchars(strip_tags((string) lang('rankings_txt_26', true)), ENT_QUOTES, 'UTF-8');
+        $duprian   = htmlspecialchars(strip_tags((string) lang('rankings_txt_26', true)), ENT_QUOTES, 'UTF-8');
         $vantarion = htmlspecialchars(strip_tags((string) lang('rankings_txt_27', true)), ENT_QUOTES, 'UTF-8');
 
         if ($influence === 1) {
@@ -505,9 +507,9 @@ final class RankingsSectionController
     private function rowModel(int $classId, int $position, array $cells): array
     {
         return [
-            'rowClass' => $this->rankClass($position),
+            'rowClass'    => $this->rankClass($position),
             'dataClassId' => $classId,
-            'cells' => $cells,
+            'cells'       => $cells,
         ];
     }
 

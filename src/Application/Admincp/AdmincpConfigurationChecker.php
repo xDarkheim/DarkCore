@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Infrastructure\Helpers\FileHelper;
+
 final class AdmincpConfigurationChecker
 {
     /** @var array<int,string>|null */
@@ -18,7 +20,7 @@ final class AdmincpConfigurationChecker
     {
         $this->writablePaths = $writablePaths;
         $this->curlAvailable = $curlAvailable;
-        $this->baseDir = $baseDir;
+        $this->baseDir       = $baseDir;
     }
 
     /** @return array<int,string> */
@@ -26,8 +28,8 @@ final class AdmincpConfigurationChecker
     {
         $configErrors = [];
 
-        $writablePaths = $this->writablePaths ?? loadJsonFile(DARKHEIM_WRITABLE_PATHS);
-        if (!is_array($writablePaths)) {
+        $writablePaths = $this->writablePaths ?? FileHelper::readJson(DARKHEIM_WRITABLE_PATHS);
+        if (! is_array($writablePaths)) {
             throw new \RuntimeException('Could not load DarkCore writable paths list.');
         }
 
@@ -35,7 +37,7 @@ final class AdmincpConfigurationChecker
             $thisPath = (string) $path;
             $fullPath = $this->baseDir() . ltrim($thisPath, '/');
             if (file_exists($fullPath)) {
-                if (!is_writable($fullPath)) {
+                if (! is_writable($fullPath)) {
                     $configErrors[] = '<span style="color:#aaaaaa;">[Permission Error]</span> ' . $thisPath . ' <span style="color:red;">(file must be writable)</span>';
                 }
             } else {
@@ -44,7 +46,7 @@ final class AdmincpConfigurationChecker
         }
 
         $curlAvailable = $this->curlAvailable ?? function_exists('curl_version');
-        if (!$curlAvailable) {
+        if (! $curlAvailable) {
             $configErrors[] = '<span style="color:#aaaaaa;">[PHP]</span> <span style="color:green;">cURL extension is not loaded (DarkCore requires cURL)</span>';
         }
 
@@ -72,4 +74,3 @@ final class AdmincpConfigurationChecker
         }
     }
 }
-

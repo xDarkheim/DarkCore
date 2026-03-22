@@ -8,13 +8,14 @@
  * `src/Infrastructure/Bootstrap/`.
  */
 
+use Darkheim\Infrastructure\Bootstrap\AppKernel;
+
 $projectRoot = dirname(__DIR__, 2);
 
 if (file_exists($projectRoot . '/vendor/autoload.php')) {
-	require_once $projectRoot . '/vendor/autoload.php';
+    require_once $projectRoot . '/vendor/autoload.php';
 }
 
-$kernel = new \Darkheim\Infrastructure\Bootstrap\AppKernel(dirname(__DIR__));
+$kernel = new AppKernel(dirname(__DIR__));
 $kernel->boot();
 $handler = $kernel->handler();
-

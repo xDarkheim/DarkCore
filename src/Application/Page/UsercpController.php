@@ -7,6 +7,8 @@ namespace Darkheim\Application\Page;
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Character\Character;
 use Darkheim\Application\Credits\CreditSystem;
+use Darkheim\Application\Game\GameHelper;
+use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class UsercpController
@@ -46,7 +48,7 @@ final class UsercpController
         $characterNames = is_array($accountCharacters) ? $accountCharacters : [];
         $charCount = count($characterNames);
 
-        $onlineCharacters = loadCache('online_characters.cache');
+        $onlineCharacters = (new CacheRepository(__PATH_CACHE__))->load('online_characters.cache');
         $onlineCharacters = is_array($onlineCharacters) ? $onlineCharacters : [];
         $charsOnline = 0;
         foreach ($characterNames as $charName) {
@@ -59,7 +61,7 @@ final class UsercpController
         if ($characterNames !== []) {
             $firstCharData = $characterService->CharacterData($characterNames[0]);
             if (is_array($firstCharData)) {
-                $firstCharAvatar = getPlayerClassAvatar((int)($firstCharData[_CLMN_CHR_CLASS_] ?? 0), false);
+                $firstCharAvatar = GameHelper::playerClassAvatar((int) ($firstCharData[_CLMN_CHR_CLASS_] ?? 0), false);
             }
         }
 

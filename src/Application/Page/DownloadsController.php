@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Page;
 
 use Darkheim\Infrastructure\View\ViewRenderer;
+use Darkheim\Infrastructure\Cache\CacheRepository;
 
 final class DownloadsController
 {
@@ -27,7 +28,7 @@ final class DownloadsController
             $patches = [];
             $tools   = [];
 
-            $cache = loadCache('downloads.cache');
+            $cache = (new CacheRepository(__PATH_CACHE__))->load('downloads.cache');
             if (is_array($cache)) {
                 foreach ($cache as $d) {
                     if ($d['download_type'] == 1)     $clients[] = $d;

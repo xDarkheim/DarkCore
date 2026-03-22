@@ -16,16 +16,15 @@
  * @link        https://darkheim.net
  */
 
-use Darkheim\Application\Auth\AdminGuard;
 use Darkheim\Application\Admincp\AdmincpUrlGenerator;
 use Darkheim\Application\Admincp\DownloadLinkService;
+use Darkheim\Application\Auth\AdminGuard;
 use Darkheim\Application\Auth\SessionManager;
 use Darkheim\Application\Game\GameHelper;
 use Darkheim\Application\Helpers\Encoder;
 use Darkheim\Application\Helpers\TimeHelper;
 use Darkheim\Application\Language\LanguageRepository;
 use Darkheim\Application\Language\Translator;
-use Darkheim\Application\Profile\ProfileRenderer;
 use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
@@ -37,7 +36,6 @@ use Darkheim\Infrastructure\Cron\CronManager;
 use Darkheim\Infrastructure\Helpers\FileHelper;
 use Darkheim\Infrastructure\Http\GeoIpService;
 use Darkheim\Infrastructure\Http\Redirector;
-use Darkheim\Infrastructure\Security\IpBlocker;
 
 // ---------------------------------------------------------------------------
 // Value / validation
@@ -64,7 +62,7 @@ function redirect($type = 1, $location = null, $delay = 0): void
 function isLoggedIn(): ?bool
 {
     $session = new SessionManager();
-    if (!$session->isAuthenticated()) {
+    if (! $session->isAuthenticated()) {
         return null;
     }
 
@@ -84,7 +82,7 @@ function isLoggedIn(): ?bool
 
 function logOutUser(): void
 {
-    (new SessionManager())->clearSession();
+    new SessionManager()->clearSession();
 }
 
 function canAccessAdminCP($username): bool
@@ -94,7 +92,7 @@ function canAccessAdminCP($username): bool
 
 function admincp_base($module = ''): string
 {
-    return (new AdmincpUrlGenerator())->base((string) $module);
+    return new AdmincpUrlGenerator()->base((string) $module);
 }
 
 function enabledisableCheckboxes($name, $checked, $e_txt, $d_txt): void
@@ -112,34 +110,14 @@ function enabledisableCheckboxes($name, $checked, $e_txt, $d_txt): void
     echo '</div>';
 }
 
-function getDownloadsList()
+function getDownloadsList(): ?array
 {
-    return (new DownloadLinkService())->all();
-}
-
-function addDownload($title, $description = '', $link = '', $size = 0, $type = 1)
-{
-    return (new DownloadLinkService())->add((string) $title, (string) $link, (string) $description, $size, $type);
-}
-
-function editDownload($id, $title, $description = '', $link = '', $size = 0, $type = 1)
-{
-    return (new DownloadLinkService())->edit($id, (string) $title, (string) $link, (string) $description, $size, $type);
-}
-
-function deleteDownload($id)
-{
-    return (new DownloadLinkService())->delete($id);
-}
-
-function updateDownloadsCache(): bool
-{
-    return (new DownloadLinkService())->updateCache();
+    return new DownloadLinkService()->all();
 }
 
 function weekDaySelectOptions($selected = 'Monday'): string
 {
-    $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    $days   = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     $result = '';
     foreach ($days as $day) {
         $isSelected = ((string) $selected === $day) ? ' selected' : '';
@@ -166,7 +144,7 @@ function inline_message($type = 'info', $message = '', $title = ''): void
 // Language / translation
 // ---------------------------------------------------------------------------
 
-function lang($phrase, $return = true)
+function lang($phrase, $return = true): ?string
 {
     $result = Translator::phrase((string) $phrase);
     if ($return) {
@@ -176,7 +154,7 @@ function lang($phrase, $return = true)
     return null;
 }
 
-function langf($phrase, $args = [], $print = false)
+function langf($phrase, $args = [], $print = false): ?string
 {
     $result = Translator::phraseFmt((string) $phrase, (array) $args);
     if ($print) {
@@ -208,7 +186,7 @@ function bootstrapConfigProvider(): ConfigProvider
     }
 
     static $fallback = null;
-    if (!$fallback instanceof ConfigProvider) {
+    if (! $fallback instanceof ConfigProvider) {
         $fallback = new ConfigProvider(__PATH_CONFIGS__);
     }
     return $fallback;
@@ -222,7 +200,7 @@ function bootstrapRuntimeState(): RuntimeState
     }
 
     static $fallback = null;
-    if (!$fallback instanceof RuntimeState) {
+    if (! $fallback instanceof RuntimeState) {
         $fallback = new RuntimeState();
     }
     return $fallback;
@@ -240,7 +218,7 @@ function cmsConfigs(): array
 function config($config_name, $return = false)
 {
     $config = cmsConfigs();
-    if (!array_key_exists($config_name, $config)) {
+    if (! array_key_exists($config_name, $config)) {
         return null;
     }
     if ($return) {
@@ -252,7 +230,7 @@ function config($config_name, $return = false)
 
 function loadModuleConfigs($module): void
 {
-    if (!moduleConfigExists($module)) {
+    if (! moduleConfigExists($module)) {
         bootstrapRuntimeState()->setModuleConfig([]);
         return;
     }
@@ -262,22 +240,17 @@ function loadModuleConfigs($module): void
 
 function moduleConfigExists($module): bool
 {
-    if (!check_value($module)) {
+    if (! check_value($module)) {
         return false;
     }
 
     return bootstrapConfigProvider()->moduleConfig((string) $module) !== null;
 }
 
-function globalConfigExists($config_file): bool
-{
-    return file_exists(__PATH_CONFIGS__ . $config_file . '.xml');
-}
-
 function mconfig($configuration)
 {
     $mconfig = moduleConfigData();
-    return array_key_exists($configuration, $mconfig) ? $mconfig[$configuration] : null;
+    return $mconfig[$configuration] ?? null;
 }
 
 function moduleConfigData(): array
@@ -285,13 +258,10 @@ function moduleConfigData(): array
     return bootstrapRuntimeState()->moduleConfig();
 }
 
-function gconfig($config_file, $return = true)
+function gconfig($config_file, $return = true): ?array
 {
-    if (!globalConfigExists($config_file)) {
-        return null;
-    }
     $result = bootstrapConfigProvider()->globalXml((string) $config_file);
-    if (!is_array($result)) {
+    if (! is_array($result)) {
         return null;
     }
     if ($return) {
@@ -301,17 +271,17 @@ function gconfig($config_file, $return = true)
     return null;
 }
 
-function loadConfigurations($file)
+function loadConfigurations($file): ?array
 {
-    if (!check_value($file) || !moduleConfigExists($file)) {
+    if (! check_value($file) || ! moduleConfigExists($file)) {
         return null;
     }
     return bootstrapConfigProvider()->moduleConfig((string) $file);
 }
 
-function loadConfig($name = 'cms')
+function loadConfig($name = 'cms'): ?array
 {
-    if (!check_value($name)) {
+    if (! check_value($name)) {
         return null;
     }
     return bootstrapConfigProvider()->config((string) $name);
@@ -321,19 +291,9 @@ function loadConfig($name = 'cms')
 // Cache
 // ---------------------------------------------------------------------------
 
-function BuildCacheData($data_array): ?string
-{
-    return is_array($data_array) ? CacheBuilder::buildLegacyText($data_array) : null;
-}
-
-function UpdateCache($file_name, $data): bool
-{
-    return CacheBuilder::writeTimestamped(__PATH_CACHE__ . $file_name, (string) $data);
-}
-
 function LoadCacheData($file_name): ?array
 {
-    return (new CacheRepository(__PATH_CACHE__))->loadLegacyText((string) $file_name);
+    return new CacheRepository(__PATH_CACHE__)->loadLegacyText((string) $file_name);
 }
 
 function encodeCache($data, $pretty = false): string
@@ -341,24 +301,9 @@ function encodeCache($data, $pretty = false): string
     return CacheBuilder::encode($data, (bool) $pretty);
 }
 
-function updateCacheFile($fileName, $data): bool
-{
-    return (new CacheRepository(__PATH_CACHE__))->save((string) $fileName, (string) $data);
-}
-
-function loadCache($fileName): ?array
-{
-    return (new CacheRepository(__PATH_CACHE__))->load((string) $fileName);
-}
-
 // ---------------------------------------------------------------------------
 // Time
 // ---------------------------------------------------------------------------
-
-function sec_to_hms($input_seconds = 0): array
-{
-    return TimeHelper::secToHms((int) $input_seconds);
-}
 
 function sec_to_dhms($input_seconds = 0): array
 {
@@ -369,17 +314,6 @@ function sec_to_dhms($input_seconds = 0): array
 // Cron
 // ---------------------------------------------------------------------------
 
-function updateCronLastRun($file): bool
-{
-    return (new CronManager())->updateLastRun((string) $file);
-}
-
-function getCronList(): ?array
-{
-    $result = (new CronManager())->getCronList();
-    return is_array($result) ? $result : null;
-}
-
 // ---------------------------------------------------------------------------
 // Game helpers
 // ---------------------------------------------------------------------------
@@ -387,16 +321,6 @@ function getCronList(): ?array
 function getPlayerClass($class = 0): string
 {
     return GameHelper::playerClass((int) $class);
-}
-
-function getPlayerClassAvatar($code = 0, $htmlImageTag = true, $tooltip = true, $cssClass = null): string
-{
-    return GameHelper::playerClassAvatar(
-        (int) $code,
-        (bool) $htmlImageTag,
-        (bool) $tooltip,
-        $cssClass !== null ? (string) $cssClass : null,
-    );
 }
 
 function returnMapName($id = 0): string
@@ -409,55 +333,18 @@ function returnPkLevel($id): ?string
     return GameHelper::pkLevel((int) $id);
 }
 
-function getGensRank($contributionPoints): string
-{
-    return GameHelper::gensRank((int) $contributionPoints);
-}
-
-function getGensLeadershipRank($rankPosition): ?string
-{
-    return GameHelper::gensLeadershipRank((int) $rankPosition);
-}
-
-function returnGuildLogo($binaryData = '', $size = 40): string
-{
-    return GameHelper::guildLogo((string) $binaryData, (int) $size);
-}
-
 // ---------------------------------------------------------------------------
 // Profiles
 // ---------------------------------------------------------------------------
-
-function playerProfile($playerName, $returnLinkOnly = false): string
-{
-    return ProfileRenderer::player((string) $playerName, (bool) $returnLinkOnly);
-}
-
-function guildProfile($guildName, $returnLinkOnly = false): string
-{
-    return ProfileRenderer::guild((string) $guildName, (bool) $returnLinkOnly);
-}
 
 // ---------------------------------------------------------------------------
 // IP / security
 // ---------------------------------------------------------------------------
 
-function checkBlockedIp(): bool
-{
-    if (defined('access') && access === 'cron') {
-        return false;
-    }
-    return IpBlocker::isCurrentIpBlocked();
-}
 
 // ---------------------------------------------------------------------------
 // Geo / flags
 // ---------------------------------------------------------------------------
-
-function getCountryCodeFromIp($ip): ?string
-{
-    return GeoIpService::getCountryCode((string) $ip);
-}
 
 function getCountryFlag($countryCode = 'default'): string
 {
@@ -468,20 +355,11 @@ function getCountryFlag($countryCode = 'default'): string
 // File / filesystem
 // ---------------------------------------------------------------------------
 
-function loadJsonFile($filePath): ?array
-{
-    return FileHelper::readJson((string) $filePath);
-}
-
 function readableFileSize($bytes, $decimals = 2): string
 {
     return FileHelper::readableSize((int) $bytes, (int) $decimals);
 }
 
-function getDirectoryListFromPath($path): ?array
-{
-    return FileHelper::listDirectories((string) $path);
-}
 
 function getInstalledLanguagesList(): ?array
 {
@@ -504,7 +382,7 @@ function convertXML($object)
 function custom($index)
 {
     $data = customData();
-    return array_key_exists($index, $data) ? $data[$index] : null;
+    return $data[$index] ?? null;
 }
 
 function customData(): array
@@ -523,10 +401,6 @@ function getRankingMenuLinks(): ?array
 // ---------------------------------------------------------------------------
 
 // https://base64.guru/developers/php/examples/base64url
-function base64url_encode($data): string
-{
-    return Encoder::base64urlEncode((string) $data);
-}
 
 function base64url_decode($data, $strict = false): ?string
 {

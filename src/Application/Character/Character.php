@@ -8,6 +8,7 @@ use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Account\Account;
 use Darkheim\Application\Credits\CreditSystem;
+use Darkheim\Application\Game\GameHelper;
 use Darkheim\Domain\Validator;
 
 /**
@@ -566,7 +567,7 @@ class Character
     /** @deprecated Use getPlayerClassAvatar() helper directly. */
     public function GenerateCharacterClassAvatar($code = 0, $alt = true, $img_tags = true): string
     {
-        return getPlayerClassAvatar($code, $img_tags, $alt, 'tables-character-class-img');
+        return GameHelper::playerClassAvatar((int) $code, (bool) $img_tags, (bool) $alt, 'tables-character-class-img');
     }
 
     public function getMasterLevelInfo($character_name)

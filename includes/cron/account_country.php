@@ -2,6 +2,8 @@
 
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Application\Account\Account;
+use Darkheim\Infrastructure\Cron\CronManager;
+use Darkheim\Infrastructure\Http\GeoIpService;
 
 // File Name
 $file_name = basename(__FILE__);
@@ -14,7 +16,7 @@ $accountList = $db->query_fetch("SELECT TOP 40 * FROM "._TBL_MS_." WHERE "._CLMN
 if(is_array($accountList)) {
 	$Account = new Account();
 	foreach($accountList as $row) {
-		$countryCode = getCountryCodeFromIp($row[_CLMN_MS_IP_]);
+		$countryCode = GeoIpService::getCountryCode((string) $row[_CLMN_MS_IP_]);
 		if(!check_value($countryCode)) continue;
 		$Account->_account = $row[_CLMN_MS_MEMBID_];
 		$Account->_country = $countryCode;
@@ -23,4 +25,4 @@ if(is_array($accountList)) {
 }
 
 // UPDATE CRON
-updateCronLastRun($file_name);
+(new CronManager())->updateLastRun($file_name);

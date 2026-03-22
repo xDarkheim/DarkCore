@@ -1,6 +1,7 @@
 <?php
 
 use Darkheim\Application\CastleSiege\CastleSiege;
+use Darkheim\Infrastructure\Cron\CronManager;
 
 // File Name
 $file_name = basename(__FILE__);
@@ -10,4 +11,4 @@ $castleSiege = new CastleSiege();
 $castleSiege->updateSiegeCache();
 
 // UPDATE CRON
-updateCronLastRun($file_name);
+(new CronManager())->updateLastRun($file_name);

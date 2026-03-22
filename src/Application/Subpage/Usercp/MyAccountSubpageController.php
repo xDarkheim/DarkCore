@@ -7,6 +7,9 @@ namespace Darkheim\Application\Subpage\Usercp;
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Character\Character;
 use Darkheim\Application\Credits\CreditSystem;
+use Darkheim\Application\Game\GameHelper;
+use Darkheim\Application\Profile\ProfileRenderer;
+use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -44,7 +47,7 @@ final class MyAccountSubpageController
         $characterService = new Character();
         $accountCharacters = $characterService->AccountCharacter($_SESSION['username']);
         $accountCharacters = is_array($accountCharacters) ? $accountCharacters : [];
-        $onlineCharacters = loadCache('online_characters.cache');
+        $onlineCharacters = (new CacheRepository(__PATH_CACHE__))->load('online_characters.cache');
         $onlineCharacters = is_array($onlineCharacters) ? $onlineCharacters : [];
 
         $creditRows = [];
@@ -99,10 +102,10 @@ final class MyAccountSubpageController
 
             $characterCards[] = [
                 'isOnline'   => in_array($characterName, $onlineCharacters, true),
-                'profileUrl' => playerProfile((string) $characterName, true),
-                'avatarUrl'  => getPlayerClassAvatar((int) ($cd[_CLMN_CHR_CLASS_] ?? 0), false),
-                'nameHtml'   => playerProfile((string) $characterName),
-                'className'  => (string) getPlayerClass((int) ($cd[_CLMN_CHR_CLASS_] ?? 0)),
+                'profileUrl' => ProfileRenderer::player((string) $characterName, true),
+                'avatarUrl'  => GameHelper::playerClassAvatar((int) ($cd[_CLMN_CHR_CLASS_] ?? 0), false),
+                'nameHtml'   => ProfileRenderer::player((string) $characterName),
+                'className'  => GameHelper::playerClass((int) ($cd[_CLMN_CHR_CLASS_] ?? 0)),
                 'level'      => $displayLevel,
                 'location'   => returnMapName((int) ($cd[_CLMN_CHR_MAP_] ?? 0)),
             ];

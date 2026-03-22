@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Darkheim\Infrastructure\Bootstrap;
 
 use Darkheim\Infrastructure\Routing\Handler;
+use Darkheim\Infrastructure\Security\IpBlocker;
+use Darkheim\Infrastructure\Cache\CacheRepository;
 use Exception;
 
 final class AppKernel
@@ -59,7 +61,7 @@ final class AppKernel
         $this->applyMaintenanceMode($config, $access);
         $this->configureDisplayErrors($config);
 
-        if (($config['ip_block_system_enable'] ?? false) && checkBlockedIp()) {
+        if (($config['ip_block_system_enable'] ?? false) && $access !== 'cron' && IpBlocker::isCurrentIpBlocked()) {
             throw new Exception('Your IP address has been blocked.');
         }
 
@@ -315,7 +317,7 @@ final class AppKernel
             return;
         }
 
-        $pluginsCache = loadCache('plugins.cache');
+        $pluginsCache = (new CacheRepository(__PATH_CACHE__))->load('plugins.cache');
         if (!is_array($pluginsCache)) {
             return;
         }

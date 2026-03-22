@@ -6,6 +6,7 @@ namespace Darkheim\Application\Admincp;
 
 use Darkheim\Infrastructure\Cron\CronManager;
 use Darkheim\Infrastructure\View\ViewRenderer;
+use Darkheim\Application\Helpers\TimeHelper;
 
 final class CronManagerController
 {
@@ -55,7 +56,7 @@ final class CronManagerController
             $rows     = [];
             if (is_array($cronList)) {
                 foreach ($cronList as $row) {
-                    $interval = sec_to_hms($row['cron_run_time']);
+                    $interval = TimeHelper::secToHms((int) ($row['cron_run_time'] ?? 0));
                     $rows[]   = [
                         'id'          => (string) ($row['cron_id'] ?? ''),
                         'name'        => (string) ($row['cron_name'] ?? ''),

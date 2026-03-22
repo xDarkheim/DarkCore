@@ -1,6 +1,8 @@
 <?php
 
 use Darkheim\Infrastructure\Database\Connection;
+use Darkheim\Infrastructure\Cache\CacheBuilder;
+use Darkheim\Infrastructure\Cron\CronManager;
 
 // File Name
 $file_name = basename(__FILE__);
@@ -35,8 +37,8 @@ $serverInfo[] = $totalOnline;
 	
 if(is_array($serverInfo)) {
 	$cacheDATA = implode("|",$serverInfo);
-	UpdateCache('server_info.cache',$cacheDATA);
+	CacheBuilder::writeTimestamped(__PATH_CACHE__ . 'server_info.cache', $cacheDATA);
 }
 
 // UPDATE CRON
-updateCronLastRun($file_name);
+(new CronManager())->updateLastRun($file_name);

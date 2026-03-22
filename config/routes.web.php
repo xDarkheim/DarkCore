@@ -27,71 +27,71 @@ use Darkheim\Application\Page\VerifyEmailController;
  */
 return [
     'castlesiege' => [
-        'controller' => CastleSiegeController::class,
+        'controller'    => CastleSiegeController::class,
         'module_config' => 'castlesiege',
     ],
     'contact' => [
-        'controller' => ContactController::class,
+        'controller'    => ContactController::class,
         'module_config' => 'contact',
     ],
     'donation' => [
-        'controller' => DonationController::class,
+        'controller'    => DonationController::class,
         'module_config' => 'donation',
     ],
     'downloads' => [
-        'controller' => DownloadsController::class,
+        'controller'    => DownloadsController::class,
         'module_config' => 'downloads',
     ],
     'forgotpassword' => [
-        'controller' => ForgotPasswordController::class,
+        'controller'    => ForgotPasswordController::class,
         'module_config' => 'forgotpassword',
     ],
     'home' => [
-        'controller' => HomeController::class,
+        'controller'    => HomeController::class,
         'module_config' => 'home',
     ],
     'info' => [
-        'controller' => InfoController::class,
+        'controller'    => InfoController::class,
         'module_config' => 'info',
     ],
     'login' => [
-        'controller' => LoginController::class,
+        'controller'    => LoginController::class,
         'module_config' => 'login',
     ],
     'logout' => [
-        'controller' => LogoutController::class,
+        'controller'    => LogoutController::class,
         'module_config' => 'logout',
     ],
     'news' => [
-        'controller' => NewsController::class,
+        'controller'    => NewsController::class,
         'module_config' => 'news',
     ],
     'privacy' => [
-        'controller' => PrivacyController::class,
+        'controller'    => PrivacyController::class,
         'module_config' => 'privacy',
     ],
     'rankings' => [
-        'controller' => RankingsController::class,
+        'controller'    => RankingsController::class,
         'module_config' => 'rankings',
     ],
     'refunds' => [
-        'controller' => RefundsController::class,
+        'controller'    => RefundsController::class,
         'module_config' => 'refunds',
     ],
     'register' => [
-        'controller' => RegisterController::class,
+        'controller'    => RegisterController::class,
         'module_config' => 'register',
     ],
     'tos' => [
-        'controller' => TosController::class,
+        'controller'    => TosController::class,
         'module_config' => 'tos',
     ],
     'usercp' => [
-        'controller' => UsercpController::class,
+        'controller'    => UsercpController::class,
         'module_config' => 'usercp',
     ],
     'verifyemail' => [
-        'controller' => VerifyEmailController::class,
+        'controller'    => VerifyEmailController::class,
         'module_config' => 'verifyemail',
     ],
 ];

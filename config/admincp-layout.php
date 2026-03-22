@@ -14,7 +14,7 @@ declare(strict_types=1);
 return [
     [
         'title' => 'News Management',
-        'icon' => 'bi-newspaper',
+        'icon'  => 'bi-newspaper',
         'links' => [
             ['module' => 'addnews', 'label' => 'Publish'],
             ['module' => 'managenews', 'label' => 'Edit / Delete'],
@@ -22,7 +22,7 @@ return [
     ],
     [
         'title' => 'Account',
-        'icon' => 'bi-people-fill',
+        'icon'  => 'bi-people-fill',
         'links' => [
             ['module' => 'searchaccount', 'label' => 'Search'],
             ['module' => 'accountsfromip', 'label' => 'Find Accounts from IP'],
@@ -32,14 +32,14 @@ return [
     ],
     [
         'title' => 'Character',
-        'icon' => 'bi-person-fill',
+        'icon'  => 'bi-person-fill',
         'links' => [
             ['module' => 'searchcharacter', 'label' => 'Search'],
         ],
     ],
     [
         'title' => 'Bans',
-        'icon' => 'bi-slash-circle-fill',
+        'icon'  => 'bi-slash-circle-fill',
         'links' => [
             ['module' => 'searchban', 'label' => 'Search'],
             ['module' => 'banaccount', 'label' => 'Ban Account'],
@@ -49,7 +49,7 @@ return [
     ],
     [
         'title' => 'Credits',
-        'icon' => 'bi-cash-coin',
+        'icon'  => 'bi-cash-coin',
         'links' => [
             ['module' => 'creditsconfigs', 'label' => 'Credit Configurations'],
             ['module' => 'creditsmanager', 'label' => 'Credit Manager'],
@@ -59,7 +59,7 @@ return [
     ],
     [
         'title' => 'Website Configuration',
-        'icon' => 'bi-toggles',
+        'icon'  => 'bi-toggles',
         'links' => [
             ['module' => 'admincp_access', 'label' => 'AdminCP Access'],
             ['module' => 'connection_settings', 'label' => 'Connection Settings'],
@@ -71,7 +71,7 @@ return [
     ],
     [
         'title' => 'Tools',
-        'icon' => 'bi-wrench-adjustable',
+        'icon'  => 'bi-wrench-adjustable',
         'links' => [
             ['module' => 'cachemanager', 'label' => 'Cache Manager'],
             ['module' => 'cronmanager', 'label' => 'Cron Job Manager'],
@@ -79,18 +79,17 @@ return [
     ],
     [
         'title' => 'Languages',
-        'icon' => 'bi-translate',
+        'icon'  => 'bi-translate',
         'links' => [
             ['module' => 'phrases', 'label' => 'Phrase List'],
         ],
     ],
     [
         'title' => 'Plugins',
-        'icon' => 'bi-plug-fill',
+        'icon'  => 'bi-plug-fill',
         'links' => [
             ['module' => 'plugins', 'label' => 'Plugins Manager'],
             ['module' => 'plugin_install', 'label' => 'Import Plugin'],
         ],
     ],
 ];
-

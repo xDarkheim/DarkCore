@@ -1,6 +1,7 @@
 <?php
 
 use Darkheim\Application\Rankings\RankingsService as Rankings;
+use Darkheim\Infrastructure\Cron\CronManager;
 
 // File Name
 $file_name = basename(__FILE__);
@@ -11,9 +12,9 @@ $Rankings = new Rankings();
 // Load Ranking Configs
 loadModuleConfigs('rankings');
 
-if(mconfig('active') && mconfig('rankings_enable_votes')) {
+if (mconfig('active') && mconfig('rankings_enable_votes')) {
     $Rankings->UpdateRankingCache('votes');
 }
 
 // UPDATE CRON
-updateCronLastRun($file_name);
+new CronManager()->updateLastRun($file_name);

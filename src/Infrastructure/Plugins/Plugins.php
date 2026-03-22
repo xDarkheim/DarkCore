@@ -7,6 +7,8 @@ namespace Darkheim\Infrastructure\Plugins;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\Runtime\NativeSessionStore;
 use Darkheim\Infrastructure\Runtime\SessionStore;
+use Darkheim\Infrastructure\Cache\CacheBuilder;
+use Darkheim\Infrastructure\Cache\CacheRepository;
 
 /**
  * Plugin installation, activation, cache rebuild.
@@ -134,9 +136,10 @@ class Plugins
 
     public function rebuildPluginsCache(): bool
     {
+        $cache = new CacheRepository(__PATH_CACHE__);
         $plugins = $this->db->query_fetch("SELECT * FROM " . Plugins . " WHERE status = 1 ORDER BY id");
         if (!is_array($plugins)) {
-            return (bool) updateCacheFile('plugins.cache', "");
+            return $cache->save('plugins.cache', '');
         }
         foreach ($plugins as $key => $row) {
             $compatibility = explode(',', $row['compatibility']);
@@ -145,7 +148,7 @@ class Plugins
             $plugins[$key]['compatibility'] = $compatibility;
             $plugins[$key]['files']         = $files;
         }
-        return (bool) updateCacheFile('plugins.cache', encodeCache($plugins));
+        return $cache->save('plugins.cache', CacheBuilder::encode($plugins));
     }
 
     private function session(): SessionStore

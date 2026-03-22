@@ -6,6 +6,8 @@ namespace Darkheim\Application\News;
 
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Cache\CacheBuilder;
+use Darkheim\Infrastructure\Cache\CacheRepository;
 
 /**
  * NewsService — full CRUD, caching, translation management for news articles.
@@ -149,7 +151,7 @@ class NewsService
     public function newsIdExists($id): bool
     {
         if (!Validator::UnsignedNumber($id)) return false;
-        $cachedNews = loadCache('news.cache');
+        $cachedNews = (new CacheRepository(__PATH_CACHE__))->load('news.cache');
         if (!is_array($cachedNews)) return false;
 
         return array_any(
@@ -210,7 +212,7 @@ class NewsService
     {
         $newsList = $this->retrieveNewsDataForCache();
         if (!is_array($newsList)) {
-            updateCacheFile('news.cache', '');
+            (new CacheRepository(__PATH_CACHE__))->save('news.cache', '');
             return true;
         }
 
@@ -225,7 +227,9 @@ class NewsService
             }
         }
 
-        return (bool) updateCacheFile('news.cache', encodeCache($newsList));
+        $encoded = CacheBuilder::encode($newsList);
+
+        return (new CacheRepository(__PATH_CACHE__))->save('news.cache', $encoded);
     }
 
     public function loadNewsData($id)

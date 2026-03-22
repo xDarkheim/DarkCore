@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+use Darkheim\Application\Api\VersionApiController;
+use Darkheim\Application\Api\ServerTimeApiController;
+use Darkheim\Application\Api\PaypalApiController;
+use Darkheim\Application\Api\GuildmarkApiController;
+use Darkheim\Application\Api\EventsApiController;
+use Darkheim\Application\Api\CastleSiegeApiController;
+
 /**
  * API route registry.
  *
@@ -9,22 +16,22 @@ declare(strict_types=1);
  */
 return [
     'castlesiege' => [
-        'controller' => 'Darkheim\\Application\\Api\\CastleSiegeApiController',
+        'controller' => CastleSiegeApiController::class,
     ],
     'events' => [
-        'controller' => 'Darkheim\\Application\\Api\\EventsApiController',
+        'controller' => EventsApiController::class,
     ],
     'guildmark' => [
-        'controller' => 'Darkheim\\Application\\Api\\GuildmarkApiController',
+        'controller' => GuildmarkApiController::class,
     ],
     'paypal' => [
-        'controller' => 'Darkheim\\Application\\Api\\PaypalApiController',
+        'controller' => PaypalApiController::class,
     ],
     'servertime' => [
-        'controller' => 'Darkheim\\Application\\Api\\ServerTimeApiController',
+        'controller' => ServerTimeApiController::class,
     ],
     'version' => [
-        'controller' => 'Darkheim\\Application\\Api\\VersionApiController',
+        'controller' => VersionApiController::class,
     ],
 ];
 

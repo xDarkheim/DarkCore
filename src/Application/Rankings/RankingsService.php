@@ -7,6 +7,8 @@ namespace Darkheim\Application\Rankings;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Character\Character;
+use Darkheim\Application\Game\GameHelper;
+use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Runtime\NativeRequestStore;
 use Darkheim\Infrastructure\Runtime\RequestStore;
 
@@ -120,14 +122,15 @@ class RankingsService
         echo '<div class="text-center">';
         echo '<ul class="rankings-class-filter">';
         echo '<li><a onclick="rankingsFilterRemove()" class="rankings-class-filter-selection">'
-            . getPlayerClassAvatar(-1, true, false, 'rankings-class-filter-image')
+            . GameHelper::playerClassAvatar(-1, true, false, 'rankings-class-filter-image')
             . '<br />' . lang('rankings_filter_1') . '</a></li>';
         foreach ($filterData as $row) {
             $classGroup = (int) ($row[0] ?? 0);
             $classIds = (string) ($row[1] ?? '');
             $filterLabel = (string) ($row[2] ?? '');
-            echo '<li><a onclick="rankingsFilterByClass(' . $classIds . ')" class="rankings-class-filter-selection rankings-class-filter-grayscale">'
-                . getPlayerClassAvatar($classGroup, true, false, 'rankings-class-filter-image')
+            $onclick = 'rankingsFilterByClass(' . $classIds . ')';
+            echo '<li><a onclick="' . $onclick . '" class="rankings-class-filter-selection rankings-class-filter-grayscale">'
+                . GameHelper::playerClassAvatar($classGroup, true, false, 'rankings-class-filter-image')
                 . '<br />' . $filterLabel . '</a></li>';
         }
         echo '</ul>';
@@ -166,21 +169,21 @@ class RankingsService
     {
         $result = $this->_getLevelRankingData((bool) mconfig('combine_level_masterlevel'));
         if (!is_array($result)) return;
-        UpdateCache('rankings_level.cache', BuildCacheData($result));
+        $this->writeLegacyCache('rankings_level.cache', $result);
     }
 
     private function _resetsRanking(): void
     {
         $result = $this->_getResetRankingData((bool) mconfig('combine_level_masterlevel'));
         if (!is_array($result)) return;
-        UpdateCache('rankings_resets.cache', BuildCacheData($result));
+        $this->writeLegacyCache('rankings_resets.cache', $result);
     }
 
     private function _killersRanking(): void
     {
         $result = $this->_getKillersRankingData((bool) mconfig('combine_level_masterlevel'));
         if (!is_array($result)) return;
-        UpdateCache('rankings_pk.cache', BuildCacheData($result));
+        $this->writeLegacyCache('rankings_pk.cache', $result);
     }
 
     private function _grandresetsRanking(): void
@@ -190,7 +193,7 @@ class RankingsService
             "SELECT TOP " . $this->_results . " " . _CLMN_CHR_NAME_ . ", " . _CLMN_CHR_GRSTS_ . ", " . _CLMN_CHR_RSTS_ . ", " . _CLMN_CHR_CLASS_ . ", " . _CLMN_CHR_MAP_ . " FROM " . _TBL_CHR_ . " WHERE " . _CLMN_CHR_GRSTS_ . " >= 1 AND " . _CLMN_CHR_NAME_ . " NOT IN(" . $this->_rankingsExcludeChars() . ") ORDER BY " . _CLMN_CHR_GRSTS_ . " DESC, " . _CLMN_CHR_RSTS_ . " DESC"
         );
         if (!is_array($result)) return;
-        UpdateCache('rankings_gr.cache', BuildCacheData($result));
+        $this->writeLegacyCache('rankings_gr.cache', $result);
     }
 
     private function _guildsRanking(): void
@@ -250,7 +253,7 @@ class RankingsService
             ),
         };
         if (!is_array($result)) return;
-        UpdateCache('rankings_guilds.cache', BuildCacheData($result));
+        $this->writeLegacyCache('rankings_guilds.cache', $result);
     }
 
     private function _masterlevelRanking(): void
@@ -263,7 +266,7 @@ class RankingsService
             $result = $this->mu->query_fetch("SELECT TOP " . $this->_results . " t1." . _CLMN_ML_NAME_ . ", t1." . _CLMN_ML_LVL_ . ", t2." . _CLMN_CHR_CLASS_ . ", t2." . _CLMN_CHR_LVL_ . ", t2." . _CLMN_CHR_MAP_ . " FROM " . _TBL_MASTERLVL_ . " AS t1 INNER JOIN " . _TBL_CHR_ . " AS t2 ON t1." . _CLMN_ML_NAME_ . " = t2." . _CLMN_CHR_NAME_ . " WHERE t1." . _CLMN_ML_NAME_ . " NOT IN(" . $this->_rankingsExcludeChars() . ") AND t1." . _CLMN_ML_LVL_ . " > 0 ORDER BY t1." . _CLMN_ML_LVL_ . " DESC, t2." . _CLMN_CHR_LVL_ . " DESC");
         }
         if (!is_array($result)) return;
-        UpdateCache('rankings_master.cache', BuildCacheData($result));
+        $this->writeLegacyCache('rankings_master.cache', $result);
     }
 
     private function _gensRanking(): void
@@ -275,7 +278,7 @@ class RankingsService
         usort($rankingData, static fn($a, $b) => $b['contribution'] - $a['contribution']);
         $result = array_slice($rankingData, 0, $this->_results);
         if (empty($result)) return;
-        UpdateCache('rankings_gens.cache', BuildCacheData($result));
+        $this->writeLegacyCache('rankings_gens.cache', $result);
     }
 
     private function _votesRanking(): void
@@ -303,14 +306,14 @@ class RankingsService
             $result[] = [$characterName, $data['count'], $characterData[_CLMN_CHR_CLASS_], $characterData[_CLMN_CHR_MAP_]];
         }
         if (empty($result)) return;
-        UpdateCache('rankings_votes.cache', BuildCacheData($result));
+        $this->writeLegacyCache('rankings_votes.cache', $result);
     }
 
     private function _onlineRanking(): void
     {
         $result = $this->_getOnlineRankingDataMembStatHours();
         if (!is_array($result)) return;
-        UpdateCache('rankings_online.cache', BuildCacheData($result));
+        $this->writeLegacyCache('rankings_online.cache', $result);
     }
 
     // ─── Private data helpers ─────────────────────────────────────────────────
@@ -336,8 +339,10 @@ class RankingsService
 
         $rankingData = [];
         foreach ($result as $rankPos => $row) {
-            $gensRank = getGensRank($row[_CLMN_GENS_POINT_]);
-            if ($row[_CLMN_GENS_POINT_] >= 10000) $gensRank = getGensLeadershipRank($rankPos);
+            $gensRank = GameHelper::gensRank((int) $row[_CLMN_GENS_POINT_]);
+            if ($row[_CLMN_GENS_POINT_] >= 10000) {
+                $gensRank = GameHelper::gensLeadershipRank($rankPos);
+            }
             $rankingData[] = [
                 'name'         => $row[_CLMN_GENS_NAME_],
                 'influence'    => $row[_CLMN_GENS_TYPE_],
@@ -462,6 +467,17 @@ class RankingsService
             $filterList[] = [$class, implode(',', $classGroupList), $filterName];
         }
         return count($filterList) > 0 ? $filterList : null;
+    }
+
+    /** @param array<int|string, mixed[]> $rows */
+    private function writeLegacyCache(string $fileName, array $rows): void
+    {
+        $payload = CacheBuilder::buildLegacyText($rows);
+        if ($payload === null) {
+            return;
+        }
+
+        CacheBuilder::writeTimestamped(__PATH_CACHE__ . $fileName, $payload);
     }
 }
 

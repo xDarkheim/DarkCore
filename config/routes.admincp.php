@@ -42,132 +42,131 @@ use Darkheim\Application\Admincp\WebsiteSettingsController;
  */
 return [
     'accountinfo' => [
-        'controller' => AccountInfoController::class,
+        'controller'    => AccountInfoController::class,
         'module_config' => 'accountinfo',
     ],
     'accountsfromip' => [
-        'controller' => AccountsFromIpController::class,
+        'controller'    => AccountsFromIpController::class,
         'module_config' => 'accountsfromip',
     ],
     'addnews' => [
-        'controller' => AddNewsController::class,
+        'controller'    => AddNewsController::class,
         'module_config' => 'news',
     ],
     'addnewstranslation' => [
-        'controller' => AddNewsTranslationController::class,
+        'controller'    => AddNewsTranslationController::class,
         'module_config' => 'news',
     ],
     'admincp_access' => [
-        'controller' => AdminCPAccessController::class,
+        'controller'    => AdminCPAccessController::class,
         'module_config' => 'admincp_access',
     ],
     'banaccount' => [
-        'controller' => BanAccountController::class,
+        'controller'    => BanAccountController::class,
         'module_config' => 'banaccount',
     ],
     'blockedips' => [
-        'controller' => BlockedIpsController::class,
+        'controller'    => BlockedIpsController::class,
         'module_config' => 'blockedips',
     ],
     'cachemanager' => [
-        'controller' => CacheManagerController::class,
+        'controller'    => CacheManagerController::class,
         'module_config' => 'cachemanager',
     ],
     'connection_settings' => [
-        'controller' => ConnectionSettingsController::class,
+        'controller'    => ConnectionSettingsController::class,
         'module_config' => 'connection_settings',
     ],
     'creditsconfigs' => [
-        'controller' => CreditsConfigsController::class,
+        'controller'    => CreditsConfigsController::class,
         'module_config' => 'creditsconfigs',
     ],
     'creditsmanager' => [
-        'controller' => CreditsManagerController::class,
+        'controller'    => CreditsManagerController::class,
         'module_config' => 'creditsmanager',
     ],
     'cronmanager' => [
-        'controller' => CronManagerController::class,
+        'controller'    => CronManagerController::class,
         'module_config' => 'cronmanager',
     ],
     'editcharacter' => [
-        'controller' => EditCharacterController::class,
+        'controller'    => EditCharacterController::class,
         'module_config' => 'editcharacter',
     ],
     'editnews' => [
-        'controller' => EditNewsController::class,
+        'controller'    => EditNewsController::class,
         'module_config' => 'news',
     ],
     'editnewstranslation' => [
-        'controller' => EditNewsTranslationController::class,
+        'controller'    => EditNewsTranslationController::class,
         'module_config' => 'news',
     ],
     'home' => [
-        'controller' => HomeController::class,
+        'controller'    => HomeController::class,
         'module_config' => 'home',
     ],
     'latestbans' => [
-        'controller' => LatestBansController::class,
+        'controller'    => LatestBansController::class,
         'module_config' => 'latestbans',
     ],
     'latestpaypal' => [
-        'controller' => LatestPaypalController::class,
+        'controller'    => LatestPaypalController::class,
         'module_config' => 'latestpaypal',
     ],
     'managenews' => [
-        'controller' => ManageNewsController::class,
+        'controller'    => ManageNewsController::class,
         'module_config' => 'news',
     ],
     'modules_manager' => [
-        'controller' => ModulesManagerController::class,
+        'controller'    => ModulesManagerController::class,
         'module_config' => 'modules_manager',
     ],
     'navbar' => [
-        'controller' => NavbarController::class,
+        'controller'    => NavbarController::class,
         'module_config' => 'navbar',
     ],
     'newregistrations' => [
-        'controller' => NewRegistrationsController::class,
+        'controller'    => NewRegistrationsController::class,
         'module_config' => 'newregistrations',
     ],
     'onlineaccounts' => [
-        'controller' => OnlineAccountsController::class,
+        'controller'    => OnlineAccountsController::class,
         'module_config' => 'onlineaccounts',
     ],
     'phrases' => [
-        'controller' => PhrasesController::class,
+        'controller'    => PhrasesController::class,
         'module_config' => 'phrases',
     ],
     'plugin_install' => [
-        'controller' => PluginInstallController::class,
+        'controller'    => PluginInstallController::class,
         'module_config' => 'plugin_install',
     ],
     'plugins' => [
-        'controller' => PluginsController::class,
+        'controller'    => PluginsController::class,
         'module_config' => 'plugins',
     ],
     'searchaccount' => [
-        'controller' => SearchAccountController::class,
+        'controller'    => SearchAccountController::class,
         'module_config' => 'searchaccount',
     ],
     'searchban' => [
-        'controller' => SearchBanController::class,
+        'controller'    => SearchBanController::class,
         'module_config' => 'searchban',
     ],
     'searchcharacter' => [
-        'controller' => SearchCharacterController::class,
+        'controller'    => SearchCharacterController::class,
         'module_config' => 'searchcharacter',
     ],
     'topvotes' => [
-        'controller' => TopVotesController::class,
+        'controller'    => TopVotesController::class,
         'module_config' => 'topvotes',
     ],
     'usercp' => [
-        'controller' => UsercpMenuController::class,
+        'controller'    => UsercpMenuController::class,
         'module_config' => 'usercp',
     ],
     'website_settings' => [
-        'controller' => WebsiteSettingsController::class,
+        'controller'    => WebsiteSettingsController::class,
         'module_config' => 'website_settings',
     ],
 ];
-

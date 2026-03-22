@@ -1,6 +1,9 @@
 <?php
 
 use Darkheim\Infrastructure\Database\Connection;
+use Darkheim\Infrastructure\Cache\CacheBuilder;
+use Darkheim\Infrastructure\Cache\CacheRepository;
+use Darkheim\Infrastructure\Cron\CronManager;
 
 // File Name
 $file_name = basename(__FILE__);
@@ -22,8 +25,8 @@ if(is_array($onlineCharactersList)) {
 	}
 }
 
-$cacheData = encodeCache($result);
-updateCacheFile('online_characters.cache', $cacheData);
+$cacheData = CacheBuilder::encode($result);
+(new CacheRepository(__PATH_CACHE__))->save('online_characters.cache', $cacheData);
 
 // UPDATE CRON
-updateCronLastRun($file_name);
+(new CronManager())->updateLastRun($file_name);
