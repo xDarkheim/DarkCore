@@ -6,20 +6,24 @@
 *~
 .DS_Store
 Thumbs.db
+
 # Darkheim CMS specific
 var/cache/*
 !var/cache/.htaccess
 var/logs/*
 !var/logs/.htaccess
+
 # Temporary files
 *.tmp
 *.bak
 *.old
 *.orig
+
 # System files
 .htaccess.bak
 error_log
 php_errors.log
+
 # Docker related
 .env
 docker/config.env
@@ -32,6 +36,7 @@ docker/npm/
 /Dockerfile
 /docker-entrypoint.sh
 /.dockerignore
+
 # SSL Certificates (важно!)
 ssl/*.crt
 ssl/*.key
@@ -39,17 +44,22 @@ ssl/*.pem
 !ssl/README.md
 # Server-specific SSL folder
 ssl-darkheim/
+
 # Character avatars (uploaded files)
 public/themes/*/img/character-avatars/*
 !public/themes/*/img/character-avatars/.gitkeep
+
 # Guild marks (generated at runtime)
 public/img/guild/*.bmp
 public/img/guild/*.png
+
 # User uploads
 uploads/*
 !uploads/.gitkeep
+
 # Node modules (if using any JS tools)
 node_modules/
+
 # Composer
 vendor/
 composer.lock
@@ -61,28 +71,35 @@ coverage/
 
 # PHPStan
 .phpstan-cache/
+
 # Database dumps
 *.sql
 *.sql.gz
 *.sql.zip
+
 # Backup files
 backups/
 *.backup
+
 # OS generated files
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
+
 # Sensitive information
 config.local.php
 *.secret
 .env.local
 .env.*.local
+
 # Agent-specific files
 AGENTS.md
+
 # Darkheim CMS configuration files
 config/config.json
+
 # Installation .htaccess files
 public/install/.htaccess
 public/install/sql/.htaccess

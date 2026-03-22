@@ -2,6 +2,8 @@ parameters:
     phpVersion: 80400
     level: 5
 
+    tmpDir: var/cache/phpstan
+
     paths:
         - src/
 
