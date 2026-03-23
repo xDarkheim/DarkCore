@@ -100,3 +100,7 @@ config/config.json
 # Installation .htaccess files
 public/install/.htaccess
 public/install/sql/.htaccess
+
+# Themes
+public/themes/red_eye/
+public/themes/darkheim/
