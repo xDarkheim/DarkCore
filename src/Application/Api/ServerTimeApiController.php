@@ -11,9 +11,8 @@ final class ServerTimeApiController
     public function render(): void
     {
         JsonResponse::send([
-            'code' => 200,
+            'code'       => 200,
             'ServerTime' => date('Y/m/d H:i:s'),
-        ], 200);
+        ]);
     }
 }
-

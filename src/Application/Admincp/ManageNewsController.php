@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Darkheim\Application\Admincp;
 
 use Darkheim\Application\News\NewsService as News;
+use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Infrastructure\Http\Redirector;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class ManageNewsController
@@ -19,10 +21,10 @@ final class ManageNewsController
     public function render(): void
     {
         $newsService = new News();
-        $admincpUrl = new AdmincpUrlGenerator();
+        $admincpUrl  = new AdmincpUrlGenerator();
 
-        if (!$newsService->isNewsDirWritable()) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', 'The news cache folder is not writable.');
+        if (! $newsService->isNewsDirWritable()) {
+            MessageRenderer::toast('error', 'The news cache folder is not writable.');
             return;
         }
 
@@ -30,7 +32,7 @@ final class ManageNewsController
             $newsService->removeNews($_REQUEST['delete']);
             $newsService->cacheNews();
             $newsService->updateNewsCacheIndex();
-            \Darkheim\Infrastructure\Http\Redirector::go(1, 'admincp/?module=managenews');
+            Redirector::go(1, 'admincp/?module=managenews');
         }
 
         if (isset($_GET['deletetranslation'], $_GET['language'])) {
@@ -39,16 +41,16 @@ final class ManageNewsController
                 $newsService->setLanguage($_GET['language']);
                 $newsService->deleteNewsTranslation();
                 $newsService->updateNewsCacheIndex();
-                \Darkheim\Infrastructure\Http\Redirector::go(1, 'admincp/?module=managenews');
+                Redirector::go(1, 'admincp/?module=managenews');
             } catch (\Exception $ex) {
-                \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                MessageRenderer::toast('error', $ex->getMessage());
             }
         }
 
         if (isset($_REQUEST['cache']) && $_REQUEST['cache'] == 1) {
             $newsService->cacheNews()
-                ? \Darkheim\Application\View\MessageRenderer::toast('success', 'News cached successfully')
-                : \Darkheim\Application\View\MessageRenderer::toast('error', 'No news to cache.');
+                ? MessageRenderer::toast('success', 'News cached successfully')
+                : MessageRenderer::toast('error', 'No news to cache.');
             $newsService->updateNewsCacheIndex();
         }
 
@@ -57,7 +59,7 @@ final class ManageNewsController
         if (is_array($newsList)) {
             foreach ($newsList as $row) {
                 $newsService->setId($row['news_id']);
-                $translations    = $newsService->getNewsTranslationsDataList();
+                $translations     = $newsService->getNewsTranslationsDataList();
                 $translationLangs = [];
                 if (is_array($translations)) {
                     $translationLangs = array_column($translations, 'language');
@@ -77,10 +79,9 @@ final class ManageNewsController
         }
 
         $this->view->render('admincp/managenews', [
-            'items'       => $items,
-            'addUrl'      => $admincpUrl->base('addnews'),
-            'cacheUrl'    => $admincpUrl->base('managenews&cache=1'),
+            'items'    => $items,
+            'addUrl'   => $admincpUrl->base('addnews'),
+            'cacheUrl' => $admincpUrl->base('managenews&cache=1'),
         ]);
     }
 }
-

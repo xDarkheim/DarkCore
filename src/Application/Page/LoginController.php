@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Darkheim\Application\Page;
 
 use Darkheim\Application\Auth\AuthService;
+use Darkheim\Application\Auth\SessionManager;
 use Darkheim\Application\Language\Translator;
+use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
+use Darkheim\Infrastructure\Http\Redirector;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class LoginController
@@ -19,25 +23,25 @@ final class LoginController
 
     public function render(): void
     {
-        if (\Darkheim\Application\Auth\SessionManager::websiteAuthenticated()) {
-            \Darkheim\Infrastructure\Http\Redirector::go();
+        if (SessionManager::websiteAuthenticated()) {
+            Redirector::go();
             return;
         }
 
         try {
-            if (!\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active')) {
-                \Darkheim\Application\View\MessageRenderer::inline('error', Translator::phrase('error_47'));
+            if (! BootstrapContext::moduleValue('active')) {
+                MessageRenderer::inline('error', Translator::phrase('error_47'));
                 return;
             }
 
             if (isset($_POST['darkheimLogin_submit'])) {
                 try {
-                    (new AuthService())->login(
+                    new AuthService()->login(
                         $_POST['darkheimLogin_user'] ?? '',
-                        $_POST['darkheimLogin_pwd']  ?? ''
+                        $_POST['darkheimLogin_pwd']  ?? '',
                     );
                 } catch (\Exception $ex) {
-                    \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                    MessageRenderer::toast('error', $ex->getMessage());
                 }
             }
 
@@ -47,7 +51,7 @@ final class LoginController
                 'registerUrl'   => __BASE_URL__ . 'register',
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', $ex->getMessage());
+            MessageRenderer::inline('error', $ex->getMessage());
         }
     }
 }

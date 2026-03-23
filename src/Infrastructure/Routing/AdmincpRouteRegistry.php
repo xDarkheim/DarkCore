@@ -13,7 +13,7 @@ final class AdmincpRouteRegistry
 
     public function __construct(?string $routesFile = null)
     {
-        $projectRoot = dirname(__DIR__, 3);
+        $projectRoot      = dirname(__DIR__, 3);
         $this->routesFile = $routesFile ?? $projectRoot . '/config/routes.admincp.php';
     }
 
@@ -23,7 +23,7 @@ final class AdmincpRouteRegistry
     public function routeFor(string $module): ?array
     {
         $routes = $this->load();
-        $entry = $routes[$module] ?? null;
+        $entry  = $routes[$module] ?? null;
 
         return is_array($entry) ? $entry : null;
     }
@@ -37,16 +37,14 @@ final class AdmincpRouteRegistry
             return $this->routes;
         }
 
-        if (!is_file($this->routesFile)) {
+        if (! is_file($this->routesFile)) {
             $this->routes = [];
             return $this->routes;
         }
 
-        /** @var mixed $data */
-        $data = include $this->routesFile;
+        $data         = include $this->routesFile;
         $this->routes = is_array($data) ? $data : [];
 
         return $this->routes;
     }
 }
-

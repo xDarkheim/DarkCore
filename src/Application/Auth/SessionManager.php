@@ -58,13 +58,7 @@ final class SessionManager
 
     public static function websiteAuthenticated(?SessionStore $session = null): bool
     {
-        return (new self($session))->isWebsiteAuthenticated(BootstrapContext::configProvider()?->moduleConfig('login'));
-    }
-
-    public function userId(): ?int
-    {
-        $userId = $this->session->get('userid');
-        return $userId !== null ? (int) $userId : null;
+        return new self($session)->isWebsiteAuthenticated(BootstrapContext::configProvider()?->moduleConfig('login'));
     }
 
     public function username(): ?string
@@ -108,4 +102,3 @@ final class SessionManager
         }
     }
 }
-

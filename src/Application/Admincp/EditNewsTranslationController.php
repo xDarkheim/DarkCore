@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Darkheim\Application\Admincp;
 
 use Darkheim\Application\News\NewsService as News;
+use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
+use Darkheim\Infrastructure\Http\Redirector;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class EditNewsTranslationController
@@ -20,9 +23,9 @@ final class EditNewsTranslationController
     {
         try {
             $newsService = new News();
-            \Darkheim\Infrastructure\Bootstrap\BootstrapContext::loadModuleConfig('news');
+            BootstrapContext::loadModuleConfig('news');
 
-            if (!$newsService->isNewsDirWritable()) {
+            if (! $newsService->isNewsDirWritable()) {
                 throw new \RuntimeException('The news cache folder is not writable.');
             }
 
@@ -33,16 +36,16 @@ final class EditNewsTranslationController
                     $newsService->setTitle($_POST['news_title']);
                     $newsService->setContent($_POST['news_content']);
                     $newsService->updateNewsTransation();
-                    \Darkheim\Infrastructure\Http\Redirector::go(1, 'admincp/?module=managenews');
+                    Redirector::go(1, 'admincp/?module=managenews');
                 } catch (\Exception $ex) {
-                    \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                    MessageRenderer::toast('error', $ex->getMessage());
                 }
             }
 
             $newsService->setId($_GET['id']);
             $newsService->setLanguage($_GET['language']);
             $newsData = $newsService->loadNewsTranslationData();
-            if (!is_array($newsData)) {
+            if (! is_array($newsData)) {
                 throw new \RuntimeException('Could not load news data.');
             }
 
@@ -53,8 +56,7 @@ final class EditNewsTranslationController
                 'formContent' => (string) ($_POST['news_content'] ?? base64_decode((string) ($newsData['news_content'] ?? ''))),
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+            MessageRenderer::toast('error', $ex->getMessage());
         }
     }
 }
-

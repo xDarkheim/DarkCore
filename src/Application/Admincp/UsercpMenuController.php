@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -59,7 +60,7 @@ final class UsercpMenuController
                 'rows' => $rows,
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+            MessageRenderer::toast('error', $ex->getMessage());
         }
     }
 
@@ -75,9 +76,9 @@ final class UsercpMenuController
             }
             unset($cfg[$id]);
             $this->saveConfig($cfg);
-            \Darkheim\Application\View\MessageRenderer::toast('success', 'Changes successfully saved!');
+            MessageRenderer::toast('success', 'Changes successfully saved!');
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+            MessageRenderer::toast('error', $ex->getMessage());
         }
     }
 
@@ -104,11 +105,11 @@ final class UsercpMenuController
 
             $newElementData = [
                 'active'     => ($_POST['usercp_status'] ?? '0') == 1,
-                'type'       => (string) $_POST['usercp_type'],
+                'type'       => $_POST['usercp_type'],
                 'phrase'     => (string) $_POST['usercp_phrase'],
                 'link'       => (string) $_POST['usercp_link'],
                 'icon'       => (string) ($_POST['usercp_icon'] ?? 'usercp_default.png'),
-                'visibility' => (string) $_POST['usercp_visibility'],
+                'visibility' => $_POST['usercp_visibility'],
                 'newtab'     => ($_POST['usercp_newtab'] ?? '0') == 1,
                 'order'      => (int) ($_POST['usercp_order'] ?? 0),
             ];
@@ -121,13 +122,15 @@ final class UsercpMenuController
 
             usort($cfg, static fn(array $a, array $b): int => ((int) ($a['order'] ?? 0)) - ((int) ($b['order'] ?? 0)));
             $this->saveConfig($cfg);
-            \Darkheim\Application\View\MessageRenderer::toast('success', $isEdit ? 'Changes successfully saved!' : 'Usercp successfully updated!');
+            MessageRenderer::toast('success', $isEdit ? 'Changes successfully saved!' : 'Usercp successfully updated!');
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+            MessageRenderer::toast('error', $ex->getMessage());
         }
     }
 
-    /** @param array<int|string,mixed> $cfg */
+    /** @param  array<int|string,mixed>  $cfg
+     * @throws \JsonException
+     */
     private function saveConfig(array $cfg): void
     {
         $json    = json_encode($cfg, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);

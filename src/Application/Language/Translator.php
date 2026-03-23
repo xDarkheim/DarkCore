@@ -11,13 +11,13 @@ use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
  *
  * Replaces the inline logic inside the global \Darkheim\Application\Language\Translator::phrase() / \Darkheim\Application\Language\Translator::phraseFmt() helpers.
  * Use those helpers for backward-compatible call-sites; call this class
- * directly in new code.
+ * directly in the new code.
  */
 final class Translator
 {
     /**
      * Returns the translated phrase for $key.
-     * When language_debug is enabled the result is wrapped in a <span>
+     * When language_debug is enabled, the result is wrapped in a <span>
      * whose title attribute exposes the phrase key.
      */
     public static function phrase(string $key): string
@@ -57,7 +57,6 @@ final class Translator
             return false;
         }
 
-        return is_array($cms) && !empty($cms['language_debug']);
+        return is_array($cms) && ! empty($cms['language_debug']);
     }
 }
-

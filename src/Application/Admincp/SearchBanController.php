@@ -26,19 +26,19 @@ final class SearchBanController
         if (isset($_POST['search_ban'], $_POST['search_request'])) {
             $searchRequest = (string) $_POST['search_request'];
             try {
-                $db     = Connection::Database('MuOnline');
+                $db         = Connection::Database('MuOnline');
                 $admincpUrl = new AdmincpUrlGenerator();
-                $common = new Common();
-                $rows   = $db->query_fetch(
+                $common     = new Common();
+                $rows       = $db->query_fetch(
                     'SELECT TOP 25 * FROM ' . Ban_Log . ' WHERE account_id LIKE ?',
-                    ['%' . $searchRequest . '%']
+                    ['%' . $searchRequest . '%'],
                 );
-                if (!is_array($rows)) {
+                if (! is_array($rows)) {
                     throw new \RuntimeException('No results found.');
                 }
                 $results = [];
                 foreach ($rows as $ban) {
-                    $accId    = (string) ($ban['account_id'] ?? '');
+                    $accId     = (string) ($ban['account_id'] ?? '');
                     $results[] = [
                         'account'        => $accId,
                         'accountInfoUrl' => $admincpUrl->base('accountinfo&id=' . $common->retrieveUserID($accId)),
@@ -61,4 +61,3 @@ final class SearchBanController
         ]);
     }
 }
-

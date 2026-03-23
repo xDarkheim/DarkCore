@@ -6,6 +6,9 @@ namespace Darkheim\Application\Admincp;
 
 use Darkheim\Application\Language\LanguageRepository;
 use Darkheim\Application\News\NewsService as News;
+use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
+use Darkheim\Infrastructure\Http\Redirector;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class AddNewsTranslationController
@@ -21,7 +24,7 @@ final class AddNewsTranslationController
     {
         try {
             $newsService = new News();
-            \Darkheim\Infrastructure\Bootstrap\BootstrapContext::loadModuleConfig('news');
+            BootstrapContext::loadModuleConfig('news');
 
             if (! $newsService->isNewsDirWritable()) {
                 throw new \RuntimeException('The news cache folder is not writable.');
@@ -35,9 +38,9 @@ final class AddNewsTranslationController
                     $newsService->setContent($_POST['news_content']);
                     $newsService->addNewsTransation();
                     $newsService->updateNewsCacheIndex();
-                    \Darkheim\Infrastructure\Http\Redirector::go(1, 'admincp/?module=managenews');
+                    Redirector::go(1, 'admincp/?module=managenews');
                 } catch (\Exception $ex) {
-                    \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                    MessageRenderer::toast('error', $ex->getMessage());
                 }
             }
 
@@ -51,7 +54,7 @@ final class AddNewsTranslationController
                 throw new \RuntimeException('There are no available languages.');
             }
 
-            $defaultLang = (string) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('language_default', true);
+            $defaultLang = (string) BootstrapContext::cmsValue('language_default', true);
             $languages   = array_filter($languagesList, static fn($l) => $l !== $defaultLang);
 
             $this->view->render('admincp/addnewstranslation', [
@@ -64,7 +67,7 @@ final class AddNewsTranslationController
                 'formContent'      => (string) ($_POST['news_content'] ?? ($newsData['news_content'] ?? '')),
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+            MessageRenderer::toast('error', $ex->getMessage());
         }
     }
 }

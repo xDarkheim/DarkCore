@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Api;
 
 use Darkheim\Application\CastleSiege\CastleSiege;
+use Darkheim\Application\Language\Translator;
 
 final class CastleSiegeApiController
 {
@@ -14,9 +15,11 @@ final class CastleSiegeApiController
 
         try {
             $castleSiege = new CastleSiege();
-            $siegeData = $castleSiege->siegeData();
-            if (!is_array($siegeData)) {
-                throw new \RuntimeException((string) \Darkheim\Application\Language\Translator::phrase('error_103'));
+            $siegeData   = $castleSiege->siegeData();
+            if (! is_array($siegeData)) {
+                throw new \RuntimeException(
+                    Translator::phrase('error_103'),
+                );
             }
 
             http_response_code(200);
@@ -26,10 +29,9 @@ final class CastleSiegeApiController
         } catch (\Exception $ex) {
             http_response_code(500);
             echo json_encode([
-                'code' => 500,
+                'code'  => 500,
                 'error' => $ex->getMessage(),
             ], JSON_THROW_ON_ERROR);
         }
     }
 }
-

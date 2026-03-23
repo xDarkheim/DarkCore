@@ -10,7 +10,7 @@ final class RequestParameterParser
 {
     public function parseInto(QueryStore $query): void
     {
-        if (!$query->has('request')) {
+        if (! $query->has('request')) {
             return;
         }
 
@@ -24,9 +24,8 @@ final class RequestParameterParser
 
             $query->set(
                 $key,
-                ($val !== null && $val !== '') ? htmlspecialchars($val) : null
+                ($val !== null && $val !== '') ? htmlspecialchars($val) : null,
             );
         }
     }
 }
-

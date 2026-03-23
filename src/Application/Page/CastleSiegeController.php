@@ -6,7 +6,9 @@ namespace Darkheim\Application\Page;
 
 use Darkheim\Application\CastleSiege\CastleSiege;
 use Darkheim\Application\Game\GameHelper;
+use Darkheim\Application\Language\Translator;
 use Darkheim\Application\Profile\ProfileRenderer;
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class CastleSiegeController
@@ -25,10 +27,10 @@ final class CastleSiegeController
             $siegeData   = $castleSiege->siegeData();
 
             if (! is_array($siegeData)) {
-                throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_103'));
+                throw new \Exception(Translator::phrase('error_103'));
             }
             if (! $castleSiege->moduleEnabled()) {
-                throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_47'));
+                throw new \Exception(Translator::phrase('error_47'));
             }
 
             $castleData       = is_array($siegeData['castle_data'] ?? null) ? $siegeData['castle_data'] : [];
@@ -66,8 +68,8 @@ final class CastleSiegeController
 
             $showBattleCountdown   = $castleSiege->showBattleCountdown();
             $showCastleInformation = $castleSiege->showCastleInformation();
-            $showCurrentStage      = $showCastleInformation   && $castleSiege->showCurrentStage() && is_array($siegeData['current_stage'] ?? null);
-            $showNextStage         = $showCastleInformation      && $castleSiege->showNextStage() && is_array($siegeData['next_stage'] ?? null);
+            $showCurrentStage      = $showCastleInformation && $castleSiege->showCurrentStage() && is_array($siegeData['current_stage'] ?? null);
+            $showNextStage         = $showCastleInformation && $castleSiege->showNextStage() && is_array($siegeData['next_stage'] ?? null);
             $showBattleDuration    = $showCastleInformation && $castleSiege->showBattleDuration();
 
             $currentStageTitle  = $showCurrentStage ? (string) ($siegeData['current_stage']['title'] ?? '') : '';
@@ -139,7 +141,7 @@ final class CastleSiegeController
                 'scheduleRows',
             ));
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', $ex->getMessage());
+            MessageRenderer::inline('error', $ex->getMessage());
         }
     }
 }

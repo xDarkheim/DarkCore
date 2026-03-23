@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\View;
 
 use Darkheim\Domain\Validator;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Renders user-facing notification messages.
@@ -16,7 +17,7 @@ use Darkheim\Domain\Validator;
  */
 final class MessageRenderer
 {
-    private const COLORS = [
+    private const array COLORS = [
         'error'   => ['bg' => 'rgba(40,10,10,.6)',  'border' => '#7a2d2d', 'left' => '#ef5350', 'text' => '#e89090'],
         'success' => ['bg' => 'rgba(10,30,10,.6)',  'border' => '#2d7a2d', 'left' => '#4caf50', 'text' => '#a0e8a0'],
         'warning' => ['bg' => 'rgba(35,24,0,.6)',   'border' => '#7a5a00', 'left' => '#ffa726', 'text' => '#e8c878'],
@@ -79,7 +80,7 @@ final class MessageRenderer
 
     private static function isTestRuntime(): bool
     {
-        return class_exists('PHPUnit\\Framework\\TestCase', false);
+        return class_exists(TestCase::class, false);
     }
 }
 

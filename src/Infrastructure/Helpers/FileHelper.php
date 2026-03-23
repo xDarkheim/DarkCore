@@ -17,11 +17,13 @@ final class FileHelper
     /**
      * Reads and JSON-decodes a file. Returns null on any failure.
      *
-     * @return array<mixed>|null
+     * @param  string  $filePath
+     *
+     * @return array|null
      */
     public static function readJson(string $filePath): ?array
     {
-        return (new JsonConfigReader())->readFile($filePath);
+        return new JsonConfigReader()->readFile($filePath);
     }
 
     /**
@@ -32,7 +34,7 @@ final class FileHelper
      */
     public static function listDirectories(string $path): ?array
     {
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             return null;
         }
 
@@ -64,4 +66,3 @@ final class FileHelper
         return sprintf("%.{$decimals}f", $bytes / (1024 ** $factor)) . ($sz[$factor] ?? '');
     }
 }
-

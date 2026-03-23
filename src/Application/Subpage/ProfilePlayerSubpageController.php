@@ -8,7 +8,9 @@ use Darkheim\Application\Game\GameHelper;
 use Darkheim\Application\Language\Translator;
 use Darkheim\Application\Profile\ProfileRenderer;
 use Darkheim\Application\Profile\ProfileRepository;
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -23,14 +25,14 @@ final class ProfilePlayerSubpageController
 
     public function render(): void
     {
-        if (! \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active')) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', Translator::phrase('error_47'));
+        if (! BootstrapContext::moduleValue('active')) {
+            MessageRenderer::inline('error', Translator::phrase('error_47'));
             return;
         }
 
         $request = (string) ($_GET['req'] ?? '');
         if ($request === '') {
-            \Darkheim\Application\View\MessageRenderer::inline('error', Translator::phrase('error_25'));
+            MessageRenderer::inline('error', Translator::phrase('error_25'));
             return;
         }
 
@@ -121,7 +123,7 @@ final class ProfilePlayerSubpageController
                 'baseStats'      => $baseStats,
             ]);
         } catch (\Exception $e) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', $e->getMessage());
+            MessageRenderer::inline('error', $e->getMessage());
         }
     }
 }

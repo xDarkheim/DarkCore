@@ -17,7 +17,7 @@ final class CacheRepository
     {
         $path = $this->cacheDir . $fileName;
 
-        if (!is_file($path) || !is_readable($path)) {
+        if (! is_file($path) || ! is_readable($path)) {
             return null;
         }
 
@@ -48,7 +48,7 @@ final class CacheRepository
     {
         $path = $this->cacheDir . $fileName;
 
-        if (!is_file($path) || !is_writable($path)) {
+        if (! is_file($path) || ! is_writable($path)) {
             return false;
         }
 
@@ -72,7 +72,7 @@ final class CacheRepository
     {
         $path = $this->cacheDir . $fileName;
 
-        if (!is_file($path) || !is_readable($path)) {
+        if (! is_file($path) || ! is_readable($path)) {
             return null;
         }
 
@@ -92,4 +92,3 @@ final class CacheRepository
         return count($result) > 0 ? $result : null;
     }
 }
-

@@ -34,7 +34,7 @@ final class AppKernel
      */
     public function boot(): void
     {
-        $access = defined('access') ? (string) access : '';
+        $access = defined('access') ? access : '';
 
         BootstrapContext::initialize($this->configProvider, $this->runtimeState, $this->handler);
 
@@ -123,11 +123,13 @@ final class AppKernel
     private function definePathConstants(): void
     {
         $httpHost       = $_SERVER['HTTP_HOST'] ?? 'CLI';
-        $serverProtocol = (! empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) === 'on') ? 'https://' : 'http://';
-        $rootDir        = str_replace('\\', '/', dirname($this->includesDir)) . '/';
-        $publicDir      = is_dir($rootDir . 'public') ? $rootDir . 'public/' : $rootDir;
+        $serverProtocol = (! empty($_SERVER['HTTPS']) && strtolower(
+            $_SERVER['HTTPS'],
+        ) === 'on') ? 'https://' : 'https://';
+        $rootDir   = str_replace('\\', '/', dirname($this->includesDir)) . '/';
+        $publicDir = is_dir($rootDir . 'public') ? $rootDir . 'public/' : $rootDir;
 
-        $access    = defined('access') ? (string) access : '';
+        $access    = defined('access') ? access : '';
         $rootDepth = match ($access) {
             'admincp', 'api', 'cron', 'install' => 2,
             default => 1,
@@ -140,7 +142,7 @@ final class AppKernel
         //   /cms/admincp/index.php   -> /cms/
         //   /cms/api/version.php     -> /cms/
         $relativeRoot = ! empty($_SERVER['SCRIPT_NAME'])
-            ? rtrim(str_replace('\\', '/', dirname((string) $_SERVER['SCRIPT_NAME'], $rootDepth)), '/') . '/'
+            ? rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'], $rootDepth)), '/') . '/'
             : '/';
 
         $baseUrl = $serverProtocol . $httpHost . $relativeRoot;
@@ -211,7 +213,14 @@ final class AppKernel
     private function loadCustomTables(): void
     {
         $custom = [];
-        if (! @include(__PATH_CONFIGS__ . 'tables.custom.php')) {
+        $customTablesPath = __PATH_CONFIGS__ . 'tables.custom.php';
+
+        if (! is_file($customTablesPath)) {
+            $this->runtimeState->setCustomConfig($custom);
+            return;
+        }
+
+        if ((@include $customTablesPath) === false) {
             throw new \Exception('Could not load the table definitions.');
         }
 
@@ -246,7 +255,7 @@ final class AppKernel
      */
     private function validateConfiguration(array $config): void
     {
-        if (! file_exists(__PATH_THEMES__ . (string) $config['website_theme'])) {
+        if (! file_exists(__PATH_THEMES__ . $config['website_theme'])) {
             throw new \Exception('The default theme doesn\'t exist.');
         }
 
@@ -281,7 +290,7 @@ final class AppKernel
         $admins   = is_array($config['admins'] ?? null) ? $config['admins'] : [];
         $username = (string) ($_SESSION['username'] ?? '');
         if (! array_key_exists($username, $admins)) {
-            header('Location: ' . (string) $config['maintenance_page']);
+            header('Location: ' . $config['maintenance_page']);
             die();
         }
 

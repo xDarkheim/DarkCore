@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Auth;
 
+use Darkheim\Application\Language\Translator;
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Database\Connection;
+use Darkheim\Infrastructure\Http\Redirector;
 use Darkheim\Infrastructure\Runtime\ServerContext;
 
 /**
@@ -29,7 +32,7 @@ class Login
         $this->serverContext  = $serverContext  ?? new ServerContext();
         $loginConfigs         = BootstrapContext::configProvider()?->moduleConfig('login');
         if (! is_array($loginConfigs)) {
-            throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_98'));
+            throw new \Exception(Translator::phrase('error_98'));
         }
         $this->_config = $loginConfigs;
     }
@@ -39,38 +42,38 @@ class Login
         $ipAddress = $this->server()->remoteAddress() ?? '';
 
         if (! Validator::hasValue($username)) {
-            throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_4', true));
+            throw new \Exception(Translator::phrase('error_4', true));
         }
         if (! Validator::hasValue($password)) {
-            throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_4', true));
+            throw new \Exception(Translator::phrase('error_4', true));
         }
         if (! $this->canLogin($ipAddress)) {
-            throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_3', true));
+            throw new \Exception(Translator::phrase('error_3', true));
         }
         if (! $this->common->userExists($username)) {
-            throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_2', true));
+            throw new \Exception(Translator::phrase('error_2', true));
         }
 
         if ($this->common->validateUser($username, $password)) {
             $userId = $this->common->retrieveUserID($username);
             if (! Validator::hasValue($userId)) {
-                throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_12', true));
+                throw new \Exception(Translator::phrase('error_12', true));
             }
 
             $accountData = $this->common->accountInformation($userId);
             if (! is_array($accountData)) {
-                throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_12', true));
+                throw new \Exception(Translator::phrase('error_12', true));
             }
 
             $this->removeFailedLogins($ipAddress);
             session_regenerate_id();
             $this->session()->startAuthenticatedSession($userId, (string) $accountData[_CLMN_USERNM_]);
 
-            \Darkheim\Infrastructure\Http\Redirector::go(1, 'usercp/');
+            Redirector::go(1, 'usercp/');
         } else {
             $this->addFailedLogin($username, $ipAddress);
-            \Darkheim\Application\View\MessageRenderer::toast('error', \Darkheim\Application\Language\Translator::phrase('error_1', true));
-            \Darkheim\Application\View\MessageRenderer::toast('warning', \Darkheim\Application\Language\Translator::phraseFmt('login_txt_5', [$this->checkFailedLogins($ipAddress), \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('max_login_attempts'), \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('max_login_attempts')]));
+            MessageRenderer::toast('error', Translator::phrase('error_1', true));
+            MessageRenderer::toast('warning', Translator::phraseFmt('login_txt_5', [$this->checkFailedLogins($ipAddress), BootstrapContext::moduleValue('max_login_attempts'), BootstrapContext::moduleValue('max_login_attempts')]));
         }
     }
 
@@ -148,7 +151,7 @@ class Login
     public function logout(): void
     {
         $this->session()->clearSession();
-        \Darkheim\Infrastructure\Http\Redirector::go();
+        Redirector::go();
     }
 
     private function session(): SessionManager

@@ -24,11 +24,11 @@ final class ConfigProvider
         ?ConfigRepository $configRepository = null,
         ?XmlConfigReader $xmlReader = null,
     ) {
-        $this->configDir = rtrim(str_replace('\\', '/', $configDir), '/') . '/';
-        $this->moduleConfigDir = $this->configDir . 'modules/';
+        $this->configDir             = rtrim(str_replace('\\', '/', $configDir), '/') . '/';
+        $this->moduleConfigDir       = $this->configDir . 'modules/';
         $this->usercpModuleConfigDir = $this->configDir . 'modules/usercp/';
-        $this->configRepository = $configRepository ?? new ConfigRepository($this->configDir);
-        $this->xmlReader = $xmlReader ?? new XmlConfigReader();
+        $this->configRepository      = $configRepository ?? new ConfigRepository($this->configDir);
+        $this->xmlReader             = $xmlReader        ?? new XmlConfigReader();
     }
 
     /**
@@ -38,7 +38,7 @@ final class ConfigProvider
      */
     public function cms(): array
     {
-        if (!$this->cmsLoaded) {
+        if (! $this->cmsLoaded) {
             $this->cmsConfig = $this->configRepository->loadCmsOrFail();
             $this->cmsLoaded = true;
         }
@@ -61,12 +61,13 @@ final class ConfigProvider
         }
 
         $aliases = $this->configAliases();
-        $alias = $aliases[$name] ?? null;
+        $alias   = $aliases[$name] ?? null;
         return $alias !== null ? $this->configRepository->load($alias) : null;
     }
 
     /**
      * @return array<string, mixed>|null
+     * @throws \JsonException
      */
     public function moduleConfig(string $module): ?array
     {
@@ -75,25 +76,21 @@ final class ConfigProvider
         }
 
         $candidates = [$module];
-        $aliases = $this->moduleAliases();
+        $aliases    = $this->moduleAliases();
         if (isset($aliases[$module])) {
             $candidates[] = $aliases[$module];
         }
 
         foreach ($candidates as $candidate) {
-            if (str_contains($candidate, '/')) {
-                $result = $this->xmlReader->readFile($this->moduleConfigDir . $candidate . '.xml');
-                if ($result !== null) {
-                    return $result;
-                }
-                continue;
-            }
-
-            // Check main modules/ directory first, then usercp/ subdirectory
             $result = $this->xmlReader->readFile($this->moduleConfigDir . $candidate . '.xml');
             if ($result !== null) {
                 return $result;
             }
+            if (str_contains($candidate, '/')) {
+                continue;
+            }
+
+            // Check main modules/ directory first, then usercp/ subdirectory
 
             $result = $this->xmlReader->readFile($this->usercpModuleConfigDir . $candidate . '.xml');
             if ($result !== null) {
@@ -110,9 +107,9 @@ final class ConfigProvider
     private function configAliases(): array
     {
         return [
-            'cms' => 'config',
-            'navbar' => 'navigation',
-            'usercp' => 'usercp-menu',
+            'cms'         => 'config',
+            'navbar'      => 'navigation',
+            'usercp'      => 'usercp-menu',
             'castlesiege' => 'castle-siege',
         ];
     }
@@ -123,23 +120,24 @@ final class ConfigProvider
     private function moduleAliases(): array
     {
         return [
-            'forgotpassword' => 'forgot-password',
-            'usercp.addstats' => 'usercp/add-stats',
-            'usercp.buyzen' => 'usercp/buy-zen',
-            'usercp.clearpk' => 'usercp/clear-pk',
+            'forgotpassword'        => 'forgot-password',
+            'usercp.addstats'       => 'usercp/add-stats',
+            'usercp.buyzen'         => 'usercp/buy-zen',
+            'usercp.clearpk'        => 'usercp/clear-pk',
             'usercp.clearskilltree' => 'usercp/clear-skill-tree',
-            'usercp.myaccount' => 'usercp/my-account',
-            'usercp.myemail' => 'usercp/my-email',
-            'usercp.mypassword' => 'usercp/my-password',
-            'usercp.reset' => 'usercp/reset',
-            'usercp.resetstats' => 'usercp/reset-stats',
-            'usercp.unstick' => 'usercp/unstick',
-            'usercp.vote' => 'usercp/vote',
+            'usercp.myaccount'      => 'usercp/my-account',
+            'usercp.myemail'        => 'usercp/my-email',
+            'usercp.mypassword'     => 'usercp/my-password',
+            'usercp.reset'          => 'usercp/reset',
+            'usercp.resetstats'     => 'usercp/reset-stats',
+            'usercp.unstick'        => 'usercp/unstick',
+            'usercp.vote'           => 'usercp/vote',
         ];
     }
 
     /**
      * @return array<string, mixed>|null
+     * @throws \JsonException
      */
     public function globalXml(string $name): ?array
     {
@@ -162,4 +160,3 @@ final class ConfigProvider
         return is_string($timezone) && trim($timezone) !== '' ? $timezone : 'UTC';
     }
 }
-

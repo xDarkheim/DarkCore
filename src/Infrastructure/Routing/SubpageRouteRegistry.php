@@ -13,7 +13,7 @@ final class SubpageRouteRegistry
 
     public function __construct(?string $routesFile = null)
     {
-        $projectRoot = dirname(__DIR__, 3);
+        $projectRoot      = dirname(__DIR__, 3);
         $this->routesFile = $routesFile ?? $projectRoot . '/config/routes.subpages.php';
     }
 
@@ -22,9 +22,9 @@ final class SubpageRouteRegistry
      */
     public function routeFor(string $page, string $subpage): ?array
     {
-        $key = $page . '/' . $subpage;
+        $key    = $page . '/' . $subpage;
         $routes = $this->load();
-        $entry = $routes[$key] ?? null;
+        $entry  = $routes[$key] ?? null;
 
         return is_array($entry) ? $entry : null;
     }
@@ -38,16 +38,14 @@ final class SubpageRouteRegistry
             return $this->routes;
         }
 
-        if (!is_file($this->routesFile)) {
+        if (! is_file($this->routesFile)) {
             $this->routes = [];
             return $this->routes;
         }
 
-        /** @var mixed $data */
-        $data = include $this->routesFile;
+        $data         = include $this->routesFile;
         $this->routes = is_array($data) ? $data : [];
 
         return $this->routes;
     }
 }
-

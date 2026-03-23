@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Config\ConfigRepository;
@@ -67,15 +68,15 @@ final class WebsiteSettingsController
 
                 new ConfigRepository(__PATH_CONFIGS__)->saveCms($cmsConfigurations);
 
-                \Darkheim\Application\View\MessageRenderer::toast('success', 'Settings successfully saved!');
+                MessageRenderer::toast('success', 'Settings successfully saved!');
             } catch (\Exception $ex) {
-                \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                MessageRenderer::toast('error', $ex->getMessage());
             }
         }
 
         $rows = $this->rowsSchema();
         foreach ($rows as &$row) {
-            $rawValue = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue((string) $row['key'], true);
+            $rawValue = BootstrapContext::cmsValue((string) $row['key'], true);
             if ($row['type'] === 'bool') {
                 $row['value'] = in_array($rawValue, [true, 1, '1', 'true'], true) ? '1' : '0';
             } else {

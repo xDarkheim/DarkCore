@@ -22,7 +22,7 @@ final class RankingRepository
     public function load(string $cacheFile): ?RankingCache
     {
         $raw = $this->cache->loadLegacyText($cacheFile);
-        if (!is_array($raw)) {
+        if (! is_array($raw)) {
             return null;
         }
 
@@ -50,4 +50,3 @@ final class RankingRepository
         return $this->cache->load('online_characters.cache') ?? [];
     }
 }
-

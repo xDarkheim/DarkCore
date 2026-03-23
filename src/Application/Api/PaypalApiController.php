@@ -16,20 +16,20 @@ final class PaypalApiController
     public function render(): void
     {
         $cfg = BootstrapContext::configProvider()?->moduleConfig('donation-paypal');
-        if (!is_array($cfg)) {
+        if (! is_array($cfg)) {
             header('HTTP/1.1 500 Internal Server Error');
             return;
         }
 
         $enableSandbox = $cfg['paypal_enable_sandbox'];
-        $sellerEmail = $cfg['paypal_email'];
+        $sellerEmail   = $cfg['paypal_email'];
 
         $ipn = new PaypalIPN();
         if ($enableSandbox == 1) {
             $ipn->useSandbox();
         }
 
-        $verified = $ipn->verifyIPN();
+        $verified        = $ipn->verifyIPN();
         $paypalIpnStatus = 'VERIFICATION FAILED';
 
         if ($verified) {
@@ -55,12 +55,12 @@ final class PaypalApiController
                 throw new \RuntimeException('RECEIVER EMAIL MISMATCH');
             }
 
-            $common = new Common();
-            $itemNumber = (string) ($_POST['item_number'] ?? '');
+            $common        = new Common();
+            $itemNumber    = (string) ($_POST['item_number'] ?? '');
             $paymentAmount = (float) ($_POST['mc_gross'] ?? 0);
-            $txnId = (string) ($_POST['txn_id'] ?? '');
-            $payerEmail = (string) ($_POST['payer_email'] ?? '');
-            $userId = (string) ($_POST['custom'] ?? '');
+            $txnId         = (string) ($_POST['txn_id'] ?? '');
+            $payerEmail    = (string) ($_POST['payer_email'] ?? '');
+            $userId        = (string) ($_POST['custom'] ?? '');
 
             try {
                 if (($_POST['payment_status'] ?? '') === 'Completed') {
@@ -81,18 +81,20 @@ final class PaypalApiController
     }
 
     /**
-     * @param array<string,mixed> $cfg
+     * @param  array<string,mixed>  $cfg
+     *
+     * @throws \Exception
      */
     private function completePayment(array $cfg, string $userId, float $paymentAmount): void
     {
         $addCredits = (int) floor($paymentAmount * (float) $cfg['paypal_conversion_rate']);
-        if (!Validator::UnsignedNumber($userId)) {
+        if (! Validator::UnsignedNumber($userId)) {
             throw new \RuntimeException('invalid userid');
         }
 
-        $account = new Account();
+        $account     = new Account();
         $accountInfo = $account->accountInformation($userId);
-        if (!is_array($accountInfo)) {
+        if (! is_array($accountInfo)) {
             throw new \RuntimeException('invalid account');
         }
 
@@ -113,10 +115,9 @@ final class PaypalApiController
                 throw new \RuntimeException('invalid identifier');
         }
 
-        $_GET['page'] = 'api';
+        $_GET['page']    = 'api';
         $_GET['subpage'] = 'paypal';
 
         $creditSystem->addCredits($addCredits);
     }
 }
-

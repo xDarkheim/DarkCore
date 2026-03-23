@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Config\ConfigRepository;
@@ -59,9 +60,9 @@ final class AdminCPAccessController
 
                 $cmsConfigurations['admins'] = $adminAccounts;
                 new ConfigRepository(__PATH_CONFIGS__)->saveCms($cmsConfigurations);
-                \Darkheim\Application\View\MessageRenderer::toast('success', 'Settings saved!');
+                MessageRenderer::toast('success', 'Settings saved!');
             } catch (\Exception $ex) {
-                \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                MessageRenderer::toast('error', $ex->getMessage());
             }
         }
 

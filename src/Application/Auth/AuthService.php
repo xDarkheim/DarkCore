@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Auth;
 
+use Darkheim\Infrastructure\Http\Redirector;
+
 /**
  * PSR-4 service that delegates to the legacy `login` classmap class.
  * Keeps all existing business logic (brute-force throttle, session keys,
@@ -36,12 +38,12 @@ final class AuthService
     }
 
     /**
-     * Destroys the current session and redirects to home.
+     * Destroys the current session and redirects home.
      */
     public function logout(): void
     {
         $this->session->clearSession();
-        \Darkheim\Infrastructure\Http\Redirector::go();
+        Redirector::go();
     }
 }
 

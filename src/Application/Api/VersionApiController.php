@@ -12,11 +12,11 @@ final class VersionApiController
     {
         try {
             JsonResponse::send([
-                'code' => 200,
-                'apache' => $this->apacheVersion(),
-                'php' => PHP_VERSION,
+                'code'     => 200,
+                'apache'   => $this->apacheVersion(),
+                'php'      => PHP_VERSION,
                 'darkheim' => __CMS_VERSION__,
-            ], 200);
+            ]);
         } catch (\Exception $ex) {
             JsonResponse::send(['code' => 500, 'error' => $ex->getMessage()], 500);
         }
@@ -28,7 +28,6 @@ final class VersionApiController
             return (string) apache_get_version();
         }
 
-        return (string) ($_SERVER['SERVER_SOFTWARE'] ?? '');
+        return ($_SERVER['SERVER_SOFTWARE'] ?? '');
     }
 }
-

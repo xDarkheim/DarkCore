@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Admincp;
 
 use Darkheim\Application\Credits\CreditSystem;
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class CreditsManagerController
@@ -29,13 +30,13 @@ final class CreditsManagerController
                     'subtract' => $creditSystem->subtractCredits($_POST['credits']),
                     default    => throw new \RuntimeException('Invalid transaction.'),
                 };
-                \Darkheim\Application\View\MessageRenderer::toast('success', $_POST['transaction'] === 'add' ? 'Credits added.' : 'Credits subtracted.');
+                MessageRenderer::toast('success', $_POST['transaction'] === 'add' ? 'Credits added.' : 'Credits subtracted.');
             } catch (\Exception $ex) {
-                \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                MessageRenderer::toast('error', $ex->getMessage());
             }
         }
 
-        $logs = $creditSystem->getLogs();
+        $logs    = $creditSystem->getLogs();
         $logRows = [];
         if (is_array($logs)) {
             foreach ($logs as $d) {
@@ -57,4 +58,3 @@ final class CreditsManagerController
         ]);
     }
 }
-

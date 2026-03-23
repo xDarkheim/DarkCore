@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Admincp;
 
 use Darkheim\Application\Auth\Common;
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class BlockedIpsController
@@ -24,17 +25,17 @@ final class BlockedIpsController
 
         if (isset($_POST['submit_block'], $_POST['ip_address'])) {
             if ($common->blockIpAddress($_POST['ip_address'], $_SESSION['username'])) {
-                \Darkheim\Application\View\MessageRenderer::toast('success', 'IP address blocked.');
+                MessageRenderer::toast('success', 'IP address blocked.');
             } else {
-                \Darkheim\Application\View\MessageRenderer::toast('error', 'Error blocking IP.');
+                MessageRenderer::toast('error', 'Error blocking IP.');
             }
         }
 
         if (isset($_GET['unblock'])) {
             if ($common->unblockIpAddress($_REQUEST['unblock'])) {
-                \Darkheim\Application\View\MessageRenderer::toast('success', 'IP address unblocked.');
+                MessageRenderer::toast('success', 'IP address unblocked.');
             } else {
-                \Darkheim\Application\View\MessageRenderer::toast('error', 'Error unblocking IP.');
+                MessageRenderer::toast('error', 'Error unblocking IP.');
             }
         }
 

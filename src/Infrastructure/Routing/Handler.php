@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Darkheim\Infrastructure\Routing;
 
 use Darkheim\Application\Auth\Common;
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Database\Connection;
+use Darkheim\Infrastructure\Http\Redirector;
 use Darkheim\Infrastructure\Runtime\NativeQueryStore;
 use Darkheim\Infrastructure\Runtime\NativeSessionStore;
 use Darkheim\Infrastructure\Runtime\QueryStore;
@@ -91,7 +92,7 @@ class Handler
             throw new \Exception('Access forbidden.');
         }
         $this->pageAccessDispatcher->dispatch(
-            (string) access,
+            access,
             (string) $config['website_theme'],
             compact('config', 'custom', 'lang', 'tSettings', 'handler', 'moduleHtml', 'themeLayout'),
         );
@@ -140,15 +141,16 @@ class Handler
                     return;
                 }
                 $this->module404();
+            } elseif ($this->subpageRouteDispatcher->dispatch(
+                $resolved['page'],
+                ($resolved['subpage'] ?? ''),
+            )) {
+                $mconfig = BootstrapContext::runtimeState()?->moduleConfig() ?? [];
             } else {
-                if ($this->subpageRouteDispatcher->dispatch($resolved['page'], (string) ($resolved['subpage'] ?? ''))) {
-                    $mconfig = BootstrapContext::runtimeState()?->moduleConfig() ?? [];
-                } else {
-                    $this->module404();
-                }
+                $this->module404();
             }
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+            MessageRenderer::toast('error', $ex->getMessage());
         }
     }
 
@@ -180,22 +182,7 @@ class Handler
             return;
         }
 
-        \Darkheim\Application\View\MessageRenderer::toast('error', 'INVALID MODULE');
-    }
-
-    public function darkcorePowered(): void
-    {
-        echo '<p style="font-size:11px;color:#aaa;">Powered by <a href="https://darkheim.net" target="_blank" style="color:#aaa;">DarkCore CMS</a> v' . __CMS_VERSION__ . '</p>';
-    }
-
-    public function websiteTitle(): void
-    {
-        $titlePhrase  = Translator::phrase('website_title');
-        $cmsConfig = BootstrapContext::configProvider()?->cms() ?? [];
-        $websiteTitle = (Validator::hasValue($titlePhrase) && $titlePhrase !== 'ERROR'
-            ? $titlePhrase
-            : (string) ($cmsConfig['website_title'] ?? ''));
-        echo $websiteTitle;
+        MessageRenderer::toast('error', 'INVALID MODULE');
     }
 
     public function switchLanguage($language): bool
@@ -218,7 +205,7 @@ class Handler
 
     private function module404(): void
     {
-        \Darkheim\Infrastructure\Http\Redirector::go();
+        Redirector::go();
     }
 
     private function dispatchApiRequest(string $page, string $subpage): bool

@@ -9,6 +9,7 @@ use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Credits\CreditSystem;
 use Darkheim\Application\Game\GameHelper;
 use Darkheim\Application\Language\Translator;
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Database\Connection;
@@ -142,27 +143,27 @@ class Character
         $characterData = $this->CharacterData($this->_character);
         $resetNumber   = $characterData[_CLMN_CHR_RSTS_] + 1;
 
-        if ((\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('required_level') >= 1)
-            && $characterData[_CLMN_CHR_LVL_] < \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('required_level')
+        if ((BootstrapContext::moduleValue('required_level') >= 1)
+            && $characterData[_CLMN_CHR_LVL_] < BootstrapContext::moduleValue('required_level')
         ) {
             throw new \Exception(Translator::phrase('error_33'));
         }
 
-        $maxResets = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('maximum_resets');
+        $maxResets = BootstrapContext::moduleValue('maximum_resets');
         if ($maxResets > 0 && $resetNumber > $maxResets) {
             throw new \Exception(Translator::phrase('error_127'));
         }
 
-        $clearStats       = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('keep_stats') != 1;
-        $newLevelUpPoints = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('points_reward') >= 1 ? (int) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('points_reward') : 0;
-        if (\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('multiply_points_by_resets') == 1) {
+        $clearStats       = BootstrapContext::moduleValue('keep_stats') != 1;
+        $newLevelUpPoints = BootstrapContext::moduleValue('points_reward') >= 1 ? (int) BootstrapContext::moduleValue('points_reward') : 0;
+        if (BootstrapContext::moduleValue('multiply_points_by_resets') == 1) {
             $newLevelUpPoints *= $resetNumber;
         }
         if (! $clearStats) {
             $newLevelUpPoints += $characterData[_CLMN_CHR_LVLUP_POINT_];
         }
 
-        $revertClass = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('revert_class_evolution') == 1;
+        $revertClass = BootstrapContext::moduleValue('revert_class_evolution') == 1;
         if ($revertClass) {
             if (! array_key_exists('class_group', $this->_classData[$characterData[_CLMN_CHR_CLASS_]])) {
                 throw new \Exception(Translator::phrase('error_128'));
@@ -170,14 +171,14 @@ class Character
             $classGroup = $this->_classData[$characterData[_CLMN_CHR_CLASS_]]['class_group'];
         }
 
-        $zenRequirement = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('zen_cost');
+        $zenRequirement = BootstrapContext::moduleValue('zen_cost');
         if ($zenRequirement > 0 && $characterData[_CLMN_CHR_ZEN_] < $zenRequirement) {
             throw new \Exception(Translator::phrase('error_34'));
         }
         $newZen = $characterData[_CLMN_CHR_ZEN_] - $zenRequirement;
 
-        $creditConfig = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_config');
-        $creditCost   = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_cost');
+        $creditConfig = BootstrapContext::moduleValue('credit_config');
+        $creditCost   = BootstrapContext::moduleValue('credit_cost');
         $creditSystem = null;
         if ($creditCost > 0 && $creditConfig != 0) {
             $creditSystem = new CreditSystem();
@@ -190,7 +191,7 @@ class Character
         }
 
         $base_stats     = $this->_getClassBaseStats($characterData[_CLMN_CHR_CLASS_]);
-        $clearInventory = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('clear_inventory') == 1;
+        $clearInventory = BootstrapContext::moduleValue('clear_inventory') == 1;
 
         $data = [];
         if ($revertClass) {
@@ -233,8 +234,8 @@ class Character
             $creditSystem->subtractCredits($creditCost);
         }
 
-        $creditRewardConfig = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_reward_config');
-        $creditReward       = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_reward');
+        $creditRewardConfig = BootstrapContext::moduleValue('credit_reward_config');
+        $creditReward       = BootstrapContext::moduleValue('credit_reward');
         if ($creditReward > 0 && $creditRewardConfig != 0) {
             $rewardSystem = new CreditSystem();
             $rewardSystem->setConfigId($creditRewardConfig);
@@ -243,7 +244,7 @@ class Character
             $rewardSystem->addCredits($creditReward);
         }
 
-        \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_8'));
+        MessageRenderer::toast('success', Translator::phrase('success_8'));
     }
 
     public function CharacterResetStats(): void
@@ -270,10 +271,10 @@ class Character
         }
 
         $characterData  = $this->CharacterData($this->_character);
-        $zenRequirement = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('zen_cost');
+        $zenRequirement = BootstrapContext::moduleValue('zen_cost');
 
-        $creditConfig = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_config');
-        $creditCost   = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_cost');
+        $creditConfig = BootstrapContext::moduleValue('credit_config');
+        $creditCost   = BootstrapContext::moduleValue('credit_cost');
         $creditSystem = null;
         if ($creditCost > 0 && $creditConfig != 0) {
             $creditSystem = new CreditSystem();
@@ -321,7 +322,7 @@ class Character
             $creditSystem->subtractCredits($creditCost);
         }
 
-        \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_9'));
+        MessageRenderer::toast('success', Translator::phrase('success_9'));
     }
 
     public function CharacterClearPK(): void
@@ -352,10 +353,10 @@ class Character
             throw new \Exception(Translator::phrase('error_117'));
         }
 
-        $zenRequirement = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('zen_cost');
+        $zenRequirement = BootstrapContext::moduleValue('zen_cost');
 
-        $creditConfig = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_config');
-        $creditCost   = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_cost');
+        $creditConfig = BootstrapContext::moduleValue('credit_config');
+        $creditCost   = BootstrapContext::moduleValue('credit_cost');
         $creditSystem = null;
         if ($creditCost > 0 && $creditConfig != 0) {
             $creditSystem = new CreditSystem();
@@ -383,7 +384,7 @@ class Character
             $creditSystem->subtractCredits($creditCost);
         }
 
-        \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_10'));
+        MessageRenderer::toast('success', Translator::phrase('success_10'));
     }
 
     public function CharacterUnstick(): void
@@ -417,10 +418,10 @@ class Character
             throw new \Exception(Translator::phrase('error_115'));
         }
 
-        $zenRequirement = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('zen_cost');
+        $zenRequirement = BootstrapContext::moduleValue('zen_cost');
 
-        $creditConfig = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_config');
-        $creditCost   = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_cost');
+        $creditConfig = BootstrapContext::moduleValue('credit_config');
+        $creditCost   = BootstrapContext::moduleValue('credit_cost');
         $creditSystem = null;
         if ($creditCost > 0 && $creditConfig != 0) {
             $creditSystem = new CreditSystem();
@@ -448,7 +449,7 @@ class Character
             $creditSystem->subtractCredits($creditCost);
         }
 
-        \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_11'));
+        MessageRenderer::toast('success', Translator::phrase('success_11'));
     }
 
     public function CharacterClearSkillTree(): void
@@ -475,7 +476,7 @@ class Character
         }
 
         $characterData = $this->CharacterData($this->_character);
-        if ($characterData[_CLMN_CHR_LVL_] < \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('required_level')) {
+        if ($characterData[_CLMN_CHR_LVL_] < BootstrapContext::moduleValue('required_level')) {
             throw new \Exception(Translator::phrase('error_120'));
         }
 
@@ -484,7 +485,7 @@ class Character
         if (! is_array($characterMasterLvlData)) {
             throw new \Exception(Translator::phrase('error_119'));
         }
-        if ($characterMasterLvlData[_CLMN_ML_LVL_] < \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('required_master_level')) {
+        if ($characterMasterLvlData[_CLMN_ML_LVL_] < BootstrapContext::moduleValue('required_master_level')) {
             throw new \Exception(Translator::phrase('error_121'));
         }
 
@@ -501,10 +502,10 @@ class Character
             $skillEnhancementPoints = $characterLevel - $this->_skilEnhanceTreeLevel;
         }
 
-        $zenRequirement = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('zen_cost');
+        $zenRequirement = BootstrapContext::moduleValue('zen_cost');
 
-        $creditConfig = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_config');
-        $creditCost   = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_cost');
+        $creditConfig = BootstrapContext::moduleValue('credit_config');
+        $creditCost   = BootstrapContext::moduleValue('credit_cost');
         $creditSystem = null;
         if ($creditCost > 0 && $creditConfig != 0) {
             $creditSystem = new CreditSystem();
@@ -554,7 +555,7 @@ class Character
             $creditSystem->subtractCredits($creditCost);
         }
 
-        \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_12'));
+        MessageRenderer::toast('success', Translator::phrase('success_12'));
     }
 
     public function CharacterAddStats(): void
@@ -576,8 +577,8 @@ class Character
         }
 
         $pointsTotal = $this->_strength + $this->_agility + $this->_vitality + $this->_energy + $this->_command;
-        if ($pointsTotal < \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('minimum_limit')) {
-            throw new \Exception(Translator::phraseFmt('error_54', [\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('minimum_limit')]));
+        if ($pointsTotal < BootstrapContext::moduleValue('minimum_limit')) {
+            throw new \Exception(Translator::phraseFmt('error_54', [BootstrapContext::moduleValue('minimum_limit')]));
         }
 
         $account = new Account();
@@ -595,17 +596,25 @@ class Character
         $vit = $characterData[_CLMN_CHR_STAT_VIT_] + $this->_vitality;
         $ene = $characterData[_CLMN_CHR_STAT_ENE_] + $this->_energy;
 
-        if ($str > \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('max_stats')) {
-            throw new \Exception(Translator::phraseFmt('error_53', [number_format(\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('max_stats'))]));
+        if ($str > BootstrapContext::moduleValue('max_stats')) {
+            throw new \Exception(Translator::phraseFmt('error_53', [number_format(
+                BootstrapContext::moduleValue('max_stats'),
+            )]));
         }
-        if ($agi > \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('max_stats')) {
-            throw new \Exception(Translator::phraseFmt('error_53', [number_format(\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('max_stats'))]));
+        if ($agi > BootstrapContext::moduleValue('max_stats')) {
+            throw new \Exception(Translator::phraseFmt('error_53', [number_format(
+                BootstrapContext::moduleValue('max_stats'),
+            )]));
         }
-        if ($vit > \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('max_stats')) {
-            throw new \Exception(Translator::phraseFmt('error_53', [number_format(\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('max_stats'))]));
+        if ($vit > BootstrapContext::moduleValue('max_stats')) {
+            throw new \Exception(Translator::phraseFmt('error_53', [number_format(
+                BootstrapContext::moduleValue('max_stats'),
+            )]));
         }
-        if ($ene > \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('max_stats')) {
-            throw new \Exception(Translator::phraseFmt('error_53', [number_format(\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('max_stats'))]));
+        if ($ene > BootstrapContext::moduleValue('max_stats')) {
+            throw new \Exception(Translator::phraseFmt('error_53', [number_format(
+                BootstrapContext::moduleValue('max_stats'),
+            )]));
         }
 
         $cmd = 0;
@@ -619,33 +628,35 @@ class Character
                 throw new \Exception(Translator::phrase('error_52'));
             }
             $cmd = $characterData[_CLMN_CHR_STAT_CMD_] + $this->_command;
-            if ($cmd > \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('max_stats')) {
-                throw new \Exception(Translator::phraseFmt('error_53', [number_format(\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('max_stats'))]));
+            if ($cmd > BootstrapContext::moduleValue('max_stats')) {
+                throw new \Exception(Translator::phraseFmt('error_53', [number_format(
+                    BootstrapContext::moduleValue('max_stats'),
+                )]));
             }
         }
 
-        if ($characterData[_CLMN_CHR_LVL_] < \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('required_level')) {
+        if ($characterData[_CLMN_CHR_LVL_] < BootstrapContext::moduleValue('required_level')) {
             throw new \Exception(Translator::phrase('error_123'));
         }
 
-        if (\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('required_master_level') >= 1) {
+        if (BootstrapContext::moduleValue('required_master_level') >= 1) {
             /** @phpstan-ignore notEqual.alwaysTrue */
             $characterMasterLvlData = _TBL_CHR_ != _TBL_MASTERLVL_ ? $this->getMasterLevelInfo($this->_character) : $characterData;
             if (! is_array($characterMasterLvlData)) {
                 throw new \Exception(Translator::phrase('error_119'));
             }
-            if ($characterMasterLvlData[_CLMN_ML_LVL_] < \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('required_master_level')) {
+            if ($characterMasterLvlData[_CLMN_ML_LVL_] < BootstrapContext::moduleValue('required_master_level')) {
                 throw new \Exception(Translator::phrase('error_124'));
             }
         }
 
-        $zenRequirement = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('zen_cost');
+        $zenRequirement = BootstrapContext::moduleValue('zen_cost');
         if ($zenRequirement > 0 && $characterData[_CLMN_CHR_ZEN_] < $zenRequirement) {
             throw new \Exception(Translator::phrase('error_34'));
         }
 
-        $creditConfig = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_config');
-        $creditCost   = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('credit_cost');
+        $creditConfig = BootstrapContext::moduleValue('credit_config');
+        $creditCost   = BootstrapContext::moduleValue('credit_cost');
         $creditSystem = null;
         if ($creditCost > 0 && $creditConfig != 0) {
             $creditSystem = new CreditSystem();
@@ -682,7 +693,7 @@ class Character
             $creditSystem->subtractCredits($creditCost);
         }
 
-        \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_17'));
+        MessageRenderer::toast('success', Translator::phrase('success_17'));
     }
 
     // ─── Data retrieval ───────────────────────────────────────────────────────

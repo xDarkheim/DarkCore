@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\View\ViewRenderer;
@@ -19,52 +20,57 @@ final class LatestBansController
 
     public function render(): void
     {
-        $db = Connection::Database('MuOnline');
+        $db         = Connection::Database('MuOnline');
         $admincpUrl = new AdmincpUrlGenerator();
 
         if (isset($_GET['liftban'])) {
             try {
-                if (!Validator::UnsignedNumber($_GET['liftban'])) {
+                if (! Validator::UnsignedNumber($_GET['liftban'])) {
                     throw new \RuntimeException('Invalid ban id.');
                 }
                 $banInfo = $db->query_fetch_single('SELECT * FROM ' . Ban_Log . ' WHERE id = ?', [$_GET['liftban']]);
-                if (!is_array($banInfo)) {
+                if (! is_array($banInfo)) {
                     throw new \RuntimeException('Ban ID does not exist.');
                 }
                 $unban = $db->query(
                     'UPDATE ' . _TBL_MI_ . ' SET ' . _CLMN_BLOCCODE_ . ' = 0 WHERE ' . _CLMN_USERNM_ . ' = ?',
-                    [$banInfo['account_id']]
+                    [$banInfo['account_id']],
                 );
-                if (!$unban) {
+                if (! $unban) {
                     throw new \RuntimeException('Could not unban account.');
                 }
                 $db->query('DELETE FROM ' . Ban_Log . ' WHERE account_id = ?', [$banInfo['account_id']]);
                 $db->query('DELETE FROM ' . Bans . ' WHERE account_id = ?', [$banInfo['account_id']]);
-                \Darkheim\Application\View\MessageRenderer::toast('success', 'Account ban lifted');
+                MessageRenderer::toast('success', 'Account ban lifted');
             } catch (\Exception $ex) {
-                \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                MessageRenderer::toast('error', $ex->getMessage());
             }
         }
 
         $module = (string) ($_REQUEST['module'] ?? 'latestbans');
 
         $this->view->render('admincp/latestbans', [
-            'temporalBans'  => $this->buildBanRows($db->query_fetch(
-                'SELECT TOP 25 * FROM ' . Ban_Log . " WHERE ban_type = ? ORDER BY id DESC", ['temporal']
+            'temporalBans' => $this->buildBanRows($db->query_fetch(
+                'SELECT TOP 25 * FROM ' . Ban_Log . " WHERE ban_type = ? ORDER BY id DESC",
+                ['temporal'],
             ), $module, $admincpUrl),
             'permanentBans' => $this->buildBanRows($db->query_fetch(
-                'SELECT TOP 25 * FROM ' . Ban_Log . " WHERE ban_type = ? ORDER BY id DESC", ['permanent']
+                'SELECT TOP 25 * FROM ' . Ban_Log . " WHERE ban_type = ? ORDER BY id DESC",
+                ['permanent'],
             ), $module, $admincpUrl),
         ]);
     }
 
     /**
-     * @param mixed $rows
+     * @param  mixed  $rows
+     * @param  string  $module
+     * @param  AdmincpUrlGenerator  $admincpUrl
+     *
      * @return array<int,array{account:string,bannedBy:string,banDate:string,banDays:string,banReason:string,liftBanUrl:string}>
      */
     private function buildBanRows(mixed $rows, string $module, AdmincpUrlGenerator $admincpUrl): array
     {
-        if (!is_array($rows)) {
+        if (! is_array($rows)) {
             return [];
         }
         $result = [];
@@ -81,4 +87,3 @@ final class LatestBansController
         return $result;
     }
 }
-

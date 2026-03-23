@@ -24,17 +24,17 @@ final class TopVotesController
         $month = date('F Y');
 
         try {
-            $db   = Connection::Database('MuOnline');
-            $common = new Common();
-            $startOfMonth = new \DateTimeImmutable('first day of this month 00:00:00');
+            $db               = Connection::Database('MuOnline');
+            $common           = new Common();
+            $startOfMonth     = new \DateTimeImmutable('first day of this month 00:00:00');
             $startOfNextMonth = $startOfMonth->modify('+1 month');
-            $ts1  = $startOfMonth->getTimestamp();
-            $ts2  = $startOfNextMonth->getTimestamp();
-            $logs = $db->query_fetch(
+            $ts1              = $startOfMonth->getTimestamp();
+            $ts2              = $startOfNextMonth->getTimestamp();
+            $logs             = $db->query_fetch(
                 'SELECT TOP 100 user_id, COUNT(*) as totalvotes FROM ' . Vote_Logs . ' WHERE timestamp BETWEEN ? AND ? GROUP BY user_id ORDER BY totalvotes DESC',
-                [$ts1, $ts2]
+                [$ts1, $ts2],
             );
-            if (!is_array($logs)) {
+            if (! is_array($logs)) {
                 throw new \RuntimeException('No vote logs found.');
             }
             foreach ($logs as $idx => $v) {
@@ -56,4 +56,3 @@ final class TopVotesController
         ]);
     }
 }
-

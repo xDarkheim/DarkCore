@@ -23,11 +23,11 @@ final class LatestPaypalController
         $error = null;
 
         try {
-            $db     = Connection::Database('MuOnline');
+            $db         = Connection::Database('MuOnline');
             $admincpUrl = new AdmincpUrlGenerator();
-            $common = new Common();
-            $data   = $db->query_fetch('SELECT * FROM ' . PayPal_Transactions . ' ORDER BY id DESC');
-            if (!is_array($data)) {
+            $common     = new Common();
+            $data       = $db->query_fetch('SELECT * FROM ' . PayPal_Transactions . ' ORDER BY id DESC');
+            if (! is_array($data)) {
                 throw new \RuntimeException('No PayPal transactions found.');
             }
             foreach ($data as $tx) {
@@ -52,4 +52,3 @@ final class LatestPaypalController
         ]);
     }
 }
-

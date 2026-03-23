@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -58,7 +59,7 @@ final class NavbarController
                 'rows' => $rows,
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+            MessageRenderer::toast('error', $ex->getMessage());
         }
     }
 
@@ -74,9 +75,9 @@ final class NavbarController
             }
             unset($cfg[$id]);
             $this->saveConfig($cfg);
-            \Darkheim\Application\View\MessageRenderer::toast('success', 'Changes successfully saved!');
+            MessageRenderer::toast('success', 'Changes successfully saved!');
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+            MessageRenderer::toast('error', $ex->getMessage());
         }
     }
 
@@ -103,10 +104,10 @@ final class NavbarController
 
             $newElementData = [
                 'active'     => ($_POST['navbar_status'] ?? '0') == 1,
-                'type'       => (string) $_POST['navbar_type'],
+                'type'       => $_POST['navbar_type'],
                 'phrase'     => (string) $_POST['navbar_phrase'],
                 'link'       => (string) ($_POST['navbar_link'] ?? ''),
-                'visibility' => (string) $_POST['navbar_visibility'],
+                'visibility' => $_POST['navbar_visibility'],
                 'newtab'     => ($_POST['navbar_newtab'] ?? '0') == 1,
                 'order'      => (int) ($_POST['navbar_order'] ?? 0),
             ];
@@ -119,13 +120,15 @@ final class NavbarController
 
             usort($cfg, static fn(array $a, array $b): int => ((int) ($a['order'] ?? 0)) - ((int) ($b['order'] ?? 0)));
             $this->saveConfig($cfg);
-            \Darkheim\Application\View\MessageRenderer::toast('success', $isEdit ? 'Changes successfully saved!' : 'Navbar successfully updated!');
+            MessageRenderer::toast('success', $isEdit ? 'Changes successfully saved!' : 'Navbar successfully updated!');
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+            MessageRenderer::toast('error', $ex->getMessage());
         }
     }
 
-    /** @param array<int|string,mixed> $cfg */
+    /** @param  array<int|string,mixed>  $cfg
+     * @throws \JsonException
+     */
     private function saveConfig(array $cfg): void
     {
         $json    = json_encode($cfg, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);

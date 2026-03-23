@@ -7,7 +7,9 @@ namespace Darkheim\Infrastructure\Http;
 final class JsonResponse
 {
     /**
-     * @param array<string, mixed> $payload
+     * @param  array<string, mixed>  $payload
+     *
+     * @throws \JsonException
      */
     public static function send(array $payload, int $statusCode = 200): void
     {

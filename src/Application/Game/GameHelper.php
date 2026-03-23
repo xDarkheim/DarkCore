@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Game;
 
-use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 
 /**
  * Game-specific display/lookup helpers.
@@ -13,7 +13,7 @@ use Darkheim\Domain\Validator;
  * Centralises all character-class, map, PK-level, Gens, and guild-logo logic
  * that was previously scattered across global functions in functions.php.
  *
- * All methods are static so they can be used both from new OOP call-sites
+ * All methods are static, so they can be used both from new OOP call-sites
  * and from the thin global-function wrappers in includes/bootstrap/compat.php.
  */
 final class GameHelper
@@ -28,7 +28,7 @@ final class GameHelper
     public static function playerClass(int $code): string
     {
         $custom = self::custom();
-        if (!array_key_exists($code, $custom['character_class'] ?? [])) {
+        if (! array_key_exists($code, $custom['character_class'] ?? [])) {
             return 'Unknown';
         }
 
@@ -51,7 +51,7 @@ final class GameHelper
     ): string {
         $custom    = self::custom();
         $classes   = $custom['character_class'] ?? [];
-        $avatarDir = defined('__PATH_THEME_IMG__') ? (string) __PATH_THEME_IMG__ : '';
+        $avatarDir = defined('__PATH_THEME_IMG__') ? __PATH_THEME_IMG__ : '';
 
         // Config key for the avatar subdirectory
         try {
@@ -64,7 +64,7 @@ final class GameHelper
         $fullPath  = $avatarDir . $dir . '/' . $imageFile;
         $className = array_key_exists($code, $classes) ? (string) $classes[$code][0] : '';
 
-        if (!$htmlImageTag) {
+        if (! $htmlImageTag) {
             return $fullPath;
         }
 
@@ -92,11 +92,11 @@ final class GameHelper
         $custom = self::custom();
         $maps   = $custom['map_list'] ?? [];
 
-        if (!is_array($maps)) {
+        if (! is_array($maps)) {
             return 'Lorencia Bar';
         }
 
-        if (!array_key_exists($id, $maps)) {
+        if (! array_key_exists($id, $maps)) {
             try {
                 $debug = BootstrapContext::configProvider()?->cms()['error_reporting'] ?? false;
             } catch (\Throwable) {
@@ -115,7 +115,7 @@ final class GameHelper
         $custom = self::custom();
         $levels = $custom['pk_level'] ?? [];
 
-        if (!is_array($levels) || !array_key_exists($id, $levels)) {
+        if (! is_array($levels) || ! array_key_exists($id, $levels)) {
             return null;
         }
 
@@ -161,7 +161,7 @@ final class GameHelper
     public static function guildLogo(string $binaryData = '', int $size = 40): string
     {
         $imgSize = Validator::UnsignedNumber($size) ? $size : 40;
-        $api     = defined('__PATH_API__') ? (string) __PATH_API__ : '';
+        $api     = defined('__PATH_API__') ? __PATH_API__ : '';
 
         return '<img src="' . $api . 'guildmark.php?data=' . $binaryData
             . '&size=' . urlencode((string) $size) . '" width="' . $imgSize . '" height="' . $imgSize . '">';
@@ -181,4 +181,3 @@ final class GameHelper
         return BootstrapContext::runtimeState()?->customConfig() ?? [];
     }
 }
-

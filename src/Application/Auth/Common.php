@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Auth;
 
+use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Database\Connection;
-use Darkheim\Domain\Validator;
 
 /**
  * Common base class — shared account/auth utilities used by child classes.
@@ -21,32 +21,48 @@ class Common
 
     public function __construct()
     {
-        $this->muonline = Connection::Database('MuOnline');
-        $this->_passwordEncryption = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('SQL_PASSWORD_ENCRYPTION', true);
-        $this->_sha256salt          = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('SQL_SHA256_SALT', true);
-        $this->_debug               = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('error_reporting', true);
+        $this->muonline            = Connection::Database('MuOnline');
+        $this->_passwordEncryption = BootstrapContext::cmsValue('SQL_PASSWORD_ENCRYPTION', true);
+        $this->_sha256salt         = BootstrapContext::cmsValue('SQL_SHA256_SALT', true);
+        $this->_debug              = BootstrapContext::cmsValue('error_reporting', true);
     }
 
     public function emailExists($email)
     {
-        if (!Validator::Email($email)) return;
-        $result = $this->muonline->query_fetch_single("SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_EMAIL_ . " = ?", array($email));
-        if (is_array($result)) return true;
+        if (! Validator::Email($email)) {
+            return;
+        }
+        $result = $this->muonline->query_fetch_single("SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_EMAIL_ . " = ?", [$email]);
+        if (is_array($result)) {
+            return true;
+        }
     }
 
     public function userExists($username)
     {
-        if (!Validator::UsernameLength($username)) return;
-        if (!Validator::AlphaNumeric($username)) return;
-        $result = $this->muonline->query_fetch_single("SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_USERNM_ . " = ?", array($username));
-        if (is_array($result)) return true;
+        if (! Validator::UsernameLength($username)) {
+            return;
+        }
+        if (! Validator::AlphaNumeric($username)) {
+            return;
+        }
+        $result = $this->muonline->query_fetch_single("SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_USERNM_ . " = ?", [$username]);
+        if (is_array($result)) {
+            return true;
+        }
     }
 
     public function validateUser($username, $password)
     {
-        if (!Validator::UsernameLength($username)) return;
-        if (!Validator::AlphaNumeric($username)) return;
-        if (!Validator::PasswordLength($password)) return;
+        if (! Validator::UsernameLength($username)) {
+            return;
+        }
+        if (! Validator::AlphaNumeric($username)) {
+            return;
+        }
+        if (! Validator::PasswordLength($password)) {
+            return;
+        }
 
         $data = ['username' => $username, 'password' => $password];
 
@@ -57,11 +73,11 @@ class Common
                 break;
             case 'phpmd5':
                 $data['password'] = md5($password);
-                $query = "SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_USERNM_ . " = :username AND " . _CLMN_PASSWD_ . " = :password";
+                $query            = "SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_USERNM_ . " = :username AND " . _CLMN_PASSWD_ . " = :password";
                 break;
             case 'sha256':
                 $data['password'] = $password . $username . $this->_sha256salt;
-                $query = "SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_USERNM_ . " = :username AND " . _CLMN_PASSWD_ . " = HASHBYTES('SHA2_256', CAST(:password AS VARCHAR(MAX)))";
+                $query            = "SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_USERNM_ . " = :username AND " . _CLMN_PASSWD_ . " = HASHBYTES('SHA2_256', CAST(:password AS VARCHAR(MAX)))";
                 break;
             default:
                 $query = "SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_USERNM_ . " = :username AND " . _CLMN_PASSWD_ . " = :password";
@@ -73,40 +89,68 @@ class Common
 
     public function retrieveUserID($username)
     {
-        if (!Validator::UsernameLength($username)) return;
-        if (!Validator::AlphaNumeric($username)) return;
-        $result = $this->muonline->query_fetch_single("SELECT " . _CLMN_MEMBID_ . " FROM " . _TBL_MI_ . " WHERE " . _CLMN_USERNM_ . " = ?", array($username));
-        if (is_array($result)) return $result[_CLMN_MEMBID_];
+        if (! Validator::UsernameLength($username)) {
+            return;
+        }
+        if (! Validator::AlphaNumeric($username)) {
+            return;
+        }
+        $result = $this->muonline->query_fetch_single("SELECT " . _CLMN_MEMBID_ . " FROM " . _TBL_MI_ . " WHERE " . _CLMN_USERNM_ . " = ?", [$username]);
+        if (is_array($result)) {
+            return $result[_CLMN_MEMBID_];
+        }
     }
 
     public function retrieveUserIDbyEmail($email)
     {
-        if (!$this->emailExists($email)) return;
-        $result = $this->muonline->query_fetch_single("SELECT " . _CLMN_MEMBID_ . " FROM " . _TBL_MI_ . " WHERE " . _CLMN_EMAIL_ . " = ?", array($email));
-        if (is_array($result)) return $result[_CLMN_MEMBID_];
+        if (! $this->emailExists($email)) {
+            return;
+        }
+        $result = $this->muonline->query_fetch_single("SELECT " . _CLMN_MEMBID_ . " FROM " . _TBL_MI_ . " WHERE " . _CLMN_EMAIL_ . " = ?", [$email]);
+        if (is_array($result)) {
+            return $result[_CLMN_MEMBID_];
+        }
     }
 
     public function accountInformation($id)
     {
-        if (!Validator::Number($id)) return;
-        $result = $this->muonline->query_fetch_single("SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_MEMBID_ . " = ?", array($id));
-        if (is_array($result)) return $result;
+        if (! Validator::Number($id)) {
+            return;
+        }
+        $result = $this->muonline->query_fetch_single("SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_MEMBID_ . " = ?", [$id]);
+        if (is_array($result)) {
+            return $result;
+        }
     }
 
     public function accountOnline($username)
     {
-        if (!Validator::UsernameLength($username)) return;
-        if (!Validator::AlphaNumeric($username)) return;
-        $result = $this->muonline->query_fetch_single("SELECT " . _CLMN_CONNSTAT_ . " FROM " . _TBL_MS_ . " WHERE " . _CLMN_USERNM_ . " = ? AND " . _CLMN_CONNSTAT_ . " = ?", array($username, 1));
-        if (is_array($result)) return true;
+        if (! Validator::UsernameLength($username)) {
+            return;
+        }
+        if (! Validator::AlphaNumeric($username)) {
+            return;
+        }
+        $result = $this->muonline->query_fetch_single("SELECT " . _CLMN_CONNSTAT_ . " FROM " . _TBL_MS_ . " WHERE " . _CLMN_USERNM_ . " = ? AND " . _CLMN_CONNSTAT_ . " = ?", [$username, 1]);
+        if (is_array($result)) {
+            return true;
+        }
     }
 
     public function changePassword($id, $username, $new_password)
     {
-        if (!Validator::UnsignedNumber($id)) return;
-        if (!Validator::UsernameLength($username)) return;
-        if (!Validator::AlphaNumeric($username)) return;
-        if (!Validator::PasswordLength($new_password)) return;
+        if (! Validator::UnsignedNumber($id)) {
+            return;
+        }
+        if (! Validator::UsernameLength($username)) {
+            return;
+        }
+        if (! Validator::AlphaNumeric($username)) {
+            return;
+        }
+        if (! Validator::PasswordLength($new_password)) {
+            return;
+        }
 
         switch ($this->_passwordEncryption) {
             case 'wzmd5':
@@ -127,39 +171,61 @@ class Common
         }
 
         $result = $this->muonline->query($query, $data);
-        if ($result) return true;
+        if ($result) {
+            return true;
+        }
     }
 
     public function addPasswordChangeRequest($userid, $new_password, $auth_code)
     {
-        if (!Validator::hasValue($userid)) return;
-        if (!Validator::hasValue($new_password)) return;
-        if (!Validator::hasValue($auth_code)) return;
-        if (!Validator::PasswordLength($new_password)) return;
+        if (! Validator::hasValue($userid)) {
+            return;
+        }
+        if (! Validator::hasValue($new_password)) {
+            return;
+        }
+        if (! Validator::hasValue($auth_code)) {
+            return;
+        }
+        if (! Validator::PasswordLength($new_password)) {
+            return;
+        }
 
         $data   = [$userid, $new_password, $auth_code, time()];
         $query  = "INSERT INTO " . Passchange_Request . " (user_id,new_password,auth_code,request_date) VALUES (?, ?, ?, ?)";
         $result = $this->muonline->query($query, $data);
-        if ($result) return true;
+        if ($result) {
+            return true;
+        }
     }
 
     public function hasActivePasswordChangeRequest($userid)
     {
-        if (!Validator::hasValue($userid)) return;
-        $result = $this->muonline->query_fetch_single("SELECT * FROM " . Passchange_Request . " WHERE user_id = ?", array($userid));
-        if (!is_array($result)) return;
+        if (! Validator::hasValue($userid)) {
+            return;
+        }
+        $result = $this->muonline->query_fetch_single("SELECT * FROM " . Passchange_Request . " WHERE user_id = ?", [$userid]);
+        if (! is_array($result)) {
+            return;
+        }
         $configs = BootstrapContext::configProvider()?->moduleConfig('my-password');
-        if (!is_array($configs)) return;
+        if (! is_array($configs)) {
+            return;
+        }
         $request_timeout = $configs['change_password_request_timeout'] * 3600;
         $request_date    = $result['request_date'] + $request_timeout;
-        if (time() < $request_date) return true;
+        if (time() < $request_date) {
+            return true;
+        }
         $this->removePasswordChangeRequest($userid);
     }
 
     public function removePasswordChangeRequest($userid)
     {
-        $result = $this->muonline->query("DELETE FROM " . Passchange_Request . " WHERE user_id = ?", array($userid));
-        if ($result) return true;
+        $result = $this->muonline->query("DELETE FROM " . Passchange_Request . " WHERE user_id = ?", [$userid]);
+        if ($result) {
+            return true;
+        }
     }
 
     public function generatePasswordChangeVerificationURL($user_id, $auth_code): string
@@ -174,19 +240,25 @@ class Common
 
     public function updateEmail($userid, $newEmail)
     {
-        if (!Validator::hasValue($userid)) return;
-        if (!Validator::Email($newEmail)) return;
-        $result = $this->muonline->query("UPDATE " . _TBL_MI_ . " SET " . _CLMN_EMAIL_ . " = ? WHERE " . _CLMN_MEMBID_ . " = ?", array($newEmail, $userid));
-        if ($result) return true;
+        if (! Validator::hasValue($userid)) {
+            return;
+        }
+        if (! Validator::Email($newEmail)) {
+            return;
+        }
+        $result = $this->muonline->query("UPDATE " . _TBL_MI_ . " SET " . _CLMN_EMAIL_ . " = ? WHERE " . _CLMN_MEMBID_ . " = ?", [$newEmail, $userid]);
+        if ($result) {
+            return true;
+        }
     }
 
     public function paypal_transaction($transactionId, $userId, $paymentAmount, $paypalEmail, $orderId): bool
     {
-        if (!Validator::hasValue($transactionId) || !Validator::UnsignedNumber($userId) || !Validator::hasValue($paypalEmail) || !Validator::hasValue($orderId)) {
+        if (! Validator::hasValue($transactionId) || ! Validator::UnsignedNumber($userId) || ! Validator::hasValue($paypalEmail) || ! Validator::hasValue($orderId)) {
             return false;
         }
 
-        return (bool) $this->muonline->query(
+        return $this->muonline->query(
             'INSERT INTO ' . PayPal_Transactions . ' (transaction_id, user_id, payment_amount, paypal_email, transaction_date, transaction_status, order_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [
                 (string) $transactionId,
@@ -196,55 +268,63 @@ class Common
                 time(),
                 1,
                 (string) $orderId,
-            ]
+            ],
         );
     }
 
     public function paypal_transaction_reversed_updatestatus($orderId): bool
     {
-        if (!Validator::hasValue($orderId)) {
+        if (! Validator::hasValue($orderId)) {
             return false;
         }
 
-        return (bool) $this->muonline->query(
+        return $this->muonline->query(
             'UPDATE ' . PayPal_Transactions . ' SET transaction_status = ? WHERE order_id = ?',
-            [0, (string) $orderId]
+            [0, (string) $orderId],
         );
     }
 
     public function blockAccount($userId): bool
     {
-        if (!Validator::UnsignedNumber($userId)) {
+        if (! Validator::UnsignedNumber($userId)) {
             return false;
         }
 
-        return (bool) $this->muonline->query(
+        return $this->muonline->query(
             'UPDATE ' . _TBL_MI_ . ' SET ' . _CLMN_BLOCCODE_ . ' = ? WHERE ' . _CLMN_MEMBID_ . ' = ?',
-            [1, (int) $userId]
+            [1, (int) $userId],
         );
     }
 
     public function retrieveBlockedIPs(): array|false
     {
-        $result = $this->muonline->query_fetch("SELECT * FROM " . Blocked_IP . " ORDER BY block_date DESC", []);
+        $result = $this->muonline->query_fetch(
+            "SELECT * FROM " . Blocked_IP . " ORDER BY block_date DESC",
+        );
         return is_array($result) ? $result : false;
     }
 
     public function blockIpAddress(string $ip, string $blockedBy): bool
     {
-        if (!Validator::hasValue($ip)) return false;
-        if (!Validator::hasValue($blockedBy)) return false;
-        $result = $this->muonline->query(
+        if (! Validator::hasValue($ip)) {
+            return false;
+        }
+        if (! Validator::hasValue($blockedBy)) {
+            return false;
+        }
+
+        return $this->muonline->query(
             "INSERT INTO " . Blocked_IP . " (block_ip, block_by, block_date) VALUES (?, ?, ?)",
-            [$ip, $blockedBy, time()]
+            [$ip, $blockedBy, time()],
         );
-        return (bool) $result;
     }
 
     public function unblockIpAddress($id): bool
     {
-        if (!Validator::Number($id)) return false;
-        $result = $this->muonline->query("DELETE FROM " . Blocked_IP . " WHERE id = ?", [$id]);
-        return (bool) $result;
+        if (! Validator::Number($id)) {
+            return false;
+        }
+
+        return $this->muonline->query("DELETE FROM " . Blocked_IP . " WHERE id = ?", [$id]);
     }
 }

@@ -8,7 +8,7 @@ final class JsonConfigReader
 {
     public function readFile(string $path): ?array
     {
-        if (!is_file($path) || !is_readable($path)) {
+        if (! is_file($path) || ! is_readable($path)) {
             return null;
         }
 
@@ -26,4 +26,3 @@ final class JsonConfigReader
         return is_array($decoded) ? $decoded : null;
     }
 }
-

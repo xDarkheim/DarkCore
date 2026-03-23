@@ -21,7 +21,7 @@ final class ProfileRenderer
      */
     public static function player(string $playerName, bool $linkOnly = false): string
     {
-        if (!self::profilesEnabled('player_profiles')) {
+        if (! self::profilesEnabled('player_profiles')) {
             return $playerName;
         }
 
@@ -30,7 +30,7 @@ final class ProfileRenderer
             ? self::base64urlEncode($playerName)
             : urlencode($playerName);
 
-        $base = (defined('__BASE_URL__') ? (string) __BASE_URL__ : '') . 'profile/player/req/' . $slug;
+        $base = (defined('__BASE_URL__') ? __BASE_URL__ : '') . 'profile/player/req/' . $slug;
 
         if ($linkOnly) {
             return $base;
@@ -45,7 +45,7 @@ final class ProfileRenderer
      */
     public static function guild(string $guildName, bool $linkOnly = false): string
     {
-        if (!self::profilesEnabled('guild_profiles')) {
+        if (! self::profilesEnabled('guild_profiles')) {
             return $guildName;
         }
 
@@ -54,7 +54,7 @@ final class ProfileRenderer
             ? self::base64urlEncode($guildName)
             : urlencode($guildName);
 
-        $base = (defined('__BASE_URL__') ? (string) __BASE_URL__ : '') . 'profile/guild/req/' . $slug;
+        $base = (defined('__BASE_URL__') ? __BASE_URL__ : '') . 'profile/guild/req/' . $slug;
 
         if ($linkOnly) {
             return $base;
@@ -75,7 +75,7 @@ final class ProfileRenderer
             return false;
         }
 
-        return is_array($cms) && !empty($cms[$key]);
+        return is_array($cms) && ! empty($cms[$key]);
     }
 
     private static function isEncoded(): bool
@@ -98,4 +98,3 @@ final class ProfileRenderer
         return rtrim($url, '=');
     }
 }
-

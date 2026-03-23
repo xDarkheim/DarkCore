@@ -21,18 +21,17 @@ final class NewsRepository
      * Returns all news items from cache, newest-first order (as stored).
      *
      * @return NewsItem[]
-     * @throws \JsonException
      */
     public function findAll(): array
     {
         $raw = $this->cache->load('news.cache');
-        if (!is_array($raw)) {
+        if (! is_array($raw)) {
             return [];
         }
 
         return array_values(array_filter(array_map(
             fn(array $row) => $this->hydrate($row),
-            $raw
+            $raw,
         )));
     }
 
@@ -55,7 +54,7 @@ final class NewsRepository
 
         // Translation cache (short)
         if ($language !== '' && $short) {
-            $file = $translationsDir . 'news_' . $id . '_' . $language . '_s.cache';
+            $file    = $translationsDir . 'news_' . $id . '_' . $language . '_s.cache';
             $content = $this->readFile($file);
             if ($content !== '') {
                 return $content;
@@ -64,7 +63,7 @@ final class NewsRepository
 
         // Translation cache (full)
         if ($language !== '') {
-            $file = $translationsDir . 'news_' . $id . '_' . $language . '.cache';
+            $file    = $translationsDir . 'news_' . $id . '_' . $language . '.cache';
             $content = $this->readFile($file);
             if ($content !== '') {
                 return $content;
@@ -73,7 +72,7 @@ final class NewsRepository
 
         // Short version cache
         if ($short) {
-            $file = $this->newsDir . 'news_' . $id . '_s.cache';
+            $file    = $this->newsDir . 'news_' . $id . '_s.cache';
             $content = $this->readFile($file);
             if ($content !== '') {
                 return $content;
@@ -86,7 +85,7 @@ final class NewsRepository
 
     private function readFile(string $path): string
     {
-        if (!is_file($path) || !is_readable($path)) {
+        if (! is_file($path) || ! is_readable($path)) {
             return '';
         }
 
@@ -97,7 +96,7 @@ final class NewsRepository
 
     private function hydrate(array $row): ?NewsItem
     {
-        if (!isset($row['news_id'])) {
+        if (! isset($row['news_id'])) {
             return null;
         }
 
@@ -105,10 +104,10 @@ final class NewsRepository
         $title = isset($row['news_title']) ? (string) $row['news_title'] : '';
 
         return new NewsItem(
-            id:           (int) $row['news_id'],
-            title:        $title,
-            author:       $row['news_author'] ?? 'Admin',
-            date:         (int) ($row['news_date'] ?? 0),
+            id: (int) $row['news_id'],
+            title: $title,
+            author: $row['news_author'] ?? 'Admin',
+            date: (int) ($row['news_date'] ?? 0),
             translations: $row['translations'] ?? [],
         );
     }

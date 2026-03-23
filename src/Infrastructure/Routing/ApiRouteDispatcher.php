@@ -16,17 +16,17 @@ final class ApiRouteDispatcher
     public function dispatch(string $endpoint): bool
     {
         $route = $this->registry->routeFor($endpoint);
-        if (!is_array($route)) {
+        if (! is_array($route)) {
             return false;
         }
 
         $controllerClass = $route['controller'] ?? null;
-        if (!is_string($controllerClass) || $controllerClass === '' || !class_exists($controllerClass)) {
+        if (! is_string($controllerClass) || $controllerClass === '' || ! class_exists($controllerClass)) {
             return false;
         }
 
         $controller = new $controllerClass();
-        if (!method_exists($controller, 'render')) {
+        if (! method_exists($controller, 'render')) {
             return false;
         }
 
@@ -34,4 +34,3 @@ final class ApiRouteDispatcher
         return true;
     }
 }
-

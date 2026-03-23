@@ -8,7 +8,7 @@ final class XmlConfigReader
 {
     public function readFile(string $path): ?array
     {
-        if (!is_file($path) || !is_readable($path)) {
+        if (! is_file($path) || ! is_readable($path)) {
             return null;
         }
 
@@ -26,10 +26,9 @@ final class XmlConfigReader
             json_encode($xml->children(), JSON_THROW_ON_ERROR),
             true,
             512,
-            JSON_THROW_ON_ERROR
+            JSON_THROW_ON_ERROR,
         );
 
         return is_array($decoded) ? $decoded : null;
     }
 }
-

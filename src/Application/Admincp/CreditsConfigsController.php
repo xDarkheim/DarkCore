@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Darkheim\Application\Admincp;
 
 use Darkheim\Application\Credits\CreditSystem;
+use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class CreditsConfigsController
@@ -19,7 +21,7 @@ final class CreditsConfigsController
     public function render(): void
     {
         $creditSystem = new CreditSystem();
-        $admincpUrl = new AdmincpUrlGenerator();
+        $admincpUrl   = new AdmincpUrlGenerator();
 
         if (isset($_POST['new_submit'])) {
             try {
@@ -32,9 +34,9 @@ final class CreditsConfigsController
                 $creditSystem->_configCheckOnline = $_POST['new_checkonline'];
                 $creditSystem->_configDisplay     = $_POST['new_display'];
                 $creditSystem->saveConfig();
-                \Darkheim\Application\View\MessageRenderer::toast('success', 'Configuration saved.');
+                MessageRenderer::toast('success', 'Configuration saved.');
             } catch (\Exception $ex) {
-                \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                MessageRenderer::toast('error', $ex->getMessage());
             }
         }
 
@@ -50,9 +52,9 @@ final class CreditsConfigsController
                 $creditSystem->_configCheckOnline = $_POST['edit_checkonline'];
                 $creditSystem->_configDisplay     = $_POST['edit_display'];
                 $creditSystem->editConfig();
-                \Darkheim\Application\View\MessageRenderer::toast('success', 'Configuration updated.');
+                MessageRenderer::toast('success', 'Configuration updated.');
             } catch (\Exception $ex) {
-                \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                MessageRenderer::toast('error', $ex->getMessage());
             }
         }
 
@@ -61,7 +63,7 @@ final class CreditsConfigsController
                 $creditSystem->setConfigId($_GET['delete']);
                 $creditSystem->deleteConfig();
             } catch (\Exception $ex) {
-                \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                MessageRenderer::toast('error', $ex->getMessage());
             }
         }
 
@@ -77,27 +79,26 @@ final class CreditsConfigsController
         if (is_array($configsList)) {
             foreach ($configsList as $data) {
                 $configs[] = [
-                    'id'           => (string) ($data['config_id'] ?? ''),
-                    'title'        => (string) ($data['config_title'] ?? ''),
-                    'dbDisplay'    => (string) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('SQL_DB_NAME', true),
-                    'table'        => (string) ($data['config_table'] ?? ''),
-                    'creditsCol'   => (string) ($data['config_credits_col'] ?? ''),
-                    'userCol'      => (string) ($data['config_user_col'] ?? ''),
-                    'userColId'    => (string) ($data['config_user_col_id'] ?? ''),
-                    'checkOnline'  => (bool)   ($data['config_checkonline'] ?? false),
-                    'display'      => (bool)   ($data['config_display'] ?? false),
-                    'editUrl'      => $admincpUrl->base('creditsconfigs&edit=' . ($data['config_id'] ?? '')),
-                    'deleteUrl'    => $admincpUrl->base('creditsconfigs&delete=' . ($data['config_id'] ?? '')),
+                    'id'          => (string) ($data['config_id'] ?? ''),
+                    'title'       => (string) ($data['config_title'] ?? ''),
+                    'dbDisplay'   => (string) BootstrapContext::cmsValue('SQL_DB_NAME', true),
+                    'table'       => (string) ($data['config_table'] ?? ''),
+                    'creditsCol'  => (string) ($data['config_credits_col'] ?? ''),
+                    'userCol'     => (string) ($data['config_user_col'] ?? ''),
+                    'userColId'   => (string) ($data['config_user_col_id'] ?? ''),
+                    'checkOnline' => (bool) ($data['config_checkonline'] ?? false),
+                    'display'     => (bool) ($data['config_display'] ?? false),
+                    'editUrl'     => $admincpUrl->base('creditsconfigs&edit=' . ($data['config_id'] ?? '')),
+                    'deleteUrl'   => $admincpUrl->base('creditsconfigs&delete=' . ($data['config_id'] ?? '')),
                 ];
             }
         }
 
         $this->view->render('admincp/creditsconfigs', [
-            'isEditing'   => $isEditing,
-            'editConfig'  => $editConfig,
-            'dbName'      => (string) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('SQL_DB_NAME', true),
-            'configs'     => $configs,
+            'isEditing'  => $isEditing,
+            'editConfig' => $editConfig,
+            'dbName'     => (string) BootstrapContext::cmsValue('SQL_DB_NAME', true),
+            'configs'    => $configs,
         ]);
     }
 }
-

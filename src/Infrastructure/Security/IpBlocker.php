@@ -23,24 +23,23 @@ final class IpBlocker
      */
     public static function isCurrentIpBlocked(): bool
     {
-        if (!isset($_SERVER['REMOTE_ADDR'])) {
+        if (! isset($_SERVER['REMOTE_ADDR'])) {
             return false;
         }
 
-        $ip = (string) $_SERVER['REMOTE_ADDR'];
+        $ip = $_SERVER['REMOTE_ADDR'];
 
-        if (!Validator::Ip($ip)) {
+        if (! Validator::Ip($ip)) {
             return false;
         }
 
-        $cacheDir = defined('__PATH_CACHE__') ? (string) __PATH_CACHE__ : '';
-        $blocked  = (new CacheRepository($cacheDir))->load('blocked_ip.cache');
+        $cacheDir = defined('__PATH_CACHE__') ? __PATH_CACHE__ : '';
+        $blocked  = new CacheRepository($cacheDir)->load('blocked_ip.cache');
 
-        if (!is_array($blocked)) {
+        if (! is_array($blocked)) {
             return false;
         }
 
         return in_array($ip, $blocked, true);
     }
 }
-

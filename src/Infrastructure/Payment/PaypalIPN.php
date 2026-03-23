@@ -14,7 +14,7 @@ use Darkheim\Infrastructure\Runtime\PostStore;
 class PaypalIPN
 {
     /** @var bool Use sandbox endpoint for testing. */
-    private bool $use_sandbox    = false;
+    private bool $use_sandbox = false;
     /** @var bool Use bundled CA certificate instead of system certs. */
     private bool $use_local_certs = true;
     /** @var string Path to the CA certificate PEM file used for IPN verification. */
@@ -29,7 +29,7 @@ class PaypalIPN
 
     public function __construct(?PostStore $post = null)
     {
-        $this->post = $post ?? new NativePostStore();
+        $this->post      = $post ?? new NativePostStore();
         $this->cert_path = $this->_defaultCertPath();
     }
 
@@ -80,19 +80,19 @@ class PaypalIPN
         }
 
         $ch = curl_init($this->getPaypalUri());
-        curl_setopt($ch, CURLOPT_HTTP_VERSION,   CURL_HTTP_VERSION_1_1);
-        curl_setopt($ch, CURLOPT_POST,            true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,  true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS,      $req);
-        curl_setopt($ch, CURLOPT_SSLVERSION,      6);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,  true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,  2);
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
+        curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 
         if ($this->use_local_certs) {
             curl_setopt($ch, CURLOPT_CAINFO, $this->cert_path);
         }
 
-        curl_setopt($ch, CURLOPT_FORBID_REUSE,   true);
+        curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'User-Agent: PHP-IPN-Verification-Script',
@@ -100,7 +100,7 @@ class PaypalIPN
         ]);
 
         $res = curl_exec($ch);
-        if (!$res) {
+        if (! $res) {
             $errno  = curl_errno($ch);
             $errstr = curl_error($ch);
             curl_close($ch);
@@ -133,4 +133,3 @@ class PaypalIPN
         return __DIR__ . '/cert/cacert.pem';
     }
 }
-

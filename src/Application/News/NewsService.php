@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\News;
 
 use Darkheim\Application\Language\Translator;
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
@@ -71,11 +72,11 @@ class NewsService
     {
         $this->db = Connection::Database('MuOnline');
         if (!Validator::hasValue($title) || !Validator::hasValue($content) || !Validator::hasValue($author)) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', Translator::phrase('error_41'));
+            MessageRenderer::toast('error', Translator::phrase('error_41'));
             return;
         }
-        if (!$this->checkTitle($title)) { \Darkheim\Application\View\MessageRenderer::toast('error', Translator::phrase('error_42')); return; }
-        if (!$this->checkContent($content)) { \Darkheim\Application\View\MessageRenderer::toast('error', Translator::phrase('error_43')); return; }
+        if (!$this->checkTitle($title)) { MessageRenderer::toast('error', Translator::phrase('error_42')); return; }
+        if (!$this->checkContent($content)) { MessageRenderer::toast('error', Translator::phrase('error_43')); return; }
 
         if ($comments < 0 || $comments > 1) $comments = 1;
 
@@ -88,7 +89,7 @@ class NewsService
             [base64_encode($title), $author, time(), base64_encode($content), $comments]
         );
 
-        \Darkheim\Application\View\MessageRenderer::toast($add ? 'success' : 'error', $add ? Translator::phrase('success_15') : Translator::phrase('error_23'));
+        MessageRenderer::toast($add ? 'success' : 'error', $add ? Translator::phrase('success_15') : Translator::phrase('error_23'));
     }
 
     public function removeNews($id): bool
@@ -121,7 +122,7 @@ class NewsService
             [base64_encode($title), base64_encode($content), $author, strtotime($date), $comments, $id]
         );
 
-        \Darkheim\Application\View\MessageRenderer::toast($query ? 'success' : 'error', $query ? 'News successfully edited.' : Translator::phrase('error_99'));
+        MessageRenderer::toast($query ? 'success' : 'error', $query ? 'News successfully edited.' : Translator::phrase('error_99'));
     }
 
     // ─── Validation ───────────────────────────────────────────────────────────
@@ -154,7 +155,7 @@ class NewsService
     public function newsIdExists($id): bool
     {
         if (!Validator::UnsignedNumber($id)) return false;
-        $cachedNews = (new CacheRepository(__PATH_CACHE__))->load('news.cache');
+        $cachedNews = new CacheRepository(__PATH_CACHE__)->load('news.cache');
         if (!is_array($cachedNews)) return false;
 
         return array_any(
@@ -215,7 +216,7 @@ class NewsService
     {
         $newsList = $this->retrieveNewsDataForCache();
         if (!is_array($newsList)) {
-            (new CacheRepository(__PATH_CACHE__))->save('news.cache', '');
+            new CacheRepository(__PATH_CACHE__)->save('news.cache', '');
             return true;
         }
 
@@ -232,7 +233,7 @@ class NewsService
 
         $encoded = CacheBuilder::encode($newsList);
 
-        return (new CacheRepository(__PATH_CACHE__))->save('news.cache', $encoded);
+        return new CacheRepository(__PATH_CACHE__)->save('news.cache', $encoded);
     }
 
     public function loadNewsData($id)

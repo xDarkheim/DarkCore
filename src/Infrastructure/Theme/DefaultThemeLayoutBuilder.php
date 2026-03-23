@@ -19,6 +19,7 @@ final class DefaultThemeLayoutBuilder
 {
     /**
      * @return array<string, mixed>
+     * @throws \Exception
      */
     public function build(string $currentPage, string $currentSubpage): array
     {
@@ -41,10 +42,10 @@ final class DefaultThemeLayoutBuilder
             'languageSwitcherHtml'   => $this->renderLanguageSwitcherHtml(),
             'topBarIsLoggedIn'       => $isLoggedIn,
             'topBarShowAdmincp'      => $isLoggedIn && AdminGuard::canAccess((string) ($_SESSION['username'] ?? '')),
-            'topBarUsercpLabel'      => (string) Translator::phrase('module_titles_txt_3'),
-            'topBarLogoutLabel'      => (string) Translator::phrase('menu_txt_6'),
-            'topBarRegisterLabel'    => (string) Translator::phrase('menu_txt_3'),
-            'topBarLoginLabel'       => (string) Translator::phrase('menu_txt_4'),
+            'topBarUsercpLabel'      => Translator::phrase('module_titles_txt_3'),
+            'topBarLogoutLabel'      => Translator::phrase('menu_txt_6'),
+            'topBarRegisterLabel'    => Translator::phrase('menu_txt_3'),
+            'topBarLoginLabel'       => Translator::phrase('menu_txt_4'),
             'usercpUrl'              => __BASE_URL__ . 'usercp/',
             'admincpUrl'             => __BASE_URL__ . 'admincp/',
             'logoutUrl'              => __BASE_URL__ . 'logout/',
@@ -56,11 +57,11 @@ final class DefaultThemeLayoutBuilder
             'brandTitleAttr'         => htmlspecialchars($serverName, ENT_QUOTES, 'UTF-8'),
             'brandAlt'               => htmlspecialchars($serverName, ENT_QUOTES, 'UTF-8'),
             'showOnlineCounter'      => $serverInfo['showOnlineCounter'],
-            'onlineLabel'            => (string) Translator::phrase('sidebar_srvinfo_txt_5'),
+            'onlineLabel'            => Translator::phrase('sidebar_srvinfo_txt_5'),
             'onlinePlayersFormatted' => number_format($serverInfo['onlinePlayers']),
             'onlinePlayersPercent'   => $serverInfo['onlinePlayersPercent'],
-            'serverTimeLabel'        => (string) Translator::phrase('server_time'),
-            'userTimeLabel'          => (string) Translator::phrase('user_time'),
+            'serverTimeLabel'        => Translator::phrase('server_time'),
+            'userTimeLabel'          => Translator::phrase('user_time'),
             'showSidebarLayout'      => $currentPage === 'usercp' && $currentSubpage !== '',
             'moduleColumnClass'      => $currentPage === 'usercp' && $currentSubpage !== '' ? 'col-xs-8' : 'col-xs-12',
             'sidebarColumnClass'     => 'col-xs-4',
@@ -105,6 +106,7 @@ final class DefaultThemeLayoutBuilder
 
     /**
      * @return array{showOnlineCounter:bool,onlinePlayers:int,onlinePlayersPercent:float,rows:array<int,array{label:string,value:string,valueStyle:string}>}
+     * @throws \Exception
      */
     private function serverInfoData(): array
     {
@@ -135,25 +137,25 @@ final class DefaultThemeLayoutBuilder
                 continue;
             }
             $rows[] = [
-                'label'      => (string) Translator::phrase($phraseKey),
-                'value'      => (string) $value,
+                'label'      => Translator::phrase($phraseKey),
+                'value'      => $value,
                 'valueStyle' => '',
             ];
         }
 
         if (is_array($srvInfo)) {
             $rows[] = [
-                'label'      => (string) Translator::phrase('sidebar_srvinfo_txt_2'),
+                'label'      => Translator::phrase('sidebar_srvinfo_txt_2'),
                 'value'      => number_format((int) $srvInfo[0]),
                 'valueStyle' => 'font-weight:bold;',
             ];
             $rows[] = [
-                'label'      => (string) Translator::phrase('sidebar_srvinfo_txt_3'),
+                'label'      => Translator::phrase('sidebar_srvinfo_txt_3'),
                 'value'      => number_format((int) ($srvInfo[1] ?? 0)),
                 'valueStyle' => 'font-weight:bold;',
             ];
             $rows[] = [
-                'label'      => (string) Translator::phrase('sidebar_srvinfo_txt_4'),
+                'label'      => Translator::phrase('sidebar_srvinfo_txt_4'),
                 'value'      => number_format((int) ($srvInfo[2] ?? 0)),
                 'valueStyle' => 'font-weight:bold;',
             ];
@@ -161,7 +163,7 @@ final class DefaultThemeLayoutBuilder
 
         if ($showOnlineCounter) {
             $rows[] = [
-                'label'      => (string) Translator::phrase('sidebar_srvinfo_txt_5'),
+                'label'      => Translator::phrase('sidebar_srvinfo_txt_5'),
                 'value'      => number_format($onlinePlayers),
                 'valueStyle' => 'color:#00aa00;font-weight:bold;',
             ];
@@ -183,26 +185,26 @@ final class DefaultThemeLayoutBuilder
     {
         return [
             'showLoginPanel'         => ! $isLoggedIn,
-            'loginTitle'             => (string) Translator::phrase('module_titles_txt_2'),
+            'loginTitle'             => Translator::phrase('module_titles_txt_2'),
             'forgotPasswordUrl'      => __BASE_URL__ . 'forgotpassword',
-            'forgotPasswordLabel'    => (string) Translator::phrase('login_txt_4'),
+            'forgotPasswordLabel'    => Translator::phrase('login_txt_4'),
             'loginActionUrl'         => __BASE_URL__ . 'login',
-            'loginUsernameLabel'     => (string) Translator::phrase('login_txt_1'),
-            'loginPasswordLabel'     => (string) Translator::phrase('login_txt_2'),
-            'loginButtonLabel'       => (string) Translator::phrase('login_txt_3'),
+            'loginUsernameLabel'     => Translator::phrase('login_txt_1'),
+            'loginPasswordLabel'     => Translator::phrase('login_txt_2'),
+            'loginButtonLabel'       => Translator::phrase('login_txt_3'),
             'showUsercpPanel'        => $isLoggedIn,
-            'usercpTitle'            => (string) Translator::phrase('usercp_menu_title'),
+            'usercpTitle'            => Translator::phrase('usercp_menu_title'),
             'sidebarLogoutUrl'       => __BASE_URL__ . 'logout',
-            'sidebarLogoutLabel'     => (string) Translator::phrase('login_txt_6'),
+            'sidebarLogoutLabel'     => Translator::phrase('login_txt_6'),
             'usercpMenuHtml'         => $isLoggedIn ? $this->renderUsercpMenuHtml() : '',
             'joinBannerUrl'          => __BASE_URL__ . 'register',
             'joinBannerImageUrl'     => __PATH_THEME_IMG__ . 'sidebar_banner_join.jpg',
-            'joinBannerAlt'          => (string) Translator::phrase('menu_txt_3'),
+            'joinBannerAlt'          => Translator::phrase('menu_txt_3'),
             'downloadBannerUrl'      => __BASE_URL__ . 'downloads',
             'downloadBannerImageUrl' => __PATH_THEME_IMG__ . 'sidebar_banner_download.jpg',
-            'downloadBannerAlt'      => (string) Translator::phrase('module_titles_txt_8'),
+            'downloadBannerAlt'      => Translator::phrase('module_titles_txt_8'),
             'showServerInfoPanel'    => $serverInfo['rows'] !== [],
-            'serverInfoTitle'        => (string) Translator::phrase('sidebar_srvinfo_txt_1'),
+            'serverInfoTitle'        => Translator::phrase('sidebar_srvinfo_txt_1'),
             'serverInfoRows'         => $serverInfo['rows'],
             'castleSiegeWidgetHtml'  => $this->renderCastleSiegeWidgetHtml(),
         ];
@@ -210,19 +212,20 @@ final class DefaultThemeLayoutBuilder
 
     /**
      * @return array<string, mixed>
+     * @throws \Exception
      */
     private function footerData(): array
     {
         $cmsConfig = BootstrapContext::configProvider()?->cms() ?? [];
         return [
             'links' => [
-                ['url' => __BASE_URL__ . 'tos/', 'label' => (string) Translator::phrase('footer_terms')],
-                ['url' => __BASE_URL__ . 'privacy/', 'label' => (string) Translator::phrase('footer_privacy')],
-                ['url' => __BASE_URL__ . 'refunds/', 'label' => (string) Translator::phrase('footer_refund')],
-                ['url' => __BASE_URL__ . 'info/', 'label' => (string) Translator::phrase('footer_info')],
-                ['url' => __BASE_URL__ . 'contact/', 'label' => (string) Translator::phrase('footer_contact')],
+                ['url' => __BASE_URL__ . 'tos/', 'label' => Translator::phrase('footer_terms')],
+                ['url' => __BASE_URL__ . 'privacy/', 'label' => Translator::phrase('footer_privacy')],
+                ['url' => __BASE_URL__ . 'refunds/', 'label' => Translator::phrase('footer_refund')],
+                ['url' => __BASE_URL__ . 'info/', 'label' => Translator::phrase('footer_info')],
+                ['url' => __BASE_URL__ . 'contact/', 'label' => Translator::phrase('footer_contact')],
             ],
-            'copyrightText' => (string) Translator::phraseFmt('footer_copyright', [(string) ($cmsConfig['server_name'] ?? ''), date('Y')]),
+            'copyrightText' => Translator::phraseFmt('footer_copyright', [(string) ($cmsConfig['server_name'] ?? ''), date('Y')]),
             'poweredByHtml' => '<p style="font-size:11px;color:#aaa;">Powered by <a href="https://darkheim.net" target="_blank" style="color:#aaa;">DarkCore CMS</a> v' . __CMS_VERSION__ . '</p>',
             'socialLinks'   => [
                 ['url' => (string) ($cmsConfig['social_link_facebook'] ?? ''), 'imageUrl' => __PATH_THEME_IMG__ . 'social/facebook.svg', 'alt' => 'Facebook'],
@@ -257,16 +260,16 @@ final class DefaultThemeLayoutBuilder
             }
 
             $title = Validator::hasValue(Translator::phrase((string) ($element['phrase'] ?? '')))
-                ? (string) Translator::phrase((string) $element['phrase'])
+                ? Translator::phrase((string) $element['phrase'])
                 : 'Unk_phrase';
             $link = ((string) ($element['type'] ?? '') === 'internal')
-                ? __BASE_URL__ . (string) ($element['link'] ?? '')
+                ? __BASE_URL__ . ($element['link'] ?? '')
                 : (string) ($element['link'] ?? '');
             $target   = ! empty($element['newtab']) ? ' target="_blank"' : '';
             $iconHtml = '';
             if ($withIcons) {
                 $icon = Validator::hasValue((string) ($element['icon'] ?? ''))
-                    ? __PATH_THEME_IMG__ . 'icons/' . (string) $element['icon']
+                    ? __PATH_THEME_IMG__ . 'icons/' . $element['icon']
                     : __PATH_THEME_IMG__ . 'icons/usercp_default.png';
                 $iconHtml = '<img src="' . htmlspecialchars($icon, ENT_QUOTES, 'UTF-8') . '">';
             }
@@ -292,7 +295,7 @@ final class DefaultThemeLayoutBuilder
 
     private function isLoggedInStrict(): bool
     {
-        return (new SessionManager())->isWebsiteAuthenticated(BootstrapContext::configProvider()?->moduleConfig('login'));
+        return new SessionManager()->isWebsiteAuthenticated(BootstrapContext::configProvider()?->moduleConfig('login'));
     }
 
     private function renderCastleSiegeWidgetHtml(): string
@@ -318,23 +321,47 @@ final class DefaultThemeLayoutBuilder
         }
 
         $html = '<div class="panel castle-owner-widget">';
-        $html .= '<div class="panel-heading"><h3 class="panel-title">' . htmlspecialchars((string) Translator::phrase('castlesiege_widget_title'), ENT_QUOTES, 'UTF-8') . '</h3></div>';
+        $html .= '<div class="panel-heading"><h3 class="panel-title">' . htmlspecialchars(
+            Translator::phrase('castlesiege_widget_title'),
+            ENT_QUOTES,
+            'UTF-8',
+        ) . '</h3></div>';
         $html .= '<div class="panel-body">';
         $html .= '<div class="row">';
         $html .= '<div class="col-sm-6 text-center">' . GameHelper::guildLogo($guildOwnerMark, 100) . '</div>';
         $html .= '<div class="col-sm-6">';
-        $html .= '<span class="alt">' . htmlspecialchars((string) Translator::phrase('castlesiege_txt_2'), ENT_QUOTES, 'UTF-8') . '</span><br />';
+        $html .= '<span class="alt">' . htmlspecialchars(
+            Translator::phrase('castlesiege_txt_2'),
+            ENT_QUOTES,
+            'UTF-8',
+        ) . '</span><br />';
         $html .= $guildOwner . '<br /><br />';
-        $html .= '<span class="alt">' . htmlspecialchars((string) Translator::phrase('castlesiege_txt_12'), ENT_QUOTES, 'UTF-8') . '</span><br />';
+        $html .= '<span class="alt">' . htmlspecialchars(
+            Translator::phrase('castlesiege_txt_12'),
+            ENT_QUOTES,
+            'UTF-8',
+        ) . '</span><br />';
         $html .= $guildMaster;
         $html .= '</div></div>';
         $html .= '<div class="row" style="margin-top: 20px;">';
         $html .= '<div class="col-sm-12 text-center">';
-        $html .= '<span class="alt">' . htmlspecialchars((string) Translator::phrase('castlesiege_txt_21'), ENT_QUOTES, 'UTF-8') . '</span><br />';
+        $html .= '<span class="alt">' . htmlspecialchars(
+            Translator::phrase('castlesiege_txt_21'),
+            ENT_QUOTES,
+            'UTF-8',
+        ) . '</span><br />';
         $html .= htmlspecialchars((string) ($siegeData['current_stage']['title'] ?? ''), ENT_QUOTES, 'UTF-8') . '<br /><br />';
-        $html .= '<span class="alt">' . htmlspecialchars((string) Translator::phrase('castlesiege_txt_1'), ENT_QUOTES, 'UTF-8') . '</span><br />';
+        $html .= '<span class="alt">' . htmlspecialchars(
+            Translator::phrase('castlesiege_txt_1'),
+            ENT_QUOTES,
+            'UTF-8',
+        ) . '</span><br />';
         $html .= htmlspecialchars((string) ($siegeData['warfare_stage_countdown'] ?? ''), ENT_QUOTES, 'UTF-8') . '<br /><br />';
-        $html .= '<a href="' . htmlspecialchars(__BASE_URL__ . 'castlesiege', ENT_QUOTES, 'UTF-8') . '" class="btn btn-castlewidget btn-xs">' . htmlspecialchars((string) Translator::phrase('castlesiege_txt_7'), ENT_QUOTES, 'UTF-8') . '</a>';
+        $html .= '<a href="' . htmlspecialchars(__BASE_URL__ . 'castlesiege', ENT_QUOTES, 'UTF-8') . '" class="btn btn-castlewidget btn-xs">' . htmlspecialchars(
+            Translator::phrase('castlesiege_txt_7'),
+            ENT_QUOTES,
+            'UTF-8',
+        ) . '</a>';
         $html .= '</div></div></div></div>';
 
         return $html;

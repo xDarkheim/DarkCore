@@ -13,18 +13,32 @@ final class RuntimeState
     private array $moduleConfig = [];
 
     /** @var array<string, mixed> */
-    private array $globalConfig = [];
-
-    /** @var array<string, mixed> */
     private array $customConfig = [];
 
     /**
-     * @param array<string, mixed> $phrases
+     * @param array<string, mixed> $languagePhrases
      */
-    public function setLanguagePhrases(array $phrases): void
+    public function setLanguagePhrases(array $languagePhrases): void
     {
-        $this->languagePhrases = $phrases;
+        $this->languagePhrases = $languagePhrases;
     }
+
+    /**
+     * @param array<string, mixed> $moduleConfig
+     */
+    public function setModuleConfig(array $moduleConfig): void
+    {
+        $this->moduleConfig = $moduleConfig;
+    }
+
+    /**
+     * @param array<string, mixed> $customConfig
+     */
+    public function setCustomConfig(array $customConfig): void
+    {
+        $this->customConfig = $customConfig;
+    }
+
 
     /**
      * @return array<string, mixed>
@@ -35,43 +49,11 @@ final class RuntimeState
     }
 
     /**
-     * @param array<string, mixed> $config
-     */
-    public function setModuleConfig(array $config): void
-    {
-        $this->moduleConfig = $config;
-    }
-
-    /**
      * @return array<string, mixed>
      */
     public function moduleConfig(): array
     {
         return $this->moduleConfig;
-    }
-
-    /**
-     * @param array<string, mixed> $config
-     */
-    public function setGlobalConfig(array $config): void
-    {
-        $this->globalConfig = $config;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function globalConfig(): array
-    {
-        return $this->globalConfig;
-    }
-
-    /**
-     * @param array<string, mixed> $config
-     */
-    public function setCustomConfig(array $config): void
-    {
-        $this->customConfig = $config;
     }
 
     /**

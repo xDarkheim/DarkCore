@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Darkheim\Application\Page;
 
 use Darkheim\Application\Game\GameHelper;
+use Darkheim\Application\Language\Translator;
 use Darkheim\Application\Profile\ProfileRenderer;
 use Darkheim\Application\Rankings\RankingCache;
 use Darkheim\Application\Rankings\RankingRepository;
 use Darkheim\Application\Rankings\RankingsService;
+use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\Http\GeoIpService;
 use Darkheim\Infrastructure\View\ViewRenderer;
@@ -28,34 +31,34 @@ final class RankingsSectionController
             $subpage = (string) ($_REQUEST['subpage'] ?? '');
             $config  = $this->subpageConfig($subpage);
             if ($config === null) {
-                throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_58', true));
+                throw new \Exception(Translator::phrase('error_58', true));
             }
 
-            if (! \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active') || ! \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue($config['featureFlag'])) {
-                throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_44', true));
+            if (! BootstrapContext::moduleValue('active') || ! BootstrapContext::moduleValue($config['featureFlag'])) {
+                throw new \Exception(Translator::phrase('error_44', true));
             }
 
             $rankings   = new RankingsService();
             $repository = new RankingRepository(new CacheRepository(__PATH_CACHE__));
             $rankCache  = $repository->load($config['cacheFile']);
             if (! $rankCache instanceof RankingCache) {
-                throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_58', true));
+                throw new \Exception(Translator::phrase('error_58', true));
             }
 
-            $showCountry        = $config['supportsCountry'] && (bool) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('show_country_flags');
+            $showCountry        = $config['supportsCountry'] && BootstrapContext::moduleValue('show_country_flags');
             $characterCountries = $showCountry ? $repository->loadCharacterCountries() : [];
             if ($characterCountries === []) {
                 $showCountry = false;
             }
 
-            $showOnlineStatus = (bool) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('show_online_status');
+            $showOnlineStatus = (bool) BootstrapContext::moduleValue('show_online_status');
             $onlineCharacters = $showOnlineStatus ? $repository->loadOnlineCharacters() : [];
-            $showPlaceNumber  = (bool) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('rankings_show_place_number');
-            $showLocation     = $config['supportsLocation'] && (bool) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('show_location');
-            $showFilter       = $config['supportsFilter']   && (bool) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('rankings_class_filter');
+            $showPlaceNumber  = (bool) BootstrapContext::moduleValue('rankings_show_place_number');
+            $showLocation     = $config['supportsLocation'] && BootstrapContext::moduleValue('show_location');
+            $showFilter       = $config['supportsFilter']   && BootstrapContext::moduleValue('rankings_class_filter');
 
             $this->view->render('ranking', [
-                'pageTitle'    => \Darkheim\Application\Language\Translator::phrase('module_titles_txt_10', true),
+                'pageTitle'    => Translator::phrase('module_titles_txt_10', true),
                 'menuItems'    => $rankings->menuItems($subpage),
                 'filterItems'  => $showFilter ? $this->buildFilterItems($rankings) : [],
                 'tableHeaders' => $this->buildHeaders($config['columns'], $showPlaceNumber, $showCountry, $showLocation),
@@ -69,12 +72,12 @@ final class RankingsSectionController
                     $characterCountries,
                     $onlineCharacters,
                 ),
-                'updatedAtText' => (bool) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('rankings_show_date')
-                    ? \Darkheim\Application\Language\Translator::phrase('rankings_txt_20', true) . ' ' . date('m/d/Y - h:i A', $rankCache->timestamp)
+                'updatedAtText' => BootstrapContext::moduleValue('rankings_show_date')
+                    ? Translator::phrase('rankings_txt_20', true) . ' ' . date('m/d/Y - h:i A', $rankCache->timestamp)
                     : null,
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', $ex->getMessage());
+            MessageRenderer::inline('error', $ex->getMessage());
         }
     }
 
@@ -171,34 +174,34 @@ final class RankingsSectionController
             $headers[] = '';
         }
         if ($showCountry) {
-            $headers[] = \Darkheim\Application\Language\Translator::phrase('rankings_txt_33');
+            $headers[] = Translator::phrase('rankings_txt_33');
         }
 
         foreach ($columns as $column) {
             $headers[] = match ($column) {
-                'avatar'       => \Darkheim\Application\Language\Translator::phrase('rankings_txt_11'),
-                'player'       => \Darkheim\Application\Language\Translator::phrase('rankings_txt_10'),
-                'level'        => \Darkheim\Application\Language\Translator::phrase('rankings_txt_12'),
-                'resets'       => \Darkheim\Application\Language\Translator::phrase('rankings_txt_13'),
-                'kills'        => \Darkheim\Application\Language\Translator::phrase('rankings_txt_14'),
-                'hours'        => \Darkheim\Application\Language\Translator::phrase('rankings_txt_15'),
-                'guild'        => \Darkheim\Application\Language\Translator::phrase('rankings_txt_17', true),
-                'master'       => \Darkheim\Application\Language\Translator::phrase('rankings_txt_18', true),
-                'score'        => \Darkheim\Application\Language\Translator::phrase('rankings_txt_19', true),
-                'grand_resets' => \Darkheim\Application\Language\Translator::phrase('rankings_txt_21'),
-                'master_level' => \Darkheim\Application\Language\Translator::phrase('rankings_txt_23'),
-                'gens'         => \Darkheim\Application\Language\Translator::phrase('rankings_txt_29'),
-                'rank'         => \Darkheim\Application\Language\Translator::phrase('rankings_txt_30'),
-                'contribution' => \Darkheim\Application\Language\Translator::phrase('rankings_txt_31'),
-                'votes'        => \Darkheim\Application\Language\Translator::phrase('rankings_txt_32', true),
-                'pk_status'    => \Darkheim\Application\Language\Translator::phrase('rankings_txt_35'),
-                'logo'         => \Darkheim\Application\Language\Translator::phrase('rankings_txt_28', true),
+                'avatar'       => Translator::phrase('rankings_txt_11'),
+                'player'       => Translator::phrase('rankings_txt_10'),
+                'level'        => Translator::phrase('rankings_txt_12'),
+                'resets'       => Translator::phrase('rankings_txt_13'),
+                'kills'        => Translator::phrase('rankings_txt_14'),
+                'hours'        => Translator::phrase('rankings_txt_15'),
+                'guild'        => Translator::phrase('rankings_txt_17', true),
+                'master'       => Translator::phrase('rankings_txt_18', true),
+                'score'        => Translator::phrase('rankings_txt_19', true),
+                'grand_resets' => Translator::phrase('rankings_txt_21'),
+                'master_level' => Translator::phrase('rankings_txt_23'),
+                'gens'         => Translator::phrase('rankings_txt_29'),
+                'rank'         => Translator::phrase('rankings_txt_30'),
+                'contribution' => Translator::phrase('rankings_txt_31'),
+                'votes'        => Translator::phrase('rankings_txt_32', true),
+                'pk_status'    => Translator::phrase('rankings_txt_35'),
+                'logo'         => Translator::phrase('rankings_txt_28', true),
                 default        => $column,
             };
         }
 
         if ($showLocation) {
-            $headers[] = \Darkheim\Application\Language\Translator::phrase('rankings_txt_34');
+            $headers[] = Translator::phrase('rankings_txt_34');
         }
 
         return $headers;
@@ -212,7 +215,7 @@ final class RankingsSectionController
         $items = [[
             'onclick'    => 'rankingsFilterRemove()',
             'avatarHtml' => GameHelper::playerClassAvatar(-1, true, false, 'rankings-class-filter-image'),
-            'label'      => \Darkheim\Application\Language\Translator::phrase('rankings_filter_1'),
+            'label'      => Translator::phrase('rankings_filter_1'),
             'linkClass'  => 'rankings-class-filter-selection',
         ]];
 
@@ -337,13 +340,13 @@ final class RankingsSectionController
             return null;
         }
 
-        $multiplier = (int) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('guild_score_formula') === 1 ? 1 : (int) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('guild_score_multiplier');
+        $multiplier = (int) BootstrapContext::moduleValue('guild_score_formula') === 1 ? 1 : (int) BootstrapContext::moduleValue('guild_score_multiplier');
         $cells      = [];
         if ($showPlaceNumber) {
             $cells[] = '<span class="rankings-table-place">' . $position . '</span>';
         }
         $cells[] = ProfileRenderer::guild((string) $entry[0]);
-        $cells[] = GameHelper::guildLogo((string) $entry[3], 40);
+        $cells[] = GameHelper::guildLogo((string) $entry[3]);
         $cells[] = ProfileRenderer::player((string) $entry[1]) . $this->onlineStatusHtml((string) $entry[1], $showOnlineStatus, $onlineCharacters);
         $cells[] = number_format((int) floor((float) $entry[2] * $multiplier));
 
@@ -383,7 +386,7 @@ final class RankingsSectionController
         $name    = (string) $entry[0];
         $classId = (int) $entry[2];
         $cells   = $this->characterCells($position, $name, $classId, $showPlaceNumber, $showCountry, $showOnlineStatus, $characterCountries, $onlineCharacters);
-        $cells[] = number_format((int) round(((float) $entry[1]) / 60 / 60)) . ' ' . \Darkheim\Application\Language\Translator::phrase('rankings_txt_16', true);
+        $cells[] = number_format((int) round(((float) $entry[1]) / 60 / 60)) . ' ' . Translator::phrase('rankings_txt_16', true);
         if ($showLocation) {
             $cells[] = GameHelper::mapName((int) ($entry[3] ?? 0));
         }
@@ -494,8 +497,12 @@ final class RankingsSectionController
 
     private function gensTypeHtml(int $influence): string
     {
-        $duprian   = htmlspecialchars(strip_tags((string) \Darkheim\Application\Language\Translator::phrase('rankings_txt_26', true)), ENT_QUOTES, 'UTF-8');
-        $vantarion = htmlspecialchars(strip_tags((string) \Darkheim\Application\Language\Translator::phrase('rankings_txt_27', true)), ENT_QUOTES, 'UTF-8');
+        $duprian = htmlspecialchars(strip_tags(
+            Translator::phrase('rankings_txt_26', true),
+        ), ENT_QUOTES, 'UTF-8');
+        $vantarion = htmlspecialchars(strip_tags(
+            Translator::phrase('rankings_txt_27', true),
+        ), ENT_QUOTES, 'UTF-8');
 
         if ($influence === 1) {
             return '<img class="rankings-gens-img" src="' . __PATH_THEME_IMG__ . 'gens_1.png" title="' . $duprian . '" alt="' . $duprian . '"/>';

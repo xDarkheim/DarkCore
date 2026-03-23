@@ -42,9 +42,7 @@ class Connection
     private static function _config(string $config): mixed
     {
         $cmsConfig = BootstrapContext::configProvider()?->cms() ?? [];
-        if (! array_key_exists($config, $cmsConfig)) {
-            return null;
-        }
-        return $cmsConfig[$config];
+
+        return $cmsConfig[$config] ?? null;
     }
 }

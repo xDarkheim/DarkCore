@@ -16,7 +16,7 @@ final class CacheBuilder
      * Builds the legacy pipe-delimited, newline-separated text cache format.
      * Columns are separated by the ¦ character; rows by \n.
      *
-     * @param array<int|string, mixed[]> $dataArray
+     * @param array<int|string, array> $dataArray
      */
     public static function buildLegacyText(array $dataArray): ?string
     {
@@ -47,7 +47,7 @@ final class CacheBuilder
      */
     public static function writeTimestamped(string $filePath, string $data): bool
     {
-        if (!is_file($filePath) || !is_writable($filePath)) {
+        if (! is_file($filePath) || ! is_writable($filePath)) {
             return false;
         }
 
@@ -67,7 +67,6 @@ final class CacheBuilder
      * JSON-encodes $data for cache storage.
      * Pass $pretty = true to get a human-readable output (useful for debugging).
      *
-     * @throws \JsonException on encoding failure
      */
     public static function encode(mixed $data, bool $pretty = false): string
     {
@@ -79,4 +78,3 @@ final class CacheBuilder
         return json_encode($data, $flags);
     }
 }
-

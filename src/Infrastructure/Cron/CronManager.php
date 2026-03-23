@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Cron;
 
-use Darkheim\Infrastructure\Database\Connection;
+use Darkheim\Application\Language\Translator;
 use Darkheim\Domain\Validator;
+use Darkheim\Infrastructure\Database\Connection;
 
 /**
  * Cron job management — CRUD and status control for scheduled tasks.
@@ -27,21 +28,21 @@ class CronManager
     }
 
     public $_commonIntervals = [
-        60      => '1 minute',
-        300     => '5 minutes',
-        600     => '10 minutes',
-        900     => '15 minutes',
-        1800    => '30 minutes',
-        3600    => '1 hour',
-        7200    => '2 hours',
-        14400   => '4 hours',
-        21600   => '6 hours',
-        43200   => '12 hours',
-        86400   => '1 day ',
-        604800  => '7 days',
-        1296000 => '15 days',
-        2592000 => '1 month',
-        7776000 => '3 months',
+        60       => '1 minute',
+        300      => '5 minutes',
+        600      => '10 minutes',
+        900      => '15 minutes',
+        1800     => '30 minutes',
+        3600     => '1 hour',
+        7200     => '2 hours',
+        14400    => '4 hours',
+        21600    => '6 hours',
+        43200    => '12 hours',
+        86400    => '1 day ',
+        604800   => '7 days',
+        1296000  => '15 days',
+        2592000  => '1 month',
+        7776000  => '3 months',
         15552000 => '6 months',
         31104000 => '1 year',
     ] {
@@ -59,22 +60,31 @@ class CronManager
 
     public function setId($id): void
     {
-        if (!Validator::UnsignedNumber($id)) throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_49'));
+        if (! Validator::UnsignedNumber($id)) {
+            throw new \Exception(Translator::phrase('error_49'));
+        }
         $this->_id = $id;
     }
 
-    public function setDescription($desc): void { $this->_desc = $desc; }
+    public function setDescription($desc): void
+    {
+        $this->_desc = $desc;
+    }
 
     public function setFile($file): void
     {
-        if (!$this->_cronFileExists($file)) throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_50'));
+        if (! $this->_cronFileExists($file)) {
+            throw new \Exception(Translator::phrase('error_50'));
+        }
         $this->_file = $file;
     }
 
     public function getCronList()
     {
         $result = $this->muonline->query_fetch("SELECT * FROM " . Cron . " ORDER BY cron_id");
-        if (!is_array($result)) return;
+        if (! is_array($result)) {
+            return;
+        }
         return $result;
     }
 
@@ -84,64 +94,93 @@ class CronManager
      */
     public function updateLastRun(string $file): bool
     {
-        $result = $this->muonline->query(
+        return $this->muonline->query(
             'UPDATE ' . Cron . ' SET cron_last_run = ? WHERE cron_file_run = ?',
             [time(), $file],
         );
-        return (bool) $result;
     }
 
-    public function enableCron(): void  { $this->_setCronStatus(1); }
-    public function disableCron(): void { $this->_setCronStatus(0); }
+    public function enableCron(): void
+    {
+        $this->_setCronStatus();
+    }
+    public function disableCron(): void
+    {
+        $this->_setCronStatus(0);
+    }
 
     public function resetCronLastRun(): bool
     {
-        if (!\Darkheim\Domain\Validator::hasValue($this->_id)) return false;
-        $result = $this->muonline->query("UPDATE " . Cron . " SET cron_last_run = NULL WHERE cron_id = ?", array($this->_id));
-        if (!$result) throw new \Exception($this->muonline->error);
+        if (! Validator::hasValue($this->_id)) {
+            return false;
+        }
+        $result = $this->muonline->query("UPDATE " . Cron . " SET cron_last_run = NULL WHERE cron_id = ?", [$this->_id]);
+        if (! $result) {
+            throw new \Exception($this->muonline->error);
+        }
         return true;
     }
 
     public function deleteCron(): bool
     {
-        if (!\Darkheim\Domain\Validator::hasValue($this->_id)) return false;
-        $result = $this->muonline->query("DELETE FROM " . Cron . " WHERE cron_id = ?", array($this->_id));
-        if (!$result) throw new \Exception($this->muonline->error);
+        if (! Validator::hasValue($this->_id)) {
+            return false;
+        }
+        $result = $this->muonline->query("DELETE FROM " . Cron . " WHERE cron_id = ?", [$this->_id]);
+        if (! $result) {
+            throw new \Exception($this->muonline->error);
+        }
         return true;
     }
 
 
     public function addCron(): bool
     {
-        if (!\Darkheim\Domain\Validator::hasValue($this->_name)) throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_106'));
-        if (!\Darkheim\Domain\Validator::hasValue($this->_file)) throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_106'));
-        if (!\Darkheim\Domain\Validator::hasValue($this->_interval)) throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_106'));
-        if ($this->_cronAlreadyExists()) throw new \Exception(\Darkheim\Application\Language\Translator::phrase('error_107'));
+        if (! Validator::hasValue($this->_name)) {
+            throw new \Exception(Translator::phrase('error_106'));
+        }
+        if (! Validator::hasValue($this->_file)) {
+            throw new \Exception(Translator::phrase('error_106'));
+        }
+        if (! Validator::hasValue($this->_interval)) {
+            throw new \Exception(Translator::phrase('error_106'));
+        }
+        if ($this->_cronAlreadyExists()) {
+            throw new \Exception(Translator::phrase('error_107'));
+        }
 
         $data   = [$this->_name, $this->_file, $this->_interval, 1, 0, $this->_cronFileMd5($this->_file)];
         $result = $this->muonline->query("INSERT INTO " . Cron . " (cron_name, cron_file_run, cron_run_time, cron_status, cron_protected, cron_file_md5) VALUES (?, ?, ?, ?, ?, ?)", $data);
-        if (!$result) throw new \Exception($this->muonline->error);
+        if (! $result) {
+            throw new \Exception($this->muonline->error);
+        }
         return true;
     }
 
     public function enableAll(): bool
     {
         $result = $this->muonline->query("UPDATE " . Cron . " SET cron_status = 1");
-        if (!$result) throw new \Exception($this->muonline->error);
+        if (! $result) {
+            throw new \Exception($this->muonline->error);
+        }
         return true;
     }
 
     public function disableAll(): bool
     {
         $result = $this->muonline->query("UPDATE " . Cron . " SET cron_status = 0");
-        if (!$result) throw new \Exception($this->muonline->error);
+        if (! $result) {
+            throw new \Exception($this->muonline->error);
+        }
         return true;
     }
 
     public function resetAllLastRun(): bool
     {
         $result = $this->muonline->query("UPDATE " . Cron . " SET cron_last_run = NULL");
-        if (!$result) throw new \Exception($this->muonline->error);
+        if (! $result) {
+            throw new \Exception($this->muonline->error);
+        }
         return true;
     }
 
@@ -151,7 +190,7 @@ class CronManager
         $return = [];
         while (($file = readdir($dir)) !== false) {
             if (filetype(__PATH_CRON__ . $file) == "file" && $file != ".htaccess" && $file != "cron.php") {
-                if (\Darkheim\Domain\Validator::hasValue($selected) && $selected == $file) {
+                if (Validator::hasValue($selected) && $selected == $file) {
                     $return[] = "<option value=\"$file\" selected=\"selected\">$file</option>";
                 } else {
                     $return[] = "<option value=\"$file\">$file</option>";
@@ -169,15 +208,19 @@ class CronManager
 
     protected function _setCronStatus($status = 1): bool
     {
-        if (!\Darkheim\Domain\Validator::hasValue($this->_id)) return false;
-        $result = $this->muonline->query("UPDATE " . Cron . " SET cron_status = ? WHERE cron_id = ?", array($status, $this->_id));
-        if (!$result) throw new \Exception($this->muonline->error);
+        if (! Validator::hasValue($this->_id)) {
+            return false;
+        }
+        $result = $this->muonline->query("UPDATE " . Cron . " SET cron_status = ? WHERE cron_id = ?", [$status, $this->_id]);
+        if (! $result) {
+            throw new \Exception($this->muonline->error);
+        }
         return true;
     }
 
     protected function _cronAlreadyExists(): bool
     {
-        $result = $this->muonline->query_fetch_single("SELECT * FROM " . Cron . " WHERE cron_file_run = ?", array($this->_file));
+        $result = $this->muonline->query_fetch_single("SELECT * FROM " . Cron . " WHERE cron_file_run = ?", [$this->_file]);
         return is_array($result);
     }
 
@@ -186,4 +229,3 @@ class CronManager
         return md5_file(__PATH_CRON__ . $file) ?: '';
     }
 }
-

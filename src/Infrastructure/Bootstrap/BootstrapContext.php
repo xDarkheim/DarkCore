@@ -9,14 +9,14 @@ use Darkheim\Infrastructure\Routing\Handler;
 final class BootstrapContext
 {
     private static ?ConfigProvider $configProvider = null;
-    private static ?RuntimeState $runtimeState = null;
-    private static ?Handler $handler = null;
+    private static ?RuntimeState $runtimeState     = null;
+    private static ?Handler $handler               = null;
 
     public static function initialize(ConfigProvider $configProvider, RuntimeState $runtimeState, Handler $handler): void
     {
         self::$configProvider = $configProvider;
-        self::$runtimeState = $runtimeState;
-        self::$handler = $handler;
+        self::$runtimeState   = $runtimeState;
+        self::$handler        = $handler;
     }
 
     public static function configProvider(): ?ConfigProvider
@@ -71,4 +71,3 @@ final class BootstrapContext
         self::$runtimeState?->setModuleConfig(is_array($result) ? $result : []);
     }
 }
-

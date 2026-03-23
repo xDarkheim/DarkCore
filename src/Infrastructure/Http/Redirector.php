@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Http;
 
+use Tests\Stubs\RedirectException;
+
 /**
  * HTTP redirect helper.
  *
@@ -25,11 +27,11 @@ final class Redirector
      */
     public static function go(int $type = 1, ?string $location = null, int $delay = 0): void
     {
-        if (self::isPhpUnitRuntime() && class_exists('Tests\\Stubs\\RedirectException')) {
-            throw new \Tests\Stubs\RedirectException('redirect:' . ($location ?? ''));
+        if (self::isPhpUnitRuntime() && class_exists(RedirectException::class)) {
+            throw new RedirectException('redirect:' . ($location ?? ''));
         }
 
-        $base = defined('__BASE_URL__') ? (string) __BASE_URL__ : '/';
+        $base = defined('__BASE_URL__') ? __BASE_URL__ : '/';
 
         if (empty($location)) {
             $to = $base;
@@ -37,8 +39,8 @@ final class Redirector
             $to = $base . $location;
 
             if ($location === 'login') {
-                $page = $_REQUEST['page'] ?? '';
-                $sub  = $_REQUEST['subpage'] ?? null;
+                $page                            = $_REQUEST['page']    ?? '';
+                $sub                             = $_REQUEST['subpage'] ?? null;
                 $_SESSION['login_last_location'] = $page . '/';
                 if ($sub !== null) {
                     $_SESSION['login_last_location'] .= $sub . '/';
@@ -64,4 +66,3 @@ final class Redirector
         return defined('PHPUNIT_COMPOSER_INSTALL') || defined('__PHPUNIT_PHAR__');
     }
 }
-

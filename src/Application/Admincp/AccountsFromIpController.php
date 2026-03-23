@@ -27,20 +27,20 @@ final class AccountsFromIpController
         if (isset($_POST['ip_address'])) {
             $ipAddress = (string) $_POST['ip_address'];
             try {
-                if (!Validator::Ip($ipAddress)) {
+                if (! Validator::Ip($ipAddress)) {
                     throw new \RuntimeException('You have entered an invalid IP address.');
                 }
-                $db     = Connection::Database('MuOnline');
+                $db         = Connection::Database('MuOnline');
                 $admincpUrl = new AdmincpUrlGenerator();
-                $common = new Common();
-                $rows   = $db->query_fetch(
+                $common     = new Common();
+                $rows       = $db->query_fetch(
                     'SELECT ' . _CLMN_MS_MEMBID_ . ' FROM ' . _TBL_MS_ . ' WHERE ' . _CLMN_MS_IP_ . ' = ? GROUP BY ' . _CLMN_MS_MEMBID_,
-                    [$ipAddress]
+                    [$ipAddress],
                 );
                 $results = [];
                 if (is_array($rows)) {
                     foreach ($rows as $u) {
-                        $membId   = (string) ($u[_CLMN_MS_MEMBID_] ?? '');
+                        $membId    = (string) ($u[_CLMN_MS_MEMBID_] ?? '');
                         $results[] = [
                             'account'        => $membId,
                             'accountInfoUrl' => $admincpUrl->base('accountinfo&id=' . $common->retrieveUserID($membId)),
@@ -59,4 +59,3 @@ final class AccountsFromIpController
         ]);
     }
 }
-

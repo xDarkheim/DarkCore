@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Bootstrap;
 
-final class TimezoneInitializer
+final readonly class TimezoneInitializer
 {
-    public function __construct(private ConfigProvider $configProvider)
-    {
-    }
+    public function __construct(private ConfigProvider $configProvider) {}
 
     public function apply(): string
     {
@@ -18,4 +16,3 @@ final class TimezoneInitializer
         return $timezone;
     }
 }
-

@@ -35,7 +35,7 @@ final readonly class NewsItem
 
         // Try multiple encodings in order of likelihood
         $encodings = ['Windows-1252', 'ISO-8859-1', 'CP1252', 'UTF-8'];
-        
+
         foreach ($encodings as $encoding) {
             $converted = @iconv($encoding, 'UTF-8//IGNORE', $text);
             if ($converted !== false && $converted !== '' && mb_check_encoding($converted, 'UTF-8')) {
@@ -52,4 +52,3 @@ final readonly class NewsItem
         return rtrim($baseUrl, '/') . '/news/' . $this->id . '/';
     }
 }
-

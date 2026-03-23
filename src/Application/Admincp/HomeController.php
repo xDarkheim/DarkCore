@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -18,44 +20,44 @@ final class HomeController
 
     public function render(): void
     {
-        $database = Connection::Database('MuOnline');
+        $database   = Connection::Database('MuOnline');
         $admincpUrl = new AdmincpUrlGenerator();
 
         if ($this->shouldWarnAboutInstallDirectory()) {
-            \Darkheim\Application\View\MessageRenderer::toast('warning', 'public/install/ directory still exists — rename or delete it.', 'WARNING');
+            MessageRenderer::toast('warning', 'public/install/ directory still exists — rename or delete it.', 'WARNING');
         }
 
         $this->view->render('admincp/home', [
             'showInstallWarning' => $this->shouldWarnAboutInstallDirectory(),
             'installWarningHtml' => $this->installWarningHtml(),
-            'statCards' => [
+            'statCards'          => [
                 [
-                    'iconClass' => 'bi bi-people-fill',
-                    'iconStyle' => 'color:#4caf50;',
+                    'iconClass'       => 'bi bi-people-fill',
+                    'iconStyle'       => 'color:#4caf50;',
                     'backgroundStyle' => 'background:#1a2a1a;',
-                    'value' => $this->countResult($database, 'SELECT COUNT(*) as result FROM MEMB_INFO'),
-                    'label' => 'Registered Accounts',
+                    'value'           => $this->countResult($database, 'SELECT COUNT(*) as result FROM MEMB_INFO'),
+                    'label'           => 'Registered Accounts',
                 ],
                 [
-                    'iconClass' => 'bi bi-person-fill-slash',
-                    'iconStyle' => 'color:#ef5350;',
+                    'iconClass'       => 'bi bi-person-fill-slash',
+                    'iconStyle'       => 'color:#ef5350;',
                     'backgroundStyle' => 'background:#2a1a1a;',
-                    'value' => $this->countResult($database, 'SELECT COUNT(*) as result FROM MEMB_INFO WHERE bloc_code = 1'),
-                    'label' => 'Banned Accounts',
+                    'value'           => $this->countResult($database, 'SELECT COUNT(*) as result FROM MEMB_INFO WHERE bloc_code = 1'),
+                    'label'           => 'Banned Accounts',
                 ],
                 [
-                    'iconClass' => 'bi bi-controller',
-                    'iconStyle' => 'color:#42a5f5;',
+                    'iconClass'       => 'bi bi-controller',
+                    'iconStyle'       => 'color:#42a5f5;',
                     'backgroundStyle' => 'background:#1a1a2a;',
-                    'value' => $this->countResult($database, 'SELECT COUNT(*) as result FROM Character'),
-                    'label' => 'Characters',
+                    'value'           => $this->countResult($database, 'SELECT COUNT(*) as result FROM Character'),
+                    'label'           => 'Characters',
                 ],
                 [
-                    'iconClass' => 'bi bi-list-task',
-                    'iconStyle' => 'color:#c8a96e;',
+                    'iconClass'       => 'bi bi-list-task',
+                    'iconStyle'       => 'color:#c8a96e;',
                     'backgroundStyle' => 'background:#1a2200;',
-                    'value' => $this->countResult($database, 'SELECT COUNT(*) as result FROM ' . Cron),
-                    'label' => 'Cron Tasks',
+                    'value'           => $this->countResult($database, 'SELECT COUNT(*) as result FROM ' . Cron),
+                    'label'           => 'Cron Tasks',
                 ],
             ],
             'systemRows' => [
@@ -65,8 +67,10 @@ final class HomeController
                 ['label' => 'Server Time', 'value' => date('Y-m-d H:i'), 'valueClass' => ''],
                 [
                     'label' => 'Plugin System',
-                    'value' => (bool) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('plugins_system_enable', true) ? 'Enabled' : 'Disabled',
-                    'valueClass' => (bool) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('plugins_system_enable', true) ? 'badge-status on' : 'badge-status off',
+                    'value' => BootstrapContext::cmsValue('plugins_system_enable', true)
+                        ? 'Enabled' : 'Disabled',
+                    'valueClass' => BootstrapContext::cmsValue('plugins_system_enable', true)
+                        ? 'badge-status on' : 'badge-status off',
                 ],
             ],
             'quickActions' => [
@@ -83,29 +87,29 @@ final class HomeController
 
     private function shouldWarnAboutInstallDirectory(): bool
     {
-        $installDir = __PUBLIC_DIR__ . 'install/';
+        $installDir      = __PUBLIC_DIR__ . 'install/';
         $installHtaccess = $installDir . '.htaccess';
 
-        if (!file_exists($installDir)) {
+        if (! file_exists($installDir)) {
             return false;
         }
 
-        if (!file_exists($installHtaccess)) {
+        if (! file_exists($installHtaccess)) {
             return true;
         }
 
         $contents = @file_get_contents($installHtaccess);
-        if (!is_string($contents)) {
+        if (! is_string($contents)) {
             return true;
         }
 
-        return strpos($contents, 'Require all denied') === false;
+        return ! str_contains($contents, 'Require all denied');
     }
 
     private function installWarningHtml(): string
     {
         ob_start();
-        \Darkheim\Application\View\MessageRenderer::inline('warning', 'Your public/install/ directory still exists. It is strongly recommended that you rename or delete it before going live.');
+        MessageRenderer::inline('warning', 'Your public/install/ directory still exists. It is strongly recommended that you rename or delete it before going live.');
         return (string) ob_get_clean();
     }
 
@@ -113,7 +117,7 @@ final class HomeController
     {
         try {
             $row = $database->query_fetch_single($query);
-            if (!is_array($row) || !isset($row['result']) || !is_numeric($row['result'])) {
+            if (! is_array($row) || ! isset($row['result']) || ! is_numeric($row['result'])) {
                 return '?';
             }
 
@@ -128,20 +132,19 @@ final class HomeController
      */
     private function adminRows(): array
     {
-        $admins = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('admins', true);
-        if (!is_array($admins)) {
+        $admins = BootstrapContext::cmsValue('admins', true);
+        if (! is_array($admins)) {
             return [];
         }
 
         $rows = [];
         foreach ($admins as $adminName => $adminLevel) {
             $rows[] = [
-                'name' => (string) $adminName,
-                'level' => 'Level ' . (string) $adminLevel,
+                'name'  => (string) $adminName,
+                'level' => 'Level ' . $adminLevel,
             ];
         }
 
         return $rows;
     }
 }
-

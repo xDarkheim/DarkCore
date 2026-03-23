@@ -9,6 +9,7 @@ use Darkheim\Application\Credits\CreditSystem;
 use Darkheim\Application\Language\Translator;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Database\Connection;
+use Darkheim\Infrastructure\Http\Redirector;
 
 /**
  * Vote — user voting, cooldown checks, credit rewards, logging.
@@ -140,7 +141,7 @@ class Vote
             $this->_logVote();
         }
 
-        \Darkheim\Infrastructure\Http\Redirector::go(3, $voteSite['votesite_link']);
+        Redirector::go(3, $voteSite['votesite_link']);
     }
 
     // ─── Private helpers ──────────────────────────────────────────────────────
@@ -162,7 +163,8 @@ class Vote
         if (! is_array($check)) {
             return true;
         }
-        return (bool) ($this->_timePassed($check['timestamp'])
+        return (
+            $this->_timePassed($check['timestamp'])
             && $this->_removeRecord(
                 $check['id'],
             )
@@ -187,7 +189,8 @@ class Vote
         if (! is_array($check)) {
             return true;
         }
-        return (bool) ($this->_timePassed($check['timestamp'])
+        return (
+            $this->_timePassed($check['timestamp'])
             && $this->_removeRecord(
                 $check['id'],
             )
@@ -263,7 +266,9 @@ class Vote
         return is_array($result) ? $result : null;
     }
 
-    /** @return array<string, mixed> */
+    /** @return array<string, mixed>
+     * @throws \JsonException
+     */
     private static function xmlToArray(\SimpleXMLElement $object): array
     {
         return json_decode(json_encode($object, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);

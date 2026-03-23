@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Admincp;
 
 use Darkheim\Application\Credits\CreditSystem;
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Application\Vote\VoteSiteRepository;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
@@ -48,34 +49,34 @@ final class ModulesManagerController
             $this->handleSimpleConfigSave($configKey);
 
             $moduleConfigName = $this->moduleConfigNameFromKey($configKey);
-            \Darkheim\Infrastructure\Bootstrap\BootstrapContext::loadModuleConfig($moduleConfigName);
+            BootstrapContext::loadModuleConfig($moduleConfigName);
 
             $subDir   = in_array($configKey, $usercpModules, true) ? 'usercp/' : '';
             $filePath = __PATH_VIEWS__ . 'admincp/mconfig/' . $subDir . $configKey . '.php';
             if (is_file($filePath)) {
                 $configFilePath = $filePath;
             } else {
-                \Darkheim\Application\View\MessageRenderer::toast('error', 'Invalid module.');
+                MessageRenderer::toast('error', 'Invalid module.');
             }
         }
 
-        $mconfigData = $this->prepareMconfigData($configKey);
-        $globalModules = $this->buildModuleLinks($cmsModules['_global'], $admincpUrl);
-        $usercpModules = $this->buildModuleLinks($cmsModules['_usercp'], $admincpUrl);
+        $mconfigData              = $this->prepareMconfigData($configKey);
+        $globalModules            = $this->buildModuleLinks($cmsModules['_global'], $admincpUrl);
+        $usercpModules            = $this->buildModuleLinks($cmsModules['_usercp'], $admincpUrl);
         $selectedConfigFormAction = is_string($configKey) && $configKey !== ''
             ? $admincpUrl->base('modules_manager&config=' . $configKey)
             : '';
 
         $this->view->render('admincp/modulesmanager', [
-            'globalModules'          => $globalModules,
-            'usercpModules'          => $usercpModules,
-            'selectedConfigKey'      => $configKey,
-            'selectedConfigFilePath' => $configFilePath,
+            'globalModules'            => $globalModules,
+            'usercpModules'            => $usercpModules,
+            'selectedConfigKey'        => $configKey,
+            'selectedConfigFilePath'   => $configFilePath,
             'selectedConfigFormAction' => $selectedConfigFormAction,
-            'downloadsConfigUrl'     => $admincpUrl->base('modules_manager&config=downloads'),
-            'downloadsDeleteUrlBase' => $admincpUrl->base('modules_manager&config=downloads&deletelink='),
-            'voteConfigUrl'          => $admincpUrl->base('modules_manager&config=vote'),
-            'voteDeleteSiteUrlBase'  => $admincpUrl->base('modules_manager&config=vote&deletesite='),
+            'downloadsConfigUrl'       => $admincpUrl->base('modules_manager&config=downloads'),
+            'downloadsDeleteUrlBase'   => $admincpUrl->base('modules_manager&config=downloads&deletelink='),
+            'voteConfigUrl'            => $admincpUrl->base('modules_manager&config=vote'),
+            'voteDeleteSiteUrlBase'    => $admincpUrl->base('modules_manager&config=vote&deletesite='),
             ...$mconfigData,
         ]);
     }
@@ -88,7 +89,7 @@ final class ModulesManagerController
     {
         $links = [];
         foreach ($modules as $module) {
-            $key = (string) ($module[1] ?? '');
+            $key     = (string) ($module[1] ?? '');
             $links[] = [
                 'label' => (string) ($module[0] ?? ''),
                 'key'   => $key,
@@ -174,7 +175,7 @@ final class ModulesManagerController
                     }
                 }
             } catch (\JsonException $e) {
-                \Darkheim\Application\View\MessageRenderer::toast('error', 'Error loading Castle Siege config: ' . $e->getMessage());
+                MessageRenderer::toast('error', 'Error loading Castle Siege config: ' . $e->getMessage());
             }
         }
 
@@ -187,7 +188,7 @@ final class ModulesManagerController
     private function addCreditConfigSelect(array &$data, string $viewKey, string $settingName, string $mconfigKey): void
     {
         $creditSystem = new CreditSystem();
-        $rawDefault = \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue($mconfigKey);
+        $rawDefault   = BootstrapContext::moduleValue($mconfigKey);
         if (is_int($rawDefault)) {
             $default = $rawDefault;
         } elseif (is_numeric($rawDefault)) {
@@ -229,7 +230,7 @@ final class ModulesManagerController
                 (string) ($_POST['downloads_add_size'] ?? ''),
                 (string) ($_POST['downloads_add_type'] ?? ''),
             );
-            $action ? \Darkheim\Application\View\MessageRenderer::toast('success', 'Your download link has been successfully added!') : \Darkheim\Application\View\MessageRenderer::toast('error', 'There was an error adding the download link.');
+            $action ? MessageRenderer::toast('success', 'Your download link has been successfully added!') : MessageRenderer::toast('error', 'There was an error adding the download link.');
         }
 
         if (isset($_POST['downloads_edit_submit'])) {
@@ -241,12 +242,12 @@ final class ModulesManagerController
                 (string) ($_POST['downloads_edit_size'] ?? ''),
                 (string) ($_POST['downloads_edit_type'] ?? ''),
             );
-            $action ? \Darkheim\Application\View\MessageRenderer::toast('success', 'Your download link has been successfully updated!') : \Darkheim\Application\View\MessageRenderer::toast('error', 'There was an error updating the download link.');
+            $action ? MessageRenderer::toast('success', 'Your download link has been successfully updated!') : MessageRenderer::toast('error', 'There was an error updating the download link.');
         }
 
         if (isset($_REQUEST['deletelink'])) {
             $action = $downloads->delete((string) $_REQUEST['deletelink']);
-            $action ? \Darkheim\Application\View\MessageRenderer::toast('success', 'Your download link has been successfully deleted!') : \Darkheim\Application\View\MessageRenderer::toast('error', 'There was an error deleting the download link.');
+            $action ? MessageRenderer::toast('success', 'Your download link has been successfully deleted!') : MessageRenderer::toast('error', 'There was an error deleting the download link.');
         }
     }
 
@@ -261,12 +262,12 @@ final class ModulesManagerController
                 (string) ($_POST['votesite_add_reward'] ?? ''),
                 (string) ($_POST['votesite_add_time'] ?? ''),
             );
-            $add ? \Darkheim\Application\View\MessageRenderer::toast('success', 'Votesite successfully added.') : \Darkheim\Application\View\MessageRenderer::toast('error', 'There has been an error while adding the topsite.');
+            $add ? MessageRenderer::toast('success', 'Votesite successfully added.') : MessageRenderer::toast('error', 'There has been an error while adding the topsite.');
         }
 
         if (isset($_REQUEST['deletesite'])) {
             $delete = $voteSiteRepository->delete((string) $_REQUEST['deletesite']);
-            $delete ? \Darkheim\Application\View\MessageRenderer::toast('success', 'Votesite successfully deleted.') : \Darkheim\Application\View\MessageRenderer::toast('error', 'There has been an error while deleting the topsite.');
+            $delete ? MessageRenderer::toast('success', 'Votesite successfully deleted.') : MessageRenderer::toast('error', 'There has been an error while deleting the topsite.');
         }
     }
 
@@ -335,9 +336,9 @@ final class ModulesManagerController
                 throw new \RuntimeException('There has been an error while saving changes.');
             }
 
-            \Darkheim\Application\View\MessageRenderer::toast('success', 'Settings successfully saved.');
+            MessageRenderer::toast('success', 'Settings successfully saved.');
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+            MessageRenderer::toast('error', $ex->getMessage());
         }
     }
 
@@ -594,13 +595,13 @@ final class ModulesManagerController
         $expectedPostKeys = array_keys($simpleMap[$configKey]['fields']);
         foreach ($expectedPostKeys as $postKey) {
             if (! array_key_exists($postKey, $_POST)) {
-                \Darkheim\Application\View\MessageRenderer::toast('error', 'Missing data (complete all fields).');
+                MessageRenderer::toast('error', 'Missing data (complete all fields).');
                 return;
             }
         }
 
         if (in_array($configKey, ['addstats', 'clearskilltree'], true) && isset($_POST['setting_5']) && (int) $_POST['setting_5'] > 400) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', 'The required level setting can have a maximum value of 400.');
+            MessageRenderer::toast('error', 'The required level setting can have a maximum value of 400.');
             return;
         }
 
@@ -609,7 +610,7 @@ final class ModulesManagerController
         $xmlPath  = $basePath . $map['xml'];
         $xml      = simplexml_load_string((string) file_get_contents($xmlPath));
         if (! $xml) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', 'There has been an error while loading module settings.');
+            MessageRenderer::toast('error', 'There has been an error while loading module settings.');
             return;
         }
 
@@ -619,9 +620,9 @@ final class ModulesManagerController
 
         $saved = $xml->asXML($xmlPath);
         if ($saved) {
-            \Darkheim\Application\View\MessageRenderer::toast('success', $map['success'] ?? 'Settings successfully saved.');
+            MessageRenderer::toast('success', $map['success'] ?? 'Settings successfully saved.');
         } else {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $map['error'] ?? 'There has been an error while saving changes.');
+            MessageRenderer::toast('error', $map['error'] ?? 'There has been an error while saving changes.');
         }
     }
 

@@ -27,22 +27,22 @@ final class SearchCharacterController
         if (isset($_POST['search_character'], $_POST['search_request'])) {
             $searchRequest = (string) $_POST['search_request'];
             try {
-                if (!Validator::Length($searchRequest, 11, 2)) {
+                if (! Validator::Length($searchRequest, 11, 2)) {
                     throw new \RuntimeException('The name can be 3 to 10 characters long.');
                 }
-                $db     = Connection::Database('MuOnline');
+                $db         = Connection::Database('MuOnline');
                 $admincpUrl = new AdmincpUrlGenerator();
-                $common = new Common();
-                $rows   = $db->query_fetch(
+                $common     = new Common();
+                $rows       = $db->query_fetch(
                     'SELECT TOP 10 ' . _CLMN_CHR_NAME_ . ', ' . _CLMN_CHR_ACCID_ . ' FROM ' . _TBL_CHR_ . ' WHERE Name LIKE ?',
-                    ['%' . $searchRequest . '%']
+                    ['%' . $searchRequest . '%'],
                 );
-                if (!is_array($rows)) {
+                if (! is_array($rows)) {
                     throw new \RuntimeException('No results found.');
                 }
                 $results = [];
                 foreach ($rows as $character) {
-                    $accId   = (string) ($character[_CLMN_CHR_ACCID_] ?? '');
+                    $accId     = (string) ($character[_CLMN_CHR_ACCID_] ?? '');
                     $results[] = [
                         'name'           => (string) ($character[_CLMN_CHR_NAME_] ?? ''),
                         'accountInfoUrl' => $admincpUrl->base('accountinfo&id=' . $common->retrieveUserID($accId)),
@@ -61,4 +61,3 @@ final class SearchCharacterController
         ]);
     }
 }
-

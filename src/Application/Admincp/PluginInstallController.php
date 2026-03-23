@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Plugins\Plugins;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -18,11 +20,11 @@ final class PluginInstallController
 
     public function render(): void
     {
-        $systemEnabled = (bool) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('plugins_system_enable', true);
+        $systemEnabled = (bool) BootstrapContext::cmsValue('plugins_system_enable', true);
 
         if (isset($_POST['submit'])) {
             if ($_FILES['file']['error'] > 0) {
-                \Darkheim\Application\View\MessageRenderer::toast('error', 'There has been an error uploading the file.');
+                MessageRenderer::toast('error', 'There has been an error uploading the file.');
             } else {
                 $plugin = new Plugins();
                 $plugin->importPlugin($_FILES);

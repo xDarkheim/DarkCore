@@ -15,17 +15,6 @@ namespace Darkheim\Application\Helpers;
 final class Encoder
 {
     /**
-     * Encodes $data to a URL-safe Base64 string (no padding).
-     */
-    public static function base64urlEncode(string $data): string
-    {
-        $b64 = base64_encode($data . '!we');
-        $url = strtr($b64, '+/', '-_');
-
-        return rtrim($url, '=');
-    }
-
-    /**
      * Decodes a URL-safe Base64 string produced by base64urlEncode().
      * Returns null when the sentinel is missing (invalid / tampered data).
      */
@@ -38,11 +27,10 @@ final class Encoder
             return null;
         }
 
-        if (substr($decoded, -3) !== '!we') {
+        if (! str_ends_with($decoded, '!we')) {
             return null;
         }
 
         return substr($decoded, 0, -3);
     }
 }
-

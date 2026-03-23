@@ -19,23 +19,23 @@ final class SearchAccountController
 
     public function render(): void
     {
-        $results = null;
+        $results       = null;
         $searchRequest = '';
-        $error = null;
+        $error         = null;
 
         if (isset($_POST['search_account'], $_POST['search_request'])) {
             $searchRequest = (string) $_POST['search_request'];
             try {
-                if (!Validator::Length($searchRequest, 11, 2)) {
+                if (! Validator::Length($searchRequest, 11, 2)) {
                     throw new \RuntimeException('The username can be 3 to 10 characters long.');
                 }
-                $db   = Connection::Database('MuOnline');
+                $db         = Connection::Database('MuOnline');
                 $admincpUrl = new AdmincpUrlGenerator();
-                $rows = $db->query_fetch(
+                $rows       = $db->query_fetch(
                     'SELECT ' . _CLMN_MEMBID_ . ', ' . _CLMN_USERNM_ . ' FROM ' . _TBL_MI_ . ' WHERE ' . _CLMN_USERNM_ . ' LIKE ?',
-                    ['%' . $searchRequest . '%']
+                    ['%' . $searchRequest . '%'],
                 );
-                if (!is_array($rows)) {
+                if (! is_array($rows)) {
                     throw new \RuntimeException('No results found.');
                 }
                 $results = array_map(static function (array $account): array {
@@ -57,4 +57,3 @@ final class SearchAccountController
         ]);
     }
 }
-

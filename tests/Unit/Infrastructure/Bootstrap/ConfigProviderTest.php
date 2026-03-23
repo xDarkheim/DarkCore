@@ -20,9 +20,9 @@ final class ConfigProviderTest extends TestCase
         mkdir($this->configDir . 'modules/', 0777, true);
         $this->originalTimezone = date_default_timezone_get();
         $state = new RuntimeState();
-        $state->setLanguagePhrases([]);
-        $state->setModuleConfig([]);
-        $state->setGlobalConfig([]);
+        $state->languagePhrases = [];
+        $state->moduleConfig = [];
+        $state->globalConfig = [];
     }
 
     protected function tearDown(): void

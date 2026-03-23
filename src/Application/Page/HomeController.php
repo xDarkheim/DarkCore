@@ -24,7 +24,7 @@ final class HomeController
     public function render(): void
     {
         $cmsConfig = BootstrapContext::configProvider()?->cms() ?? [];
-        $language = ((bool) ($cmsConfig['language_switch_active'] ?? false) && isset($_SESSION['language_display']))
+        $language  = (($cmsConfig['language_switch_active'] ?? false) && isset($_SESSION['language_display']))
             ? $_SESSION['language_display']
             : '';
 
@@ -90,7 +90,7 @@ final class HomeController
             }
         }
 
-        $userLoggedIn   = (new SessionManager())->isWebsiteAuthenticated(BootstrapContext::configProvider()?->moduleConfig('login'));
+        $userLoggedIn   = new SessionManager()->isWebsiteAuthenticated(BootstrapContext::configProvider()?->moduleConfig('login'));
         $usercpMenuHtml = $userLoggedIn ? new DefaultThemeLayoutBuilder()->renderUsercpMenuHtml() : '';
 
         $this->view->render('home', [

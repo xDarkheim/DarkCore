@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Config\ConfigRepository;
@@ -66,19 +67,19 @@ final class ConnectionSettingsController
                 }
 
                 new ConfigRepository(__PATH_CONFIGS__)->saveCms($cmsConfigurations);
-                \Darkheim\Application\View\MessageRenderer::toast('success', 'Settings successfully saved!');
+                MessageRenderer::toast('success', 'Settings successfully saved!');
             } catch (\Exception $ex) {
-                \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                MessageRenderer::toast('error', $ex->getMessage());
             }
         }
 
         $this->view->render('admincp/connectionsettings', [
-            'host'       => (string) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('SQL_DB_HOST', true),
-            'database'   => (string) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('SQL_DB_NAME', true),
-            'user'       => (string) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('SQL_DB_USER', true),
-            'password'   => (string) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('SQL_DB_PASS', true),
-            'port'       => (string) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('SQL_DB_PORT', true),
-            'encryption' => (string) \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('SQL_PASSWORD_ENCRYPTION', true),
+            'host'       => (string) BootstrapContext::cmsValue('SQL_DB_HOST', true),
+            'database'   => (string) BootstrapContext::cmsValue('SQL_DB_NAME', true),
+            'user'       => (string) BootstrapContext::cmsValue('SQL_DB_USER', true),
+            'password'   => (string) BootstrapContext::cmsValue('SQL_DB_PASS', true),
+            'port'       => (string) BootstrapContext::cmsValue('SQL_DB_PORT', true),
+            'encryption' => (string) BootstrapContext::cmsValue('SQL_PASSWORD_ENCRYPTION', true),
         ]);
     }
 }

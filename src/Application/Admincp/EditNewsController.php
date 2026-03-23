@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Darkheim\Application\Admincp;
 
 use Darkheim\Application\News\NewsService as News;
+use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
+use Darkheim\Infrastructure\Http\Redirector;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class EditNewsController
@@ -19,10 +22,10 @@ final class EditNewsController
     public function render(): void
     {
         $newsService = new News();
-        \Darkheim\Infrastructure\Bootstrap\BootstrapContext::loadModuleConfig('news');
+        BootstrapContext::loadModuleConfig('news');
 
-        if (!$newsService->isNewsDirWritable()) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', 'The news cache folder is not writable.');
+        if (! $newsService->isNewsDirWritable()) {
+            MessageRenderer::toast('error', 'The news cache folder is not writable.');
             return;
         }
 
@@ -30,12 +33,12 @@ final class EditNewsController
             $newsService->editNews($_REQUEST['id'], $_POST['news_title'], $_POST['news_content'], $_POST['news_author'], 0, $_POST['news_date']);
             $newsService->cacheNews();
             $newsService->updateNewsCacheIndex();
-            \Darkheim\Infrastructure\Http\Redirector::go(1, 'admincp/?module=managenews');
+            Redirector::go(1, 'admincp/?module=managenews');
         }
 
         $editNews = $newsService->loadNewsData($_REQUEST['id']);
-        if (!$editNews) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', 'Could not load news data.');
+        if (! $editNews) {
+            MessageRenderer::toast('error', 'Could not load news data.');
             return;
         }
 
@@ -47,4 +50,3 @@ final class EditNewsController
         ]);
     }
 }
-

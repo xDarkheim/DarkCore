@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Application\Helpers\TimeHelper;
 use Darkheim\Infrastructure\Cron\CronManager;
+use Darkheim\Infrastructure\Http\Redirector;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class CronManagerController
@@ -47,9 +49,9 @@ final class CronManagerController
                             break;
                         default: throw new \RuntimeException('Invalid action.');
                     }
-                    \Darkheim\Infrastructure\Http\Redirector::go(3, $admincpUrl->base('cronmanager'));
+                    Redirector::go(3, $admincpUrl->base('cronmanager'));
                 } catch (\Exception $ex) {
-                    \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                    MessageRenderer::toast('error', $ex->getMessage());
                 }
             }
 
@@ -59,9 +61,9 @@ final class CronManagerController
                     $cronManager->_interval = $_POST['cron_time'];
                     $cronManager->setFile($_POST['cron_file']);
                     $cronManager->addCron();
-                    \Darkheim\Infrastructure\Http\Redirector::go(3, $admincpUrl->base('cronmanager'));
+                    Redirector::go(3, $admincpUrl->base('cronmanager'));
                 } catch (\Exception $ex) {
-                    \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                    MessageRenderer::toast('error', $ex->getMessage());
                 }
             }
 
@@ -105,7 +107,7 @@ final class CronManagerController
                 'bulkResetUrl'    => $admincpUrl->base('cronmanager&action=allreset'),
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+            MessageRenderer::toast('error', $ex->getMessage());
         }
     }
 }

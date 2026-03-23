@@ -14,10 +14,10 @@ final class AdmincpLayoutDataProvider
 
     public function __construct(?string $layoutConfigFile = null, ?AdmincpRouteRegistry $routeRegistry = null, ?AdmincpUrlGenerator $urlGenerator = null)
     {
-        $projectRoot = dirname(__DIR__, 3);
+        $projectRoot            = dirname(__DIR__, 3);
         $this->layoutConfigFile = $layoutConfigFile ?? $projectRoot . '/config/admincp-layout.php';
-        $this->routeRegistry = $routeRegistry ?? new AdmincpRouteRegistry();
-        $this->urlGenerator = $urlGenerator ?? new AdmincpUrlGenerator();
+        $this->routeRegistry    = $routeRegistry    ?? new AdmincpRouteRegistry();
+        $this->urlGenerator     = $urlGenerator     ?? new AdmincpUrlGenerator();
     }
 
     /**
@@ -34,41 +34,41 @@ final class AdmincpLayoutDataProvider
         $groups = [];
 
         foreach ($config as $group) {
-            if (!is_array($group)) {
+            if (! is_array($group)) {
                 continue;
             }
 
-            $title = (string) ($group['title'] ?? '');
-            $icon = (string) ($group['icon'] ?? '');
+            $title       = (string) ($group['title'] ?? '');
+            $icon        = (string) ($group['icon'] ?? '');
             $linksConfig = $group['links'] ?? [];
-            if ($title === '' || $icon === '' || !is_array($linksConfig)) {
+            if ($title === '' || $icon === '' || ! is_array($linksConfig)) {
                 throw new \RuntimeException('Invalid AdminCP layout group configuration.');
             }
 
             $links = [];
             foreach ($linksConfig as $link) {
-                if (!is_array($link)) {
+                if (! is_array($link)) {
                     continue;
                 }
                 $module = (string) ($link['module'] ?? '');
-                $label = (string) ($link['label'] ?? '');
+                $label  = (string) ($link['label'] ?? '');
                 if ($module === '' || $label === '') {
                     throw new \RuntimeException('Invalid AdminCP layout link configuration.');
                 }
-                if (!is_array($this->routeRegistry->routeFor($module))) {
+                if (! is_array($this->routeRegistry->routeFor($module))) {
                     throw new \RuntimeException("AdminCP layout references unknown module '{$module}'.");
                 }
                 $links[] = [
                     'module' => $module,
-                    'label' => $label,
-                    'url' => $this->urlGenerator->base($module),
+                    'label'  => $label,
+                    'url'    => $this->urlGenerator->base($module),
                 ];
             }
 
             $groups[] = [
                 'title' => $title,
-                'icon' => $icon,
-                'id' => 'sm_' . preg_replace('/\W/', '', $title),
+                'icon'  => $icon,
+                'id'    => 'sm_' . preg_replace('/\W/', '', $title),
                 'links' => $links,
             ];
         }
@@ -79,17 +79,16 @@ final class AdmincpLayoutDataProvider
     /** @return array<int,mixed> */
     private function load(): array
     {
-        if (!is_file($this->layoutConfigFile)) {
+        if (! is_file($this->layoutConfigFile)) {
             throw new \RuntimeException('AdminCP layout config file not found.');
         }
 
         /** @var mixed $data */
         $data = include $this->layoutConfigFile;
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             throw new \RuntimeException('AdminCP layout config must return an array.');
         }
 
         return $data;
     }
 }
-

@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Darkheim\Application\Page;
 
 use Darkheim\Application\Auth\Common;
+use Darkheim\Application\Auth\SessionManager;
 use Darkheim\Application\Character\Character;
 use Darkheim\Application\Credits\CreditSystem;
 use Darkheim\Application\Game\GameHelper;
+use Darkheim\Application\Language\Translator;
+use Darkheim\Application\View\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Cache\CacheRepository;
+use Darkheim\Infrastructure\Http\Redirector;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class UsercpController
@@ -24,25 +28,25 @@ final class UsercpController
 
     public function render(): void
     {
-        if (! \Darkheim\Application\Auth\SessionManager::websiteAuthenticated()) {
-            \Darkheim\Infrastructure\Http\Redirector::go(1, 'login');
+        if (! SessionManager::websiteAuthenticated()) {
+            Redirector::go(1, 'login');
             return;
         }
 
         $cfg = BootstrapContext::configProvider()?->config('usercp');
         if (! is_array($cfg)) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', 'Could not load usercp, please contact support.');
+            MessageRenderer::inline('error', 'Could not load usercp, please contact support.');
             return;
         }
 
         $common      = new Common();
         $accountInfo = $common->accountInformation($_SESSION['userid']);
         if (! is_array($accountInfo)) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', 'Could not load account data.');
+            MessageRenderer::inline('error', 'Could not load account data.');
             return;
         }
 
-        $isOnline  = $common->accountOnline($_SESSION['username']) ? true : false;
+        $isOnline  = (bool) $common->accountOnline($_SESSION['username']);
         $isBlocked = ((int) ($accountInfo[_CLMN_BLOCCODE_] ?? 0) === 1);
 
         $characterService  = new Character();
@@ -115,13 +119,15 @@ final class UsercpController
             }
 
             $iconFile = (string) ($element['icon'] ?? '');
-            $title    = Validator::hasValue(\Darkheim\Application\Language\Translator::phrase((string) ($element['phrase'] ?? ''), true))
-                ? \Darkheim\Application\Language\Translator::phrase((string) ($element['phrase'] ?? ''), true)
+            $title    = Validator::hasValue(
+                Translator::phrase((string) ($element['phrase'] ?? ''), true),
+            )
+                ? Translator::phrase((string) ($element['phrase'] ?? ''), true)
                 : 'ERROR';
 
             $tiles[] = [
                 'link' => ((string) ($element['type'] ?? '') === 'internal')
-                    ? __BASE_URL__ . (string) ($element['link'] ?? '')
+                    ? __BASE_URL__ . ($element['link'] ?? '')
                     : (string) ($element['link'] ?? ''),
                 'title' => $title,
                 'icon'  => Validator::hasValue($iconFile)
@@ -135,11 +141,11 @@ final class UsercpController
 
         $this->view->render('usercp', [
             'username'        => htmlspecialchars((string) $accountInfo[_CLMN_USERNM_], ENT_QUOTES, 'UTF-8'),
-            'subtitle'        => \Darkheim\Application\Language\Translator::phrase('usercp_menu_title', true),
+            'subtitle'        => Translator::phrase('usercp_menu_title', true),
             'statusClass'     => $isBlocked ? 'ma-pill-banned' : 'ma-pill-active',
-            'statusText'      => $isBlocked ? \Darkheim\Application\Language\Translator::phrase('myaccount_txt_8') : \Darkheim\Application\Language\Translator::phrase('myaccount_txt_7'),
+            'statusText'      => $isBlocked ? Translator::phrase('myaccount_txt_8') : Translator::phrase('myaccount_txt_7'),
             'onlineClass'     => $isOnline ? 'ma-pill-online' : 'ma-pill-offline',
-            'onlineText'      => $isOnline ? \Darkheim\Application\Language\Translator::phrase('myaccount_txt_9') : \Darkheim\Application\Language\Translator::phrase('myaccount_txt_10'),
+            'onlineText'      => $isOnline ? Translator::phrase('myaccount_txt_9') : Translator::phrase('myaccount_txt_10'),
             'firstCharAvatar' => $firstCharAvatar,
             'charCount'       => $charCount,
             'charsOnline'     => $charsOnline,

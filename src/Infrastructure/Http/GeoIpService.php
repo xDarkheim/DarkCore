@@ -11,7 +11,7 @@ namespace Darkheim\Infrastructure\Http;
  */
 final class GeoIpService
 {
-    private const API_URL = 'https://ip-api.com/json/%s?fields=status,countryCode';
+    private const string API_URL = 'https://ip-api.com/json/%s?fields=status,countryCode';
 
     /**
      * Resolves the ISO-3166-1 alpha-2 country code for the given IP address.
@@ -27,7 +27,7 @@ final class GeoIpService
         $json = curl_exec($handle);
         curl_close($handle);
 
-        if (!$json || !is_string($json)) {
+        if (! $json || ! is_string($json)) {
             return null;
         }
 
@@ -37,7 +37,7 @@ final class GeoIpService
             return null;
         }
 
-        if (!is_array($result) || ($result['status'] ?? '') === 'fail') {
+        if (! is_array($result) || ($result['status'] ?? '') === 'fail') {
             return null;
         }
 
@@ -61,4 +61,3 @@ final class GeoIpService
         return $base . $code . '.gif';
     }
 }
-

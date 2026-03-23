@@ -13,14 +13,14 @@ final class SubpageRouteDispatcher
 
     public function __construct(?SubpageRouteRegistry $registry = null, ?string $subpageViewsPath = null)
     {
-        $this->registry = $registry ?? new SubpageRouteRegistry();
+        $this->registry         = $registry ?? new SubpageRouteRegistry();
         $this->subpageViewsPath = $subpageViewsPath;
     }
 
     public function dispatch(string $page, string $subpage): bool
     {
         $route = $this->registry->routeFor($page, $subpage);
-        if (!is_array($route)) {
+        if (! is_array($route)) {
             return false;
         }
 
@@ -31,11 +31,11 @@ final class SubpageRouteDispatcher
 
         $controllerClass = $route['controller'] ?? null;
         if (is_string($controllerClass) && $controllerClass !== '') {
-            if (!class_exists($controllerClass)) {
+            if (! class_exists($controllerClass)) {
                 return false;
             }
             $controller = new $controllerClass();
-            if (!method_exists($controller, 'render')) {
+            if (! method_exists($controller, 'render')) {
                 return false;
             }
             $controller->render();
@@ -45,14 +45,14 @@ final class SubpageRouteDispatcher
 
         $basePath = $this->subpageViewsPath;
         if ($basePath === null) {
-            if (!defined('__PATH_VIEWS__')) {
+            if (! defined('__PATH_VIEWS__')) {
                 return false;
             }
-            $basePath = (string) constant('__PATH_VIEWS__') . 'subpages/';
+            $basePath = constant('__PATH_VIEWS__') . 'subpages/';
         }
 
         $subpageFile = $basePath . $page . '/' . $subpage . '.php';
-        if (!is_file($subpageFile)) {
+        if (! is_file($subpageFile)) {
             return false;
         }
 

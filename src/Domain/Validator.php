@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Domain;
 
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
+
 /**
  * Input validation — all methods are static.
  */
@@ -11,35 +13,44 @@ class Validator
 {
     private static function textHit(string $string, array|string $exclude = ''): bool
     {
-        if (empty($exclude)) return false;
-        if (is_array($exclude)) {
-            if (array_any(
+        if (empty($exclude)) {
+            return false;
+        }
+        if (is_array($exclude)
+            && array_any(
                 $exclude,
-                fn($text) => str_contains($string, $text)
+                fn($text) => str_contains($string, $text),
             )
-            ) {
-                return true;
-            }
-        } elseif (str_contains($string, $exclude)) return true;
-        return false;
+        ) {
+            return true;
+        }
+
+        return str_contains($string, $exclude)
+        ;
     }
 
     private static function numberBetween($integer, $max = null, $min = 0): bool
     {
-        if (is_numeric($min) && $integer < $min) return false;
-        if (is_numeric($max) && $integer > $max) return false;
-        return true;
+        if (is_numeric($min) && $integer < $min) {
+            return false;
+        }
+        return ! (is_numeric($max) && $integer > $max)
+        ;
     }
 
     public static function Email(string $string, array|string $exclude = ''): bool
     {
-        if (self::textHit($string, $exclude)) return false;
+        if (self::textHit($string, $exclude)) {
+            return false;
+        }
         return (bool) preg_match("/^([a-z0-9])(([-a-z0-9._])*([a-z0-9]))*@([a-z0-9])(([a-z0-9-])*([a-z0-9]))+(\.([a-z0-9])([-a-z0-9_-])?([a-z0-9])+)+$/i", $string);
     }
 
     public static function Url(string $string, array|string $exclude = ''): bool
     {
-        if (self::textHit($string, $exclude)) return false;
+        if (self::textHit($string, $exclude)) {
+            return false;
+        }
         return (bool) preg_match("/^(http|https|ftp):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/i", $string);
     }
 
@@ -51,8 +62,8 @@ class Validator
     public static function Number($integer, $max = null, $min = 0): bool
     {
         if (preg_match("/^-?[0-9e]+$/", (string) $integer)) {
-            if (!self::numberBetween($integer, $max, $min)) return false;
-            return true;
+            return self::numberBetween($integer, $max, $min)
+            ;
         }
         return false;
     }
@@ -64,7 +75,7 @@ class Validator
 
     public static function Float($string): bool
     {
-        return ($string == (string)(float)$string);
+        return ($string == (string) (float) $string);
     }
 
     public static function Alpha(string $string): bool
@@ -85,8 +96,8 @@ class Validator
     public static function Length(string $string, $max = null, $min = 0): bool
     {
         $length = strlen($string);
-        if (!self::numberBetween($length, $max, $min)) return false;
-        return true;
+        return self::numberBetween($length, $max, $min)
+        ;
     }
 
     public static function Date(string $string): bool
@@ -103,17 +114,16 @@ class Validator
      */
     public static function hasValue(mixed $value): bool
     {
-        return (@count((array) $value) > 0 && !@empty($value)) || $value === '0';
+        return (@count((array) $value) > 0 && ! @empty($value)) || $value === '0';
     }
 
     public static function UsernameLength(string $string): bool
     {
-        return !(strlen($string) < \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('username_min_len', true) || strlen($string) > \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('username_max_len', true));
+        return ! (strlen($string) < BootstrapContext::cmsValue('username_min_len', true) || strlen($string) > BootstrapContext::cmsValue('username_max_len', true));
     }
 
     public static function PasswordLength(string $string): bool
     {
-        return !(strlen($string) < \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('password_min_len', true) || strlen($string) > \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('password_max_len', true));
+        return ! (strlen($string) < BootstrapContext::cmsValue('password_min_len', true) || strlen($string) > BootstrapContext::cmsValue('password_max_len', true));
     }
 }
-

@@ -114,7 +114,9 @@ class Plugins
         return __PATH_PLUGINS__ . $name . '/';
     }
 
-    /** @return array<string, mixed> */
+    /** @return array<string, mixed>
+     * @throws \JsonException
+     */
     private static function xmlToArray(
         \SimpleXMLElement $object,
     ): array {

@@ -7,13 +7,15 @@ namespace Darkheim\Infrastructure\Routing;
 final class PageAccessDispatcher
 {
     /**
-     * @param array<string, mixed> $context
+     * @param  array<string, mixed>  $context
+     *
+     * @throws \Exception
      */
     public function dispatch(string $access, string $theme, array $context = []): void
     {
         switch ($access) {
             case 'index':
-                if (!$this->themeExists($theme)) {
+                if (! $this->themeExists($theme)) {
                     throw new \Exception('The chosen theme cannot be loaded (' . $theme . ').');
                 }
                 if ($context !== []) {
@@ -36,4 +38,3 @@ final class PageAccessDispatcher
         return is_file(__PATH_THEMES__ . $theme . '/index.php');
     }
 }
-

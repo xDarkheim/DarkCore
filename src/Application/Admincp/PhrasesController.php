@@ -18,8 +18,8 @@ final class PhrasesController
 
     public function render(): void
     {
-        $lang  = BootstrapContext::runtimeState()?->languagePhrases() ?? [];
-        $rows  = [];
+        $lang = BootstrapContext::runtimeState()?->languagePhrases() ?? [];
+        $rows = [];
 
         foreach ($lang as $key => $value) {
             $rows[] = [

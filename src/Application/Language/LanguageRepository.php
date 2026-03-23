@@ -23,10 +23,10 @@ final class LanguageRepository
      */
     public static function getInstalled(): ?array
     {
-        $langPath = defined('__PATH_LANGUAGES__') ? (string) __PATH_LANGUAGES__ : '';
+        $langPath = defined('__PATH_LANGUAGES__') ? __PATH_LANGUAGES__ : '';
         $dirs     = FileHelper::listDirectories($langPath);
 
-        if (!is_array($dirs)) {
+        if (! is_array($dirs)) {
             return null;
         }
 
@@ -42,4 +42,3 @@ final class LanguageRepository
         return count($result) > 0 ? $result : null;
     }
 }
-

@@ -23,12 +23,12 @@ final class CronExecutor
      */
     public function execute(?string $singleCronId = null): array
     {
-        if ($singleCronId !== null && !Validator::UnsignedNumber($singleCronId)) {
+        if ($singleCronId !== null && ! Validator::UnsignedNumber($singleCronId)) {
             throw new \RuntimeException('The provided cron id is not valid.');
         }
 
         $cronList = $this->manager->getCronList();
-        if (!is_array($cronList)) {
+        if (! is_array($cronList)) {
             throw new \RuntimeException('There are no crons.');
         }
 
@@ -53,7 +53,7 @@ final class CronExecutor
             }
 
             $runTime = isset($cron['cron_run_time']) ? (int) $cron['cron_run_time'] : 0;
-            $lastRun = \Darkheim\Domain\Validator::hasValue($cron['cron_last_run'] ?? null)
+            $lastRun = Validator::hasValue($cron['cron_last_run'] ?? null)
                 ? (int) $cron['cron_last_run'] + $runTime
                 : $runTime;
 
@@ -110,4 +110,3 @@ final class CronExecutor
         }
     }
 }
-

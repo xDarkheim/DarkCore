@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace Darkheim\Application\Page;
 
 use Darkheim\Application\Auth\AuthService;
+use Darkheim\Application\Auth\SessionManager;
+use Darkheim\Infrastructure\Http\Redirector;
 
 final class LogoutController
 {
     public function render(): void
     {
-        if (!\Darkheim\Application\Auth\SessionManager::websiteAuthenticated()) {
-            \Darkheim\Infrastructure\Http\Redirector::go();
+        if (! SessionManager::websiteAuthenticated()) {
+            Redirector::go();
             return;
         }
-        (new AuthService())->logout();
-        \Darkheim\Infrastructure\Http\Redirector::go();
+        new AuthService()->logout();
+        Redirector::go();
     }
 }

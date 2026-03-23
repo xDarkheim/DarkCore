@@ -18,18 +18,20 @@ final class ControllerRouteDispatcher
     public function dispatch(string $page): bool
     {
         $controllerClass = $this->registry->controllerForPage($page);
-        if (!is_string($controllerClass) || $controllerClass === '') {
+        if (! is_string($controllerClass) || $controllerClass === '') {
             return false;
         }
 
         $moduleConfig = $this->registry->moduleConfigForPage($page);
         if (is_string($moduleConfig) && $moduleConfig !== '') {
             $result = BootstrapContext::configProvider()?->moduleConfig($moduleConfig);
-            BootstrapContext::runtimeState()?->setModuleConfig(is_array($result) ? $result : []);
+            BootstrapContext::runtimeState()?->setModuleConfig(
+                is_array($result) ? $result : [],
+            );
         }
 
         $controller = new $controllerClass();
-        if (!method_exists($controller, 'render')) {
+        if (! method_exists($controller, 'render')) {
             throw new \RuntimeException('Invalid controller for route: ' . $page);
         }
 
@@ -37,4 +39,3 @@ final class ControllerRouteDispatcher
         return true;
     }
 }
-

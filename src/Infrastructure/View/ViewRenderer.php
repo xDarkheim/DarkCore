@@ -26,10 +26,12 @@ final class ViewRenderer
     private ?string $viewsPath;
 
     /**
-     * @param string|null $theme      Active theme name; defaults to \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('website_theme').
-     * @param string|null $themesPath Absolute path to themes/ dir (trailing slash). Defaults to __PATH_THEMES__.
-     * @param string|null $viewsPath  Absolute path to views/  dir (trailing slash). Defaults to __PATH_VIEWS__.
+     * @param  string|null  $theme  Active theme name; defaults to \Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('website_theme').
+     * @param  string|null  $themesPath  Absolute path to themes/ dir (trailing slash). Defaults to __PATH_THEMES__.
+     * @param  string|null  $viewsPath  Absolute path to views/  dir (trailing slash). Defaults to __PATH_VIEWS__.
      *                                Inject custom paths in tests to avoid redefining constants.
+     *
+     * @throws \Exception
      */
     public function __construct(
         ?string $theme = null,
@@ -52,7 +54,7 @@ final class ViewRenderer
 
         if ($file === null) {
             throw new \RuntimeException(
-                "View template '{$template}' not found. "
+                "View template '$template' not found. "
                 . "Checked theme override and views/ directory.",
             );
         }

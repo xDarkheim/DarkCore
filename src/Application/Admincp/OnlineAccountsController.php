@@ -18,50 +18,49 @@ final class OnlineAccountsController
 
     public function render(): void
     {
-        $account = new Account();
+        $account    = new Account();
         $admincpUrl = new AdmincpUrlGenerator();
         $serverList = $account->getServerList();
-        $statBoxes = [];
+        $statBoxes  = [];
 
         if (is_array($serverList)) {
             foreach ($serverList as $server) {
-                $serverName = (string) $server;
+                $serverName  = (string) $server;
                 $statBoxes[] = [
-                    'value' => number_format($account->getOnlineAccountCount($serverName)),
-                    'label' => $serverName,
+                    'value'  => number_format($account->getOnlineAccountCount($serverName)),
+                    'label'  => $serverName,
                     'accent' => false,
                 ];
             }
         }
 
         $statBoxes[] = [
-            'value' => number_format($account->getOnlineAccountCount()),
-            'label' => 'Total Online',
+            'value'  => number_format($account->getOnlineAccountCount()),
+            'label'  => 'Total Online',
             'accent' => true,
         ];
 
-        $rows = [];
+        $rows           = [];
         $onlineAccounts = $account->getOnlineAccountList();
         if (is_array($onlineAccounts)) {
             foreach ($onlineAccounts as $row) {
-                if (!is_array($row)) {
+                if (! is_array($row)) {
                     continue;
                 }
                 $memberId = (string) ($row[_CLMN_MS_MEMBID_] ?? '');
-                $rows[] = [
+                $rows[]   = [
                     'accountHtml' => '<a href="' . htmlspecialchars($admincpUrl->base('accountinfo&u=' . $memberId), ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($memberId, ENT_QUOTES, 'UTF-8') . '</a>',
-                    'ipAddress' => (string) ($row[_CLMN_MS_IP_] ?? ''),
-                    'server' => (string) ($row[_CLMN_MS_GS_] ?? ''),
+                    'ipAddress'   => (string) ($row[_CLMN_MS_IP_] ?? ''),
+                    'server'      => (string) ($row[_CLMN_MS_GS_] ?? ''),
                 ];
             }
         }
 
         $this->view->render('admincp/onlineaccounts', [
-            'pageTitle' => 'Online Accounts',
-            'statBoxes' => $statBoxes,
-            'rows' => $rows,
+            'pageTitle'      => 'Online Accounts',
+            'statBoxes'      => $statBoxes,
+            'rows'           => $rows,
             'emptyStateText' => 'There are no online accounts.',
         ]);
     }
 }
-
