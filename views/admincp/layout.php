@@ -18,7 +18,9 @@ $admincpModuleBaseUrl = (string) ($admincpModuleBaseUrl ?? (__PATH_ADMINCP_HOME_
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminCP</title>
+    <title>AdminCP — DarkCore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -27,19 +29,20 @@ $admincpModuleBaseUrl = (string) ($admincpModuleBaseUrl ?? (__PATH_ADMINCP_HOME_
     <link rel="shortcut icon" href="<?php echo __PATH_ADMINCP_HOME__; ?>favicon.ico" type="image/x-icon">
     <script>
     function toggleMenu(id, btn) {
-        const sub = document.getElementById(id);
+        var sub = document.getElementById(id);
         if (!sub) return;
-        const group = btn.closest('.acp-nav-group');
-        const isOpen = sub.style.display === 'block';
+        var group = btn.closest('.acp-nav-group');
+        var isOpen = sub.style.display === 'block';
         sub.style.display = isOpen ? 'none' : 'block';
         if (group) group.classList.toggle('open', !isOpen);
     }
     function switchTab(id, btn) {
-        const wrap = btn.closest('.acp-tabs-wrap');
-        wrap.querySelectorAll('.acp-tab-content').forEach(function(el){ el.style.display='none'; el.classList.remove('active'); });
+        var wrap = btn.closest('.acp-tabs-wrap');
+        wrap.querySelectorAll('.acp-tab-content').forEach(function(el){ el.style.display = 'none'; el.classList.remove('active'); });
         wrap.querySelectorAll('.acp-tab').forEach(function(el){ el.classList.remove('active'); });
-        document.getElementById(id).style.display = 'block';
-        document.getElementById(id).classList.add('active');
+        var target = document.getElementById(id);
+        target.style.display = 'block';
+        target.classList.add('active');
         btn.classList.add('active');
     }
     </script>
@@ -50,39 +53,69 @@ $admincpModuleBaseUrl = (string) ($admincpModuleBaseUrl ?? (__PATH_ADMINCP_HOME_
 <div id="acp-progress-bar"></div>
 <div class="acp-sidebar-backdrop" id="acp-backdrop"></div>
 
+<!-- ══ TOP BAR ══ -->
 <nav class="acp-topbar">
     <div class="acp-topbar-left">
-        <button class="acp-menu-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+        <button class="acp-menu-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+            <i class="bi bi-list"></i>
+        </button>
         <a href="<?php echo htmlspecialchars($admincpHomeUrl, ENT_QUOTES, 'UTF-8'); ?>" class="acp-brand">
-            Dark<span>Core</span>
-            <small>Admin Panel</small>
+            <span class="acp-brand-mark">DK</span>
+            <span class="acp-brand-text">
+                DarkCore
+                <em>Control Center</em>
+            </span>
         </a>
     </div>
     <div class="acp-topbar-right">
-        <a href="<?php echo __BASE_URL__; ?>" target="_blank"><i class="bi bi-house-fill"></i> <span class="acp-topbar-label">Website</span></a>
-        <a href="<?php echo __BASE_URL__; ?>logout/" class="acp-logout"><i class="bi bi-power"></i> <span class="acp-topbar-label">Log Out</span></a>
-        <span class="acp-user"><i class="bi bi-person-circle"></i> <?php echo htmlspecialchars((string) $_SESSION['username']); ?></span>
+        <span class="acp-env-pill"><i class="bi bi-shield-check"></i> Production</span>
+        <a href="<?php echo __BASE_URL__; ?>" target="_blank" rel="noopener">
+            <i class="bi bi-box-arrow-up-right"></i>
+            <span class="acp-topbar-label">Open site</span>
+        </a>
+        <span class="acp-user">
+            <i class="bi bi-person-circle"></i>
+            <?php echo htmlspecialchars((string) $_SESSION['username']); ?>
+        </span>
+        <a href="<?php echo __BASE_URL__; ?>logout/" class="acp-logout">
+            <i class="bi bi-power"></i>
+            <span class="acp-topbar-label">Sign out</span>
+        </a>
     </div>
 </nav>
 
+<!-- ══ LAYOUT ══ -->
 <div class="acp-layout">
+
+    <!-- ── SIDEBAR ── -->
     <aside class="acp-sidebar" id="acp-sidebar">
+
+        <div class="acp-sidebar-head">
+            <span class="acp-sidebar-title">Navigation</span>
+            <span class="acp-sidebar-subtitle">Control modules</span>
+        </div>
+
         <nav class="acp-nav">
             <?php foreach ($sidebarGroups as $sidebarGroup):
                 $groupModules = array_column($sidebarGroup['links'], 'module');
                 $isActive = in_array($currentModule, $groupModules, true);
             ?>
             <div class="acp-nav-group <?php echo $isActive ? 'open' : ''; ?>">
-                <button class="acp-nav-title" onclick="toggleMenu('<?php echo htmlspecialchars($sidebarGroup['id'], ENT_QUOTES, 'UTF-8'); ?>', this)">
+                <button class="acp-nav-title"
+                        onclick="toggleMenu('<?php echo htmlspecialchars($sidebarGroup['id'], ENT_QUOTES, 'UTF-8'); ?>', this)"
+                        aria-expanded="<?php echo $isActive ? 'true' : 'false'; ?>">
                     <i class="bi <?php echo htmlspecialchars($sidebarGroup['icon'], ENT_QUOTES, 'UTF-8'); ?>"></i>
                     <span><?php echo htmlspecialchars($sidebarGroup['title'], ENT_QUOTES, 'UTF-8'); ?></span>
                     <i class="bi bi-chevron-right acp-arrow"></i>
                 </button>
-                <div class="acp-nav-sub" id="<?php echo htmlspecialchars($sidebarGroup['id'], ENT_QUOTES, 'UTF-8'); ?>" <?php echo $isActive ? 'style="display:block"' : ''; ?>>
+                <div class="acp-nav-sub"
+                     id="<?php echo htmlspecialchars($sidebarGroup['id'], ENT_QUOTES, 'UTF-8'); ?>"
+                     <?php echo $isActive ? 'style="display:block"' : ''; ?>>
                     <?php foreach ($sidebarGroup['links'] as $link):
                         $isSubActive = ($currentModule === $link['module']);
                     ?>
-                    <a href="<?php echo htmlspecialchars($link['url'], ENT_QUOTES, 'UTF-8'); ?>" class="acp-nav-link <?php echo $isSubActive ? 'active' : ''; ?>">
+                    <a href="<?php echo htmlspecialchars($link['url'], ENT_QUOTES, 'UTF-8'); ?>"
+                       class="acp-nav-link <?php echo $isSubActive ? 'active' : ''; ?>">
                         <?php echo htmlspecialchars($link['label'], ENT_QUOTES, 'UTF-8'); ?>
                     </a>
                     <?php endforeach; ?>
@@ -99,22 +132,30 @@ $admincpModuleBaseUrl = (string) ($admincpModuleBaseUrl ?? (__PATH_ADMINCP_HOME_
                 </button>
                 <div class="acp-nav-sub" id="sm_plugins_active">
                     <?php foreach ($extra_admincp_sidebar as $p):
-                        if (!is_array($p) || !is_array($p[1])) {
-                            continue;
-                        }
+                        if (!is_array($p) || !is_array($p[1])) { continue; }
                         foreach ($p[1] as $sub): ?>
-                    <a href="<?php echo htmlspecialchars($admincpModuleBaseUrl . (string) $sub[1], ENT_QUOTES, 'UTF-8'); ?>" class="acp-nav-link"><?php echo $sub[0]; ?></a>
+                    <a href="<?php echo htmlspecialchars($admincpModuleBaseUrl . (string) $sub[1], ENT_QUOTES, 'UTF-8'); ?>"
+                       class="acp-nav-link"><?php echo htmlspecialchars((string)$sub[0], ENT_QUOTES, 'UTF-8'); ?></a>
                     <?php endforeach; endforeach; ?>
                 </div>
             </div>
             <?php endif; ?>
         </nav>
+
+        <div class="acp-sidebar-foot">
+            DarkCore &copy; <?php echo date('Y'); ?>
+        </div>
+
     </aside>
 
+    <!-- ── MAIN ── -->
     <main class="acp-main">
-        <?php $handler->loadAdminCPModule($currentModule); ?>
+        <div class="acp-main-shell">
+            <?php $handler->loadAdminCPModule($currentModule); ?>
+        </div>
     </main>
-</div>
+
+</div><!-- /.acp-layout -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?php echo __PATH_ADMINCP_HOME__; ?>js/toast.js"></script>
@@ -123,11 +164,12 @@ $admincpModuleBaseUrl = (string) ($admincpModuleBaseUrl ?? (__PATH_ADMINCP_HOME_
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tinymce@7.7.0/tinymce.min.js"></script>
 <script>
+/* ── Sidebar toggle ── */
 (function() {
-    const sidebar = document.getElementById('acp-sidebar');
-    const toggleBtn = document.getElementById('sidebarToggle');
-    const backdrop = document.getElementById('acp-backdrop');
-    const MOBILE_BP = 768;
+    var sidebar    = document.getElementById('acp-sidebar');
+    var toggleBtn  = document.getElementById('sidebarToggle');
+    var backdrop   = document.getElementById('acp-backdrop');
+    var MOBILE_BP  = 768;
 
     function isMobile() { return window.innerWidth <= MOBILE_BP; }
 
@@ -139,7 +181,7 @@ $admincpModuleBaseUrl = (string) ($admincpModuleBaseUrl ?? (__PATH_ADMINCP_HOME_
 
     toggleBtn.addEventListener('click', function() {
         if (isMobile()) {
-            const open = sidebar.classList.toggle('mobile-open');
+            var open = sidebar.classList.toggle('mobile-open');
             backdrop.classList.toggle('active', open);
             document.body.style.overflow = open ? 'hidden' : '';
         } else {
@@ -148,54 +190,33 @@ $admincpModuleBaseUrl = (string) ($admincpModuleBaseUrl ?? (__PATH_ADMINCP_HOME_
     });
 
     backdrop.addEventListener('click', closeMobile);
-
     window.addEventListener('resize', function() {
-        if (!isMobile()) {
-            closeMobile();
-            document.body.style.overflow = '';
-        }
+        if (!isMobile()) { closeMobile(); document.body.style.overflow = ''; }
     });
-
     document.querySelectorAll('.acp-nav-link').forEach(function(link) {
-        link.addEventListener('click', function() {
-            if (isMobile()) closeMobile();
-        });
+        link.addEventListener('click', function() { if (isMobile()) closeMobile(); });
     });
 })();
 
+/* ── DataTables ── */
 $(document).ready(function() {
-    const dtOpts = {
-        searching: false,
-        ordering: false,
-        lengthChange: false,
-        pageLength: 10,
-        info: false
-    };
-    var newRegistrations = $('#new_registrations');
-    if (newRegistrations.length) newRegistrations.DataTable(dtOpts);
+    var dtBase = { searching: false, ordering: false, lengthChange: false, pageLength: 10, info: false };
+    var dtSearch = { searching: true, info: true };
 
-    var blockedIps = $('#blocked_ips');
-    if (blockedIps.length) blockedIps.DataTable(dtOpts);
-
-    var paypalDonations = $('#paypal_donations');
-    if (paypalDonations.length) {
-        var paypalOpts = Object.assign({}, dtOpts, { searching: true, info: true });
-        paypalDonations.DataTable(paypalOpts);
-    }
-
-    var superRewardsDonations = $('#superrewards_donations');
-    if (superRewardsDonations.length) {
-        var superRewardsOpts = Object.assign({}, dtOpts, { searching: true, info: true });
-        superRewardsDonations.DataTable(superRewardsOpts);
-    }
-
-    var creditsLogs = $('#credits_logs');
-    if (creditsLogs.length) {
-        var creditsLogsOpts = Object.assign({}, dtOpts, { searching: true, info: true });
-        creditsLogs.DataTable(creditsLogsOpts);
-    }
+    var tables = [
+        ['#new_registrations', dtBase],
+        ['#blocked_ips',       dtBase],
+        ['#paypal_donations',    Object.assign({}, dtBase, dtSearch)],
+        ['#superrewards_donations', Object.assign({}, dtBase, dtSearch)],
+        ['#credits_logs',       Object.assign({}, dtBase, dtSearch)],
+    ];
+    tables.forEach(function(t) {
+        var el = $(t[0]);
+        if (el.length) el.DataTable(t[1]);
+    });
 });
 
+/* ── Page transitions ── */
 (function() {
     var overlay  = document.getElementById('acp-page-transition');
     var progress = document.getElementById('acp-progress-bar');
@@ -204,40 +225,28 @@ $(document).ready(function() {
     function startProgress() {
         progress.className = '';
         progress.style.width = '0';
-        progress.offsetWidth;
+        progress.offsetWidth; // reflow
         progress.classList.add('running');
     }
-
     function finishProgress() {
         progress.classList.remove('running');
         progress.classList.add('done');
     }
-
     function navigate(href) {
         if (leaving) return;
         leaving = true;
-
         startProgress();
         overlay.classList.add('fade-out');
-
-        setTimeout(function() {
-            finishProgress();
-            window.location.href = href;
-        }, 200);
+        setTimeout(function() { finishProgress(); window.location.href = href; }, 200);
     }
 
     document.addEventListener('click', function(e) {
         var el = e.target.closest('a[href]');
         if (!el) return;
-
         var href = el.getAttribute('href');
-        if (!href) return;
-
-        if (el.target === '_blank') return;
-        if (href.startsWith('#')) return;
+        if (!href || el.target === '_blank' || href.startsWith('#')) return;
         if (href.startsWith('http') && !href.startsWith(window.location.origin)) return;
         if (href.indexOf('logout') !== -1) return;
-
         e.preventDefault();
         navigate(href);
     });
@@ -247,5 +256,4 @@ $(document).ready(function() {
 </script>
 </body>
 </html>
-
 
