@@ -87,11 +87,12 @@ Open `https://your-domain/install/` in the browser, complete the setup wizard, t
 - Classes in `src/` depend on these adapters instead of reading PHP superglobals directly.
 - Front controllers (`public/index.php`, `public/admincp/index.php`) and CLI entrypoint (`bin/cron.php`) load Composer autoloader and call `EntrypointBootstrapper::boot()`.
 - Legacy bootstrap shims under `includes/bootstrap/` have been removed; runtime code now uses namespaced classes directly.
-- AdminCP now uses `config/routes.admincp.php` + controller-backed modules under `src/Application/Admincp/`.
+- AdminCP now uses `config/routes.admincp.php` + controller-backed modules under `src/Application/Admincp/`, with shell helpers split between `src/Application/Admincp/Layout/` and `src/Application/Admincp/Support/`.
 - AdminCP shell metadata lives in `config/admincp-layout.php` and is normalized by `AdmincpLayoutDataProvider` before rendering `views/admincp/layout.php`.
 - `public/admincp/index.php` is a thin front controller; AdminCP no longer uses runtime `public/admincp/modules/*.php` includes.
 - Transitional AdminCP module-config partials live in `views/admincp/mconfig/` until they are promoted to full controller-backed screens.
 - Runtime data now lives in `var/cache/` and `var/logs/`; only `public/` is web-accessible.
+- Theme layout composition now lives in `src/Application/Theme/Layout/DefaultThemeLayoutBuilder.php`.
 - All business logic that was previously in `includes/bootstrap/functions.php` now lives in proper namespaced classes: `GameHelper`, `MessageRenderer`, `Redirector`, `Translator`, `ProfileRenderer`, `SessionManager`, `AdminGuard`, `IpBlocker`, `GeoIpService`, `CacheBuilder`, `CacheRepository`, `TimeHelper`, `Encoder`, `FileHelper`, `LanguageRepository`, and others.
 
 ---

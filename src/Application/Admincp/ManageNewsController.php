@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\Admincp\Layout\AdmincpUrlGenerator;
+
 use Darkheim\Application\News\NewsService as News;
-use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Infrastructure\Http\Redirector;
 use Darkheim\Infrastructure\View\ViewRenderer;
 

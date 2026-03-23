@@ -9,7 +9,7 @@
 <h1 class="page-header"><i class="bi bi-download me-2"></i>Import Plugin</h1>
 
 <?php if (!$systemEnabled): ?>
-    <?php \Darkheim\Application\View\MessageRenderer::inline('warning', 'The plugin system is not enabled. Enable it in Website Settings.'); ?>
+    <?php \Darkheim\Application\Shared\UI\MessageRenderer::inline('warning', 'The plugin system is not enabled. Enable it in Website Settings.'); ?>
 <?php endif; ?>
 
 <div class="acp-card" style="max-width:480px;">

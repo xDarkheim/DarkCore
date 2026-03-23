@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Subpage;
 
-use Darkheim\Application\Game\GameHelper;
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Game\GameHelper;
+use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Application\Profile\ProfileRenderer;
 use Darkheim\Application\Profile\ProfileRepository;
-use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Cache\CacheRepository;

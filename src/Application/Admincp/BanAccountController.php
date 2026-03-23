@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Admincp;
 
 use Darkheim\Application\Auth\Common;
-use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\View\ViewRenderer;

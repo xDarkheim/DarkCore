@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Email;
 
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use PHPMailer\PHPMailer\PHPMailer;

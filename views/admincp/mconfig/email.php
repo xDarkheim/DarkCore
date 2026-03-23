@@ -16,7 +16,7 @@ $emailConfigs = array_replace([
 		<tr>
 			<th>Email System<br/><span>Enable/disable the email system.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_1',$emailConfigs['active'],'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_1',$emailConfigs['active'],'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>
@@ -38,7 +38,7 @@ $emailConfigs = array_replace([
 		<tr>
 			<th>SMTP Status<br/><span>Enable/disable the SMTP system.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_4',$emailConfigs['smtp_active'],'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_4',$emailConfigs['smtp_active'],'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>

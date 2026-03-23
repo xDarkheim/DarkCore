@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Infrastructure\Bootstrap;
 
 use Darkheim\Infrastructure\Bootstrap\ConfigProvider;
-use Darkheim\Infrastructure\Bootstrap\RuntimeState;
 use Darkheim\Infrastructure\Bootstrap\TimezoneInitializer;
 use PHPUnit\Framework\TestCase;
 
@@ -19,10 +18,6 @@ final class ConfigProviderTest extends TestCase
         $this->configDir = sys_get_temp_dir() . '/darkcore_bootstrap_' . uniqid('', true) . '/config/';
         mkdir($this->configDir . 'modules/', 0777, true);
         $this->originalTimezone = date_default_timezone_get();
-        $state = new RuntimeState();
-        $state->languagePhrases = [];
-        $state->moduleConfig = [];
-        $state->globalConfig = [];
     }
 
     protected function tearDown(): void

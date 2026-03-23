@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Subpage;
 
-use Darkheim\Application\Language\Translator;
-use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Application\Shared\Language\Translator;
+use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Http\Redirector;

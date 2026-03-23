@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Darkheim\Application\Page;
 
 use Darkheim\Application\Auth\SessionManager;
-use Darkheim\Application\Game\GameHelper;
+use Darkheim\Application\Shared\Game\GameHelper;
 use Darkheim\Application\Profile\ProfileRenderer;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Cache\CacheRepository;
-use Darkheim\Infrastructure\Theme\DefaultThemeLayoutBuilder;
+use Darkheim\Application\Theme\Layout\DefaultThemeLayoutBuilder;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class HomeController
@@ -43,7 +43,7 @@ final class HomeController
                 }
                 if (! mb_check_encoding($title, 'UTF-8')) {
                     $conv = @mb_convert_encoding($title, 'UTF-8', 'Windows-1252');
-                    if (is_string($conv) && mb_check_encoding($conv, 'UTF-8')) {
+                    if (mb_check_encoding($conv, 'UTF-8')) {
                         $title = $conv;
                     }
                 }

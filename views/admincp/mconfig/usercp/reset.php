@@ -8,7 +8,7 @@ echo '<h2>Reset Settings</h2>';
 		<tr>
 			<th>Status<br/><span>Enable/disable the reset module.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_1',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'),'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_1',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'),'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>
@@ -22,19 +22,19 @@ echo '<h2>Reset Settings</h2>';
 		<tr>
 			<th>Keep Stats<br/><span>If enabled, the character's stats will not be reverted to its base stats.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_7',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('keep_stats'),'Yes (keep stats)','No (reset stats)'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_7',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('keep_stats'),'Yes (keep stats)','No (reset stats)'); ?>
 			</td>
 		</tr>
 		<tr>
 			<th>Clear Inventory<br/><span>Clears the character's inventory.<br /><br /><span style="color:red;">* Enabling this setting will also clear the character's equipment</span></span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_10',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('clear_inventory'),'Yes','No'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_10',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('clear_inventory'),'Yes','No'); ?>
 			</td>
 		</tr>
 		<tr>
 			<th>Revert Class Evolution<br/><span>Example: If the character is a Soul Master, after performing the reset, the character's class will become Dark Wizard.<br /><br /><span style="color:red;">* Enabling this setting will also clear the character's quests</span></span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_11',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('revert_class_evolution'),'Yes','No'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_11',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('revert_class_evolution'),'Yes','No'); ?>
 			</td>
 		</tr>
 	</table>
@@ -86,7 +86,7 @@ echo '<h2>Reset Settings</h2>';
 		<tr>
 			<th>Multiply Level Up Points by Resets<br/><span>If enabled, the amount of level up points reward will be multiplied by the number of resets.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_9',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('multiply_points_by_resets'),'Yes','No'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_9',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('multiply_points_by_resets'),'Yes','No'); ?>
 			</td>
 		</tr>
 		<tr>

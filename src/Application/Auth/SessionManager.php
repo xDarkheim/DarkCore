@@ -61,6 +61,12 @@ final class SessionManager
         return new self($session)->isWebsiteAuthenticated(BootstrapContext::configProvider()?->moduleConfig('login'));
     }
 
+    public function userId(): ?int
+    {
+        $userId = $this->session->get('userid');
+        return $userId !== null ? (int) $userId : null;
+    }
+
     public function username(): ?string
     {
         $username = $this->session->get('username');

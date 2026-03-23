@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Subpage\Usercp;
 
 use Darkheim\Application\Character\Character;
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
@@ -45,7 +45,7 @@ final class AddStatsSubpageController
                 try {
                     $this->handleSubmit($characterService);
                 } catch (\Exception $ex) {
-                    \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                    \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', $ex->getMessage());
                 }
             }
 
@@ -92,7 +92,7 @@ final class AddStatsSubpageController
                 'requirementsLines' => $requirementsLines,
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', $ex->getMessage());
+            \Darkheim\Application\Shared\UI\MessageRenderer::inline('error', $ex->getMessage());
         }
     }
 

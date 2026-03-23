@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Subpage\Usercp;
 
 use Darkheim\Application\Character\Character;
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 abstract class AbstractCharacterActionTableSubpageController
@@ -39,7 +39,7 @@ abstract class AbstractCharacterActionTableSubpageController
                 try {
                     $this->handleSubmit($characterService);
                 } catch (\Exception $ex) {
-                    \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                    \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', $ex->getMessage());
                 }
             }
 
@@ -60,7 +60,7 @@ abstract class AbstractCharacterActionTableSubpageController
                 'requirementsLines' => $this->requirementsLines(),
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', $ex->getMessage());
+            \Darkheim\Application\Shared\UI\MessageRenderer::inline('error', $ex->getMessage());
         }
     }
 

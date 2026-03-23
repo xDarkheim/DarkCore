@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Plugins;
 
-use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Cache\CacheRepository;

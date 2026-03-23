@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\News;
 
-use Darkheim\Application\Language\Translator;
-use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Application\Shared\Language\Translator;
+use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Cache\CacheRepository;
-use Darkheim\Application\Language\LanguageRepository;
+use Darkheim\Application\Shared\Language\LanguageRepository;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 
 /**

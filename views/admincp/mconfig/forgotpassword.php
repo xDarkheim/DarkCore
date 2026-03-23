@@ -4,7 +4,7 @@
 		<tr>
 			<th>Status<br/><span>Enable/disable the forgot password module.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_1',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'),'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_1',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'),'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>

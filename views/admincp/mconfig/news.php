@@ -4,7 +4,7 @@
 		<tr>
 			<th>Status<br/><span>Enable/disable the news module.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_1',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'),'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_1',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'),'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>
@@ -26,7 +26,7 @@
 		<tr>
 			<th>Short News<br/><span>Enable/disable the short news feature.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_6',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('news_short'),'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_6',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('news_short'),'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>

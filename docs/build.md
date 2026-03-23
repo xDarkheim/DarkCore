@@ -5,7 +5,7 @@ CSS and JS source files are served directly. There is no bundler, transpiler, or
 ## CSS
 
 The default theme receives a prepared layout context from
-`Darkheim\Infrastructure\Theme\DefaultThemeLayoutBuilder`.
+`Darkheim\Application\Theme\Layout\DefaultThemeLayoutBuilder`.
 That builder prepares the final list of stylesheet URLs, and `public/themes/default/index.php`
 only renders the resulting `<link>` tags.
 
@@ -50,7 +50,7 @@ js/main.js?v=1741820000
 
 When you need to change the default layout (`navbar`, `header`, `sidebar`, `footer`, asset URLs):
 
-1. Add or reshape the data in `Darkheim\Infrastructure\Theme\DefaultThemeLayoutBuilder`.
+1. Add or reshape the data in `Darkheim\Application\Theme\Layout\DefaultThemeLayoutBuilder`.
 2. Render that prepared data in `public/themes/default/index.php` or `inc/modules/*.php`.
 3. Keep request/config/cache/session reads out of the theme templates.
 

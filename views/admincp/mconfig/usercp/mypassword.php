@@ -4,13 +4,13 @@
 		<tr>
 			<th>Status<br/><span>Enable/disable the change password module.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_1',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'),'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_1',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'),'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>
 			<th>Email Verification<br/><span>If enabled, the account's password will not be changed until the user clicks the verification link sent via email.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_2',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('change_password_email_verification'),'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_2',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('change_password_email_verification'),'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\Admincp\Layout\AdmincpUrlGenerator;
+
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Character\Character;
 use Darkheim\Domain\Validator;
@@ -33,12 +35,12 @@ final class AccountInfoController
                     \Darkheim\Infrastructure\Http\Redirector::go(3, $admincpUrl->base('accountinfo&id=' . $userId));
                 }
             } catch (\Exception $ex) {
-                \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', $ex->getMessage());
             }
         }
 
         if (! isset($_GET['id'])) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', 'Please provide a valid user id.');
+            \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', 'Please provide a valid user id.');
             return;
         }
 
@@ -94,7 +96,7 @@ final class AccountInfoController
                 'hasConnectionHistory' => $connectionIps !== null,
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+            \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', $ex->getMessage());
         }
     }
 
@@ -124,7 +126,7 @@ final class AccountInfoController
                     if (! $common->changePassword($accountInfo[_CLMN_MEMBID_], $accountInfo[_CLMN_USERNM_], $_POST['changepassword_newpw'])) {
                         throw new \RuntimeException('Could not change password.');
                     }
-                    \Darkheim\Application\View\MessageRenderer::toast('success', 'Password updated!');
+                    \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', 'Password updated!');
                     if ($sendEmail) {
                         $email = new Email();
                         $email->setTemplate('ADMIN_CHANGE_PASSWORD');
@@ -148,7 +150,7 @@ final class AccountInfoController
                     if (! $common->updateEmail($accountInfo[_CLMN_MEMBID_], $_POST['changeemail_newemail'])) {
                         throw new \RuntimeException('Could not update email.');
                     }
-                    \Darkheim\Application\View\MessageRenderer::toast('success', 'Email address updated!');
+                    \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', 'Email address updated!');
                     if ($sendEmail) {
                         $email = new Email();
                         $email->setTemplate('ADMIN_CHANGE_EMAIL');
@@ -163,7 +165,7 @@ final class AccountInfoController
                     throw new \RuntimeException('Invalid request.');
             }
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+            \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', $ex->getMessage());
         }
     }
 

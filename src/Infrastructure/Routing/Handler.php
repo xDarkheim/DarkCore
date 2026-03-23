@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Infrastructure\Routing;
 
 use Darkheim\Application\Auth\Common;
-use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Database\Connection;
@@ -14,7 +14,7 @@ use Darkheim\Infrastructure\Runtime\NativeQueryStore;
 use Darkheim\Infrastructure\Runtime\NativeSessionStore;
 use Darkheim\Infrastructure\Runtime\QueryStore;
 use Darkheim\Infrastructure\Runtime\SessionStore;
-use Darkheim\Infrastructure\Theme\DefaultThemeLayoutBuilder;
+use Darkheim\Application\Theme\Layout\DefaultThemeLayoutBuilder;
 
 /**
  * Request handler — routing, module loading, theme rendering.

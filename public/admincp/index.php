@@ -3,9 +3,9 @@
 // access
 define('access', 'admincp');
 
-use Darkheim\Application\Admincp\AdmincpConfigurationChecker;
-use Darkheim\Application\Admincp\AdmincpLayoutDataProvider;
-use Darkheim\Application\Admincp\AdmincpUrlGenerator;
+use Darkheim\Application\Admincp\Support\AdmincpConfigurationChecker;
+use Darkheim\Application\Admincp\Layout\AdmincpLayoutDataProvider;
+use Darkheim\Application\Admincp\Layout\AdmincpUrlGenerator;
 use Darkheim\Application\Auth\AdminGuard;
 use Darkheim\Application\Auth\SessionManager;
 use Darkheim\Infrastructure\Bootstrap\EntrypointBootstrapper;

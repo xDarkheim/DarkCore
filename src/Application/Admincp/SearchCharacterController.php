@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\Admincp\Layout\AdmincpUrlGenerator;
+
 use Darkheim\Application\Auth\Common;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Database\Connection;

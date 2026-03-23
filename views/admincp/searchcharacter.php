@@ -24,7 +24,7 @@
 </div>
 
 <?php if ($error !== null): ?>
-    <?php \Darkheim\Application\View\MessageRenderer::toast('error', $error); ?>
+    <?php \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', $error); ?>
 <?php elseif ($results !== null): ?>
     <div class="acp-card">
         <div class="acp-card-header">

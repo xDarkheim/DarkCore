@@ -10,7 +10,7 @@
 <h1 class="page-header"><i class="bi bi-paypal me-2"></i>PayPal Donations</h1>
 
 <?php if ($error !== null): ?>
-    <?php \Darkheim\Application\View\MessageRenderer::toast('error', $error); ?>
+    <?php \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', $error); ?>
 <?php else: ?>
 <div class="acp-card">
     <div class="acp-card-header">Transactions</div>

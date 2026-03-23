@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Cron;
 
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Database\Connection;
 

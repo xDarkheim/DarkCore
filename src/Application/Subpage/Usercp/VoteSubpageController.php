@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Subpage\Usercp;
 
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Application\Vote\Vote;
 use Darkheim\Application\Vote\VoteSiteRepository;
 use Darkheim\Infrastructure\View\ViewRenderer;
@@ -40,7 +40,7 @@ final class VoteSubpageController
                     $vote->setVotesiteId((string) ($_POST['voting_site_id'] ?? ''));
                     $vote->vote();
                 } catch (\Exception $ex) {
-                    \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                    \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', $ex->getMessage());
                 }
             }
 
@@ -68,7 +68,7 @@ final class VoteSubpageController
                 'siteRows'    => $siteRows,
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', $ex->getMessage());
+            \Darkheim\Application\Shared\UI\MessageRenderer::inline('error', $ex->getMessage());
         }
     }
 }

@@ -6,13 +6,13 @@ echo '<h1 class="page-header">PayPal Settings</h1>';
 		<tr>
 			<th>Status<br/><span>Enable/disable the papal donation gateway.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_2',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'),'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_2',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'),'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>
 			<th>PayPal Sandbox Mode<br/><span>Enable/disable PayPal's IPN testing mode.<br/><br/>More info:<br/><a href="https://developer.paypal.com/" target="_blank">https://developer.paypal.com/</a></span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_3',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('paypal_enable_sandbox'),'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_3',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('paypal_enable_sandbox'),'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>

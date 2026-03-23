@@ -6,7 +6,7 @@ namespace Darkheim\Application\Vote;
 
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Credits\CreditSystem;
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\Http\Redirector;

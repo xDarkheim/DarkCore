@@ -12,7 +12,7 @@
 <h1 class="page-header"><i class="bi bi-plug-fill me-2"></i>Plugin Manager</h1>
 
 <?php if (!$systemEnabled): ?>
-    <?php \Darkheim\Application\View\MessageRenderer::inline('warning', 'The plugin system is not enabled. Enable it in Website Settings.'); ?>
+    <?php \Darkheim\Application\Shared\UI\MessageRenderer::inline('warning', 'The plugin system is not enabled. Enable it in Website Settings.'); ?>
 <?php endif; ?>
 
 <div class="mb-3">
@@ -63,6 +63,6 @@
     </table>
 </div>
 <?php else: ?>
-    <?php \Darkheim\Application\View\MessageRenderer::inline('info', 'No plugins installed yet.'); ?>
+    <?php \Darkheim\Application\Shared\UI\MessageRenderer::inline('info', 'No plugins installed yet.'); ?>
 <?php endif; ?>
 

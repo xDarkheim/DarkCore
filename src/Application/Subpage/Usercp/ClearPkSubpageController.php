@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Darkheim\Application\Subpage\Usercp;
 
 use Darkheim\Application\Character\Character;
-use Darkheim\Application\Game\GameHelper;
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Game\GameHelper;
+use Darkheim\Application\Shared\Language\Translator;
 
 final class ClearPkSubpageController extends AbstractCharacterActionTableSubpageController
 {

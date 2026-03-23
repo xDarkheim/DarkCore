@@ -6,7 +6,7 @@ namespace Darkheim\Application\Subpage\Usercp;
 
 use Darkheim\Application\Account\Account;
 use Darkheim\Application\Auth\Common;
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class MyPasswordSubpageController
@@ -57,7 +57,7 @@ final class MyPasswordSubpageController
                         );
                     }
                 } catch (\Exception $ex) {
-                    \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                    \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', $ex->getMessage());
                 }
             }
 
@@ -70,7 +70,7 @@ final class MyPasswordSubpageController
                 'submitLabel'  => Translator::phrase('changepassword_txt_4'),
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', $ex->getMessage());
+            \Darkheim\Application\Shared\UI\MessageRenderer::inline('error', $ex->getMessage());
         }
     }
 }

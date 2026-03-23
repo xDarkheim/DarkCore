@@ -1,5 +1,5 @@
 <div class="page-title"><span><?php
-        use Darkheim\Application\Language\Translator;
+        use Darkheim\Application\Shared\Language\Translator;
 
 echo Translator::phrase('module_titles_txt_15', true); ?></span></div>
 

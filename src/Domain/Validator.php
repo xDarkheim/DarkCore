@@ -16,17 +16,21 @@ class Validator
         if (empty($exclude)) {
             return false;
         }
+
         if (is_array($exclude)
             && array_any(
                 $exclude,
-                fn($text) => str_contains($string, $text),
+                static fn($text): bool => is_string($text) && str_contains($string, $text),
             )
         ) {
             return true;
         }
 
-        return str_contains($string, $exclude)
-        ;
+        if (! is_string($exclude)) {
+            return false;
+        }
+
+        return str_contains($string, $exclude);
     }
 
     private static function numberBetween($integer, $max = null, $min = 0): bool

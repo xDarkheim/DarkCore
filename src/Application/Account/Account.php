@@ -6,7 +6,7 @@ namespace Darkheim\Application\Account;
 
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Auth\Login;
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Email\Email;
@@ -89,7 +89,7 @@ class Account extends Common
                 throw new \Exception(Translator::phrase('error_23'));
             }
             $this->sendRegistrationVerificationEmail($username, $email, $verificationKey);
-            \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_18'));
+            \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_18'));
             return;
         }
 
@@ -125,7 +125,7 @@ class Account extends Common
             $this->sendWelcomeEmail($username, $email);
         }
 
-        \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_1'));
+        \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_1'));
 
         if ($regCfg['automatic_login'] ?? false) {
             try {
@@ -183,7 +183,7 @@ class Account extends Common
         } catch (\Exception $ex) {
         }
 
-        \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_2'));
+        \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_2'));
     }
 
     public function changePasswordProcess_verifyEmail($userid, $username, $password, $new_password, $confirm_new_password, $ip_address): void
@@ -243,7 +243,7 @@ class Account extends Common
             $email->addVariable('{EXPIRATION_TIME}', $mypassCfg['change_password_request_timeout']);
             $email->addAddress($accountData[_CLMN_EMAIL_]);
             $email->send();
-            \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_3'));
+            \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_3'));
         } catch (\Exception $ex) {
             if ($this->_debug) {
                 throw new \Exception($ex->getMessage());
@@ -308,7 +308,7 @@ class Account extends Common
         }
 
         $this->removePasswordChangeRequest($user_id);
-        \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_5'));
+        \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_5'));
     }
 
     public function passwordRecoveryProcess($user_email, $ip_address): void
@@ -350,7 +350,7 @@ class Account extends Common
             $email->addVariable('{LINK}', $aru);
             $email->addAddress($accountData[_CLMN_EMAIL_]);
             $email->send();
-            \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_6'));
+            \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_6'));
         } catch (\Exception $ex) {
             if ($this->_debug) {
                 throw new \Exception($ex->getMessage());
@@ -399,7 +399,7 @@ class Account extends Common
             $email->addVariable('{NEW_PASSWORD}', $new_password);
             $email->addAddress($accountData[_CLMN_EMAIL_]);
             $email->send();
-            \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_7'));
+            \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_7'));
         } catch (\Exception $ex) {
             if ($this->_debug) {
                 throw new \Exception($ex->getMessage());
@@ -519,7 +519,7 @@ class Account extends Common
             $this->sendWelcomeEmail($verifyKey['registration_account'], $verifyKey['registration_email']);
         }
 
-        \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_1'));
+        \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_1'));
         \Darkheim\Infrastructure\Http\Redirector::go(2, 'login/', 5);
     }
 

@@ -29,25 +29,25 @@ function downloadEsc($value): string
 		<tr>
 			<th>Status<br/><span>Enable/disable the downloads module.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_1', \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'), 'Enabled', 'Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_1', \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'), 'Enabled', 'Disabled'); ?>
 			</td>
 		</tr>
 		<tr>
 			<th>Show Client Downloads<br/></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_2', \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('show_client_downloads'), 'Yes', 'No'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_2', \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('show_client_downloads'), 'Yes', 'No'); ?>
 			</td>
 		</tr>
 		<tr>
 			<th>Show Patches Downloads<br/></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_3', \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('show_patch_downloads'), 'Yes', 'No'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_3', \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('show_patch_downloads'), 'Yes', 'No'); ?>
 			</td>
 		</tr>
 		<tr>
 			<th>Show Tools Downloads<br/></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_4', \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('show_tool_downloads'), 'Yes', 'No'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_4', \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('show_tool_downloads'), 'Yes', 'No'); ?>
 			</td>
 		</tr>
 		<tr>
@@ -106,7 +106,7 @@ if (is_array($downloads)) {
 
     echo '</table>';
 } else {
-    \Darkheim\Application\View\MessageRenderer::toast('error', 'You have not added any download link.');
+    \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', 'You have not added any download link.');
 }
 ?>
 

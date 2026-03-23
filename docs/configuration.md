@@ -59,7 +59,7 @@ Copy `config.default.json` to `config.json` and fill in your values. The install
 
 > **Active languages:** EN, RU, CN, ES, PT, RO.
 > Language phrase files live in `includes/languages/<code>/language.php`.
-> To add a new language: create the directory and phrase file, then update the language list in `src/Infrastructure/Theme/DefaultThemeLayoutBuilder.php`.
+> To add a new language: create the directory and phrase file, then update the language list in `src/Application/Theme/Layout/DefaultThemeLayoutBuilder.php`.
 
 ### Authentication & registration
 

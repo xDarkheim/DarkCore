@@ -7,7 +7,7 @@ namespace Darkheim\Application\Subpage\Usercp;
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Character\Character;
 use Darkheim\Application\Credits\CreditSystem;
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\View\ViewRenderer;
@@ -48,7 +48,7 @@ final class BuyZenSubpageController
                 try {
                     $this->handleSubmit($characterService, $accountCharacters, $buyOptions, $maxZen, $exchangeRatio);
                 } catch (\Exception $ex) {
-                    \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                    \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', $ex->getMessage());
                 }
             }
 
@@ -63,7 +63,7 @@ final class BuyZenSubpageController
                 'submitLabel' => Translator::phrase('buyzen_txt_5'),
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', $ex->getMessage());
+            \Darkheim\Application\Shared\UI\MessageRenderer::inline('error', $ex->getMessage());
         }
     }
 
@@ -165,8 +165,8 @@ final class BuyZenSubpageController
             [$zen, $characterData[_CLMN_CHR_NAME_]]
         );
 
-        \Darkheim\Application\View\MessageRenderer::toast('success', Translator::phrase('success_21'));
-        \Darkheim\Application\View\MessageRenderer::toast('info', number_format($zen) . Translator::phrase('buyzen_txt_2') . $characterName);
+        \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_21'));
+        \Darkheim\Application\Shared\UI\MessageRenderer::toast('info', number_format($zen) . Translator::phrase('buyzen_txt_2') . $characterName);
     }
 }
 

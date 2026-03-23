@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
-use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Application\Admincp\Layout\AdmincpUrlGenerator;
+
+use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Infrastructure\Cache\CacheManager;
 use Darkheim\Infrastructure\Helpers\FileHelper;
 use Darkheim\Infrastructure\Runtime\NativeQueryStore;

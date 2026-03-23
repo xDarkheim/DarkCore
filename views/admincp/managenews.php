@@ -47,6 +47,6 @@
     </div>
     <?php endforeach; ?>
 <?php else: ?>
-    <?php \Darkheim\Application\View\MessageRenderer::inline('info', 'No news found.'); ?>
+    <?php \Darkheim\Application\Shared\UI\MessageRenderer::inline('info', 'No news found.'); ?>
 <?php endif; ?>
 

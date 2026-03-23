@@ -6,8 +6,8 @@ namespace Darkheim\Application\Page;
 
 use Darkheim\Application\Account\Account;
 use Darkheim\Application\Auth\SessionManager;
-use Darkheim\Application\Language\Translator;
-use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Application\Shared\Language\Translator;
+use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Http\Redirector;
 use Darkheim\Infrastructure\View\ViewRenderer;

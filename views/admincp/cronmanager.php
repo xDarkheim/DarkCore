@@ -91,7 +91,7 @@
                 </tbody>
             </table>
             <?php else: ?>
-            <div class="p-3"><?php \Darkheim\Application\View\MessageRenderer::inline('info', 'No cron jobs found.'); ?></div>
+            <div class="p-3"><?php \Darkheim\Application\Shared\UI\MessageRenderer::inline('info', 'No cron jobs found.'); ?></div>
             <?php endif; ?>
         </div>
     </div>

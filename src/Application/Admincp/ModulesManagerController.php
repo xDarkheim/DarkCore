@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\Admincp\Layout\AdmincpUrlGenerator;
+
 use Darkheim\Application\Credits\CreditSystem;
-use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Application\Vote\VoteSiteRepository;
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
@@ -89,9 +91,9 @@ final class ModulesManagerController
     {
         $links = [];
         foreach ($modules as $module) {
-            $key     = (string) ($module[1] ?? '');
+            $key     = (string) $module[1];
             $links[] = [
-                'label' => (string) ($module[0] ?? ''),
+                'label' => (string) $module[0],
                 'key'   => $key,
                 'url'   => $admincpUrl->base('modules_manager&config=' . $key),
             ];

@@ -10,9 +10,11 @@ This map shows where the main CMS components live and which paths are safe to mo
 │   │   │   └── Account.php         # Account read/write helpers
 │   │   ├── Admincp/
 │   │   │   ├── *Controller.php     # AdminCP controller-backed modules
-│   │   │   ├── AdmincpConfigurationChecker.php
-│   │   │   ├── AdmincpLayoutDataProvider.php
-│   │   │   ├── AdmincpUrlGenerator.php
+│   │   │   ├── Layout/
+│   │   │   │   ├── AdmincpLayoutDataProvider.php
+│   │   │   │   └── AdmincpUrlGenerator.php
+│   │   │   ├── Support/
+│   │   │   │   └── AdmincpConfigurationChecker.php
 │   │   │   └── DownloadLinkService.php
 │   │   ├── Auth/
 │   │   │   ├── AdminGuard.php      # AdminCP access check (canAccess)
@@ -26,14 +28,17 @@ This map shows where the main CMS components live and which paths are safe to mo
 │   │   │   └── Character.php       # Character read/write helpers
 │   │   ├── Credits/
 │   │   │   └── CreditSystem.php    # Credits & donation logic
-│   │   ├── Game/
-│   │   │   └── GameHelper.php      # Class avatars, maps, PK levels, Gens, guild logo
-│   │   ├── Helpers/
-│   │   │   ├── Encoder.php         # URL-safe Base64 encode/decode
-│   │   │   └── TimeHelper.php      # sec_to_hms / sec_to_dhms conversions
-│   │   ├── Language/
-│   │   │   ├── LanguageRepository.php  # Lists installed language packs
-│   │   │   └── Translator.php      # lang() / langf() — phrase lookup + debug wrapping
+│   │   ├── Shared/
+│   │   │   ├── Game/
+│   │   │   │   └── GameHelper.php      # Class avatars, maps, PK levels, Gens, guild logo
+│   │   │   ├── Language/
+│   │   │   │   ├── LanguageRepository.php  # Lists installed language packs
+│   │   │   │   └── Translator.php      # lang() / langf() — phrase lookup + debug wrapping
+│   │   │   ├── Support/
+│   │   │   │   ├── Encoder.php         # URL-safe Base64 encode/decode
+│   │   │   │   └── TimeHelper.php      # sec_to_hms / sec_to_dhms conversions
+│   │   │   └── UI/
+│   │   │       └── MessageRenderer.php # Toast (popup) and inline styled messages
 │   │   ├── News/
 │   │   │   ├── NewsItem.php        # News value object
 │   │   │   ├── NewsRepository.php  # DB-backed news reads
@@ -64,8 +69,9 @@ This map shows where the main CMS components live and which paths are safe to mo
 │   │   │   ├── RankingCache.php    # Cache read/write for rankings
 │   │   │   ├── RankingRepository.php
 │   │   │   └── RankingsService.php
-│   │   ├── View/
-│   │   │   └── MessageRenderer.php # Toast (popup) and inline styled messages
+│   │   ├── Theme/
+│   │   │   └── Layout/
+│   │   │       └── DefaultThemeLayoutBuilder.php # Prepares default theme layout context (navbar, sidebar, footer, assets)
 │   │   └── Vote/
 │   │       ├── Vote.php
 │   │       └── VoteSiteRepository.php
@@ -128,8 +134,6 @@ This map shows where the main CMS components live and which paths are safe to mo
 │       │   └── ServerContext.php   # Server metadata accessor (`REMOTE_ADDR`, etc.)
 │       └── Security/
 │           └── IpBlocker.php       # Checks REMOTE_ADDR against blocked_ip.cache
-│       ├── Theme/
-│       │   └── DefaultThemeLayoutBuilder.php # Prepares default theme layout context (navbar, sidebar, footer, assets)
 │
 ├── vendor/                         # Composer-managed dependencies (do not edit)
 │   ├── autoload.php
@@ -298,20 +302,21 @@ All classes under `src/` are autoloaded via Composer PSR-4 with the root namespa
 | Namespace                             | Directory                       | Purpose                                                                 |
 |:--------------------------------------|:--------------------------------|:------------------------------------------------------------------------|
 | `Darkheim\Application\Account\*`      | `src/Application/Account/`      | Account read/write helpers                                              |
-| `Darkheim\Application\Admincp\*`      | `src/Application/Admincp/`      | AdminCP controllers, layout/check helpers, downloads service            |
+| `Darkheim\Application\Admincp\*`      | `src/Application/Admincp/`      | AdminCP controllers, layout/support helpers, downloads service          |
 | `Darkheim\Application\Auth\*`         | `src/Application/Auth/`         | Authentication, session, AdminCP guard                                  |
 | `Darkheim\Application\CastleSiege\*`  | `src/Application/CastleSiege/`  | Castle siege data access                                                |
 | `Darkheim\Application\Character\*`    | `src/Application/Character/`    | Character read/write helpers                                            |
 | `Darkheim\Application\Credits\*`      | `src/Application/Credits/`      | Credits & donation logic                                                |
-| `Darkheim\Application\Game\*`         | `src/Application/Game/`         | Class avatars, maps, Gens, guild logo                                   |
-| `Darkheim\Application\Helpers\*`      | `src/Application/Helpers/`      | Encoder, TimeHelper                                                     |
-| `Darkheim\Application\Language\*`     | `src/Application/Language/`     | Translator, LanguageRepository                                          |
+| `Darkheim\Application\Shared\Game\*` | `src/Application/Shared/Game/`  | Class avatars, maps, Gens, guild logo                                   |
+| `Darkheim\Application\Shared\Language\*` | `src/Application/Shared/Language/` | Translator, LanguageRepository                                      |
+| `Darkheim\Application\Shared\Support\*` | `src/Application/Shared/Support/` | Encoder, TimeHelper                                                 |
 | `Darkheim\Application\News\*`         | `src/Application/News/`         | News value object, repository, service                                  |
 | `Darkheim\Application\Page\*`         | `src/Application/Page/`         | Top-level page controllers (one per public route)                       |
 | `Darkheim\Application\Profile\*`      | `src/Application/Profile/`      | Profile link builder, repository                                        |
 | `Darkheim\Application\Rankings\*`     | `src/Application/Rankings/`     | Ranking cache, repository, service                                      |
-| `Darkheim\Application\View\*`         | `src/Application/View/`         | MessageRenderer (toast + inline)                                        |
+| `Darkheim\Application\Shared\UI\*`   | `src/Application/Shared/UI/`    | MessageRenderer (toast + inline)                                        |
 | `Darkheim\Application\Vote\*`         | `src/Application/Vote/`         | Vote tracking                                                           |
+| `Darkheim\Application\Theme\Layout\*` | `src/Application/Theme/Layout/` | Theme layout context builders (`DefaultThemeLayoutBuilder`)             |
 | `Darkheim\Domain\*`                   | `src/Domain/`                   | Pure domain helpers (Validator)                                         |
 | `Darkheim\Infrastructure\Bootstrap\*` | `src/Infrastructure/Bootstrap/` | AppKernel, ConfigProvider, RuntimeState, BootstrapContext               |
 | `Darkheim\Infrastructure\Cache\*`     | `src/Infrastructure/Cache/`     | CacheBuilder, CacheRepository, CacheManager                             |
@@ -324,7 +329,6 @@ All classes under `src/` are autoloaded via Composer PSR-4 with the root namespa
 | `Darkheim\Infrastructure\Payment\*`   | `src/Infrastructure/Payment/`   | PayPal IPN                                                              |
 | `Darkheim\Infrastructure\Plugins\*`   | `src/Infrastructure/Plugins/`   | Plugin loader                                                           |
 | `Darkheim\Infrastructure\Routing\*`   | `src/Infrastructure/Routing/`   | Handler, Controller/Subpage/AdminCP dispatchers, registries, sanitizers |
-| `Darkheim\Infrastructure\Theme\*`     | `src/Infrastructure/Theme/`     | Theme layout context builders (`DefaultThemeLayoutBuilder`)             |
 | `Darkheim\Infrastructure\View\*`      | `src/Infrastructure/View/`      | ViewRenderer — theme-aware template engine                              |
 | `Darkheim\Infrastructure\Runtime\*`   | `src/Infrastructure/Runtime/`   | Request/session/server boundary adapters                                |
 | `Darkheim\Infrastructure\Security\*`  | `src/Infrastructure/Security/`  | IpBlocker                                                               |
@@ -391,7 +395,7 @@ Examples already following this rule:
 
 - `Darkheim\Application\Page\RankingsSectionController` → `views/ranking.php`
 - `Darkheim\Application\Subpage\Usercp\AbstractCharacterActionTableSubpageController` → `views/subpages/usercp/actiontables.php`
-- `Darkheim\Infrastructure\Theme\DefaultThemeLayoutBuilder` → `public/themes/default/index.php` + `inc/modules/*.php`
+- `Darkheim\Application\Theme\Layout\DefaultThemeLayoutBuilder` → `public/themes/default/index.php` + `inc/modules/*.php`
 - `Darkheim\Application\Admincp\*Controller` → `views/admincp/*.php`
 
 ## AdminCP MVC notes
@@ -449,7 +453,7 @@ When adding another shared template:
 ### Recipe: change the default theme safely
 
 1. Treat `public/themes/default/index.php` and `inc/modules/*.php` as rendering-only files.
-2. If the theme needs new data, add it to `Darkheim\Infrastructure\Theme\DefaultThemeLayoutBuilder`.
+2. If the theme needs new data, add it to `Darkheim\Application\Theme\Layout\DefaultThemeLayoutBuilder`.
 3. Do not read request/session/config/cache directly from theme templates.
 4. Keep optional per-theme view overrides in `public/themes/{theme}/views/` only when the markup must differ from `views/`.
 

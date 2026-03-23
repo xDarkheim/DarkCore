@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Admincp;
 
 use Darkheim\Application\Credits\CreditSystem;
-use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class CreditsManagerController

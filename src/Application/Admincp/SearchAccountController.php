@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\Admincp\Layout\AdmincpUrlGenerator;
+
 use Darkheim\Domain\Validator;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\View\ViewRenderer;
@@ -38,7 +40,7 @@ final class SearchAccountController
                 if (! is_array($rows)) {
                     throw new \RuntimeException('No results found.');
                 }
-                $results = array_map(static function (array $account): array {
+                $results = array_map(static function (array $account) use ($admincpUrl): array {
                     return [
                         'id'             => (string) ($account[_CLMN_MEMBID_] ?? ''),
                         'username'       => (string) ($account[_CLMN_USERNM_] ?? ''),

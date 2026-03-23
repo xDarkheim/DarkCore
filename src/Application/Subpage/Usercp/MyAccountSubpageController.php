@@ -7,8 +7,8 @@ namespace Darkheim\Application\Subpage\Usercp;
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Character\Character;
 use Darkheim\Application\Credits\CreditSystem;
-use Darkheim\Application\Game\GameHelper;
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Game\GameHelper;
+use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Application\Profile\ProfileRenderer;
 use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\Database\Connection;
@@ -31,14 +31,14 @@ final class MyAccountSubpageController
         }
 
         if (! \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active')) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', Translator::phrase('error_12'));
+            \Darkheim\Application\Shared\UI\MessageRenderer::inline('error', Translator::phrase('error_12'));
             return;
         }
 
         $common      = new Common();
         $accountInfo = $common->accountInformation($_SESSION['userid']);
         if (! is_array($accountInfo)) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', Translator::phrase('error_12'));
+            \Darkheim\Application\Shared\UI\MessageRenderer::inline('error', Translator::phrase('error_12'));
             return;
         }
 

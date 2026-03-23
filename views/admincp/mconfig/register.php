@@ -4,13 +4,13 @@
 		<tr>
 			<th>Status<br/><span>Enable/disable the registration module.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_1',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'),'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_1',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active'),'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>
 			<th>Recaptcha v2<br/><span>Enable/disable Recaptcha validation. <br/><br/> <a href="https://www.google.com/recaptcha/admin" target="_blank">https://www.google.com/recaptcha/admin</a></span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_2',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('register_enable_recaptcha'),'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_2',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('register_enable_recaptcha'),'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>
@@ -32,13 +32,13 @@
 		<tr>
 			<th>Email Verification<br/><span>If enabled, the user will receive an email with a verification link. The accout will not be created if the email is not verified.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_5',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('verify_email'),'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_5',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('verify_email'),'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>
 			<th>Send Welcome Email<br/><span>Sends a welcome email after registering a new account.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_6',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('send_welcome_email'),'Enabled','Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_6',\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('send_welcome_email'),'Enabled','Disabled'); ?>
 			</td>
 		</tr>
 		<tr>
@@ -52,7 +52,7 @@
 		<tr>
 			<th>Automatic Log-In<br/><span>Automatic account log-in after registering. This feature only works when email verification is disabled.</span></th>
 			<td>
-				<?php \Darkheim\Application\View\FormFieldRenderer::enabledisableCheckboxes('setting_8', \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('automatic_login'), 'Enabled', 'Disabled'); ?>
+				<?php \Darkheim\Application\Shared\UI\FormFieldRenderer::enabledisableCheckboxes('setting_8', \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('automatic_login'), 'Enabled', 'Disabled'); ?>
 			</td>
 		</tr>
 		<tr>

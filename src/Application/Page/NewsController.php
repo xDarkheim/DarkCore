@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Page;
 
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Application\News\NewsRepository;
-use Darkheim\Application\View\MessageRenderer;
+use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\View\ViewRenderer;

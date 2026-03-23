@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Admincp;
 
+use Darkheim\Application\Admincp\Layout\AdmincpUrlGenerator;
+
 use Darkheim\Application\Account\Account;
 use Darkheim\Infrastructure\View\ViewRenderer;
 

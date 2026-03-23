@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Application\Subpage\Usercp;
 
 use Darkheim\Application\Account\Account;
-use Darkheim\Application\Language\Translator;
+use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 final class MyEmailSubpageController
@@ -37,9 +37,9 @@ final class MyEmailSubpageController
                         (string) ($_POST['darkheimEmail_newemail'] ?? ''),
                         (string) ($_SERVER['REMOTE_ADDR'] ?? '')
                     );
-                    \Darkheim\Application\View\MessageRenderer::toast('success', \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('require_verification') ? Translator::phrase('success_19') : Translator::phrase('success_20'));
+                    \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('require_verification') ? Translator::phrase('success_19') : Translator::phrase('success_20'));
                 } catch (\Exception $ex) {
-                    \Darkheim\Application\View\MessageRenderer::toast('error', $ex->getMessage());
+                    \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', $ex->getMessage());
                 }
             }
 
@@ -49,7 +49,7 @@ final class MyEmailSubpageController
                 'submitLabel' => Translator::phrase('changemail_txt_1'),
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\View\MessageRenderer::inline('error', $ex->getMessage());
+            \Darkheim\Application\Shared\UI\MessageRenderer::inline('error', $ex->getMessage());
         }
     }
 }
