@@ -6,7 +6,7 @@ use Darkheim\Infrastructure\Cron\CronManager;
 define('access', 'cron');
 
 // Load Darkheim
-if (! @include_once(str_replace('\\', '/', dirname(__FILE__, 2)) . '/' . 'cms.php')) {
+if (! @include(str_replace('\\', '/', dirname(__FILE__, 2)) . '/' . 'cms.php')) {
     die('Failed to load Darkheim CMS.');
 }
 

@@ -1,6 +1,7 @@
 <?php
 
 use Darkheim\Application\Rankings\RankingsService as Rankings;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Cron\CronManager;
 
 // File Name
@@ -10,9 +11,9 @@ $file_name = basename(__FILE__);
 $Rankings = new Rankings();
 
 // Load Ranking Configs
-\Darkheim\Infrastructure\Bootstrap\BootstrapContext::loadModuleConfig('rankings');
+BootstrapContext::loadModuleConfig('rankings');
 
-if (\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active') && \Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('rankings_enable_master')) {
+if (BootstrapContext::moduleValue('active') && BootstrapContext::moduleValue('rankings_enable_master')) {
     $Rankings->UpdateRankingCache('master');
 }
 

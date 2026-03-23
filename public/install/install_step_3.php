@@ -6,90 +6,183 @@
  * @author      Dmytro Hovenko <dmytro.hovenko@gmail.com>
  */
 
-if(!defined('access') or !access or access != 'install') die();
-?>
-<h3 class="inst-title"><i class="bi bi-table me-2"></i>Create CMS Tables</h3>
-<?php
+if (! defined('access') || access !== 'install') {
+    die();
+}
+
+/** @var array $install */
+
+/**
+ * Installer-local helpers for idempotent SQL Server table creation.
+ */
+function installerTableExists(dB $database, string $tableName): bool
+{
+    $result = $database->query_fetch_single(
+        "SELECT TOP 1 name FROM sys.tables WHERE name = ? AND schema_id = SCHEMA_ID('dbo')",
+        [$tableName],
+    );
+
+    return is_array($result);
+}
+
+function installerIsAlreadyExistsError(?string $error): bool
+{
+    if (! is_string($error) || $error === '') {
+        return false;
+    }
+
+    return str_contains($error, 'There is already an object named')
+        || str_contains($error, '[SQL 42S01]')
+        || str_contains($error, ' 2714]');
+}
+
 try {
-    if(isset($_POST['install_step_3_submit'])) {
-        if(!isset($_POST['install_step_3_error'])) {
+    if (isset($_POST['install_step_3_submit'])) {
+        if (! isset($_POST['install_step_3_error'])) {
             $_SESSION['install_cstep']++;
             header('Location: install.php');
             die();
-        } else {
-            echo '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>One or more errors occurred. Fix them before continuing.</div>';
         }
+        echo '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> One or more errors occurred. Fix them before continuing.</div>';
     }
 
-    if(!isset($_SESSION['install_sql_db1'])) throw new Exception('Database connection info missing. Please restart the installation.');
+    if (! isset($_SESSION['install_sql_db1'])) {
+        throw new Exception('Database connection info missing. Please restart the installation.');
+    }
 
+    /** @phpstan-ignore-next-line */
     $mudb = new dB(
         $_SESSION['install_sql_host'],
         $_SESSION['install_sql_port'],
         $_SESSION['install_sql_db1'],
         $_SESSION['install_sql_user'],
-        $_SESSION['install_sql_pass']
+        $_SESSION['install_sql_pass'],
     );
 
-    if($mudb->dead) throw new Exception('Could not connect to database: ' . htmlspecialchars($_SESSION['install_sql_db1']));
-    if(!is_array($install['sql_list'])) throw new Exception('Could not load CMS SQL tables list.');
+    if ($mudb->dead) {
+        throw new Exception('Could not connect to database: ' . htmlspecialchars($_SESSION['install_sql_db1']));
+    }
+    if (! is_array($install['sql_list'])) {
+        throw new Exception('Could not load CMS SQL tables list.');
+    }
 
-    foreach($install['sql_list'] as $sqlFileName => $sqlTableName) {
-        if(!file_exists('sql/' . $sqlFileName . '.txt'))
+    foreach ($install['sql_list'] as $sqlFileName => $sqlTableName) {
+        $sqlPath = __INSTALL_ROOT__ . 'sql/' . $sqlFileName . '.txt';
+        if (! file_exists($sqlPath)) {
             throw new Exception('Missing SQL file: sql/' . $sqlFileName . '.txt');
+        }
     }
 
-    $error = false;
-    $force = (isset($_GET['force']) && $_GET['force'] == 1);
-
-    echo '<div class="alert alert-info mb-3">';
-    echo '<i class="bi bi-database-fill me-2"></i>Creating CMS tables in database: <strong>' . htmlspecialchars($_SESSION['install_sql_db1']) . '</strong>';
-    echo '</div>';
-
-    echo '<div class="inst-card mb-3">';
-    echo '<div class="inst-card-header"><i class="bi bi-list-check me-1"></i>Table Status</div>';
-    echo '<div class="list-group list-group-flush">';
-
-    foreach($install['sql_list'] as $sqlFileName => $sqlTableName) {
-        $sqlFileContents = file_get_contents('sql/' . $sqlFileName . '.txt');
-        if(!$sqlFileContents) continue;
-
-        $query = str_replace('{TABLE_NAME}', $sqlTableName, $sqlFileContents);
-
-        if($force) {
-            $mudb->query("IF OBJECT_ID('[" . $sqlTableName . "]','U') IS NOT NULL DROP TABLE [" . $sqlTableName . "]");
+    $errors         = [];
+    $createdTables  = [];
+    $existingTables = [];
+    foreach ($install['sql_list'] as $sqlFileName => $sqlTableName) {
+        $sqlPath       = __INSTALL_ROOT__ . 'sql/' . $sqlFileName . '.txt';
+        $queryTemplate = file_get_contents($sqlPath);
+        if ($queryTemplate === false) {
+            $errors[$sqlFileName] = 'Could not read SQL file: ' . $sqlFileName . '.txt';
+            continue;
         }
 
-        $tableExists = $mudb->query_fetch_single("SELECT * FROM sysobjects WHERE xtype = 'U' AND name = ?", array($sqlTableName));
+        $tableName = (string) $sqlTableName;
+        $query     = trim(str_replace('{TABLE_NAME}', $tableName, $queryTemplate));
 
-        echo '<div class="list-group-item d-flex justify-content-between align-items-center">';
-        echo '<code style="color:var(--accent);font-size:12px;">'.htmlspecialchars($sqlTableName).'</code>';
+        if (installerTableExists($mudb, $tableName)) {
+            $existingTables[$sqlFileName] = $tableName;
+            continue;
+        }
 
-        if(!$tableExists) {
-            $create = $mudb->query($query);
-            if($create) {
-                echo '<span class="label label-success"><i class="bi bi-check-lg"></i> Created</span>';
-            } else {
-                echo '<span class="label label-danger"><i class="bi bi-x-lg"></i> Error</span>';
-                $error = true;
+        if (! $mudb->query($query)) {
+            if (installerIsAlreadyExistsError($mudb->error)) {
+                $existingTables[$sqlFileName] = $tableName;
+                continue;
             }
-        } else {
-            echo '<span class="label label-default"><i class="bi bi-dash-lg"></i> Already Exists</span>';
+
+            $errors[$sqlFileName] = $mudb->error;
+            continue;
         }
 
-        echo '</div>';
+        $createdTables[$sqlFileName] = $tableName;
     }
+    ?>
 
-    echo '</div></div>';
+<div class="step-section active">
+    <h2 class="step-title"><i class="bi bi-table"></i> Create Database Tables</h2>
+    <p class="step-description">Setting up the required database tables...</p>
 
-    echo '<form method="post" class="d-flex gap-2 flex-wrap">';
-    if($error) echo '<input type="hidden" name="install_step_3_error" value="1"/>';
-    echo '<a href="' . __INSTALL_URL__ . 'install.php" class="btn btn-secondary"><i class="bi bi-arrow-repeat me-1"></i>Re-Check</a>';
-    echo '<button type="submit" name="install_step_3_submit" value="continue" class="btn btn-success">Continue <i class="bi bi-arrow-right ms-1"></i></button>';
-    echo '<a href="' . __INSTALL_URL__ . 'install.php?force=1" class="btn btn-danger ms-auto"><i class="bi bi-trash3 me-1"></i>Drop &amp; Recreate</a>';
-    echo '</form>';
+    <?php if (empty($errors)): ?>
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle"></i>
+            <?php if ($existingTables === []): ?>
+                All database tables created successfully!
+            <?php elseif ($createdTables === []): ?>
+                All required database tables already exist. You can continue safely.
+            <?php else: ?>
+                Database tables are ready. New tables were created and existing ones were preserved.
+            <?php endif; ?>
+        </div>
 
+        <?php if ($createdTables !== []): ?>
+        <div class="info-box">
+            <strong>Created Tables</strong><br>
+            <ul class="checklist" style="margin-top: 10px;">
+                <?php foreach ($createdTables as $fileName => $tableName): ?>
+                <li><?php echo htmlspecialchars($tableName); ?> <small style="color: var(--tx-3);">(<?php echo htmlspecialchars($fileName); ?>)</small></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+        <?php endif; ?>
+
+        <?php if ($existingTables !== []): ?>
+        <div class="info-box">
+            <strong>Skipped Existing Tables</strong><br>
+            <ul class="checklist" style="margin-top: 10px;">
+                <?php foreach ($existingTables as $fileName => $tableName): ?>
+                <li class="warning"><?php echo htmlspecialchars($tableName); ?> <small style="color: var(--tx-3);">(<?php echo htmlspecialchars($fileName); ?>)</small></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+        <?php endif; ?>
+
+        <div class="info-box">
+            <strong>Next Step</strong><br>
+            Configure your admin account and server settings.
+        </div>
+
+        <form method="post" style="margin-top: 28px;">
+            <div class="btn-group">
+                <button type="submit" name="install_step_3_submit" class="btn btn-primary">
+                    <i class="bi bi-arrow-right"></i> Continue
+                </button>
+            </div>
+        </form>
+    <?php else: ?>
+        <div class="alert alert-danger">
+            <strong><i class="bi bi-exclamation-triangle-fill"></i> Errors Creating Tables</strong>
+        </div>
+
+        <ul class="checklist">
+            <?php foreach ($errors as $fileName => $error): ?>
+            <li class="error">
+                <strong><?php echo htmlspecialchars($fileName); ?></strong><br>
+                <small style="color: var(--tx-3);"><?php echo htmlspecialchars($error); ?></small>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+
+        <form method="post" style="margin-top: 28px;">
+            <input type="hidden" name="install_step_3_error" value="1">
+            <div class="btn-group">
+                <button type="submit" name="install_step_3_submit" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Go Back
+                </button>
+            </div>
+        </form>
+    <?php endif; ?>
+</div>
+
+<?php
 } catch (Exception $ex) {
-    echo '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>' . $ex->getMessage() . '</div>';
-    echo '<a href="' . __INSTALL_URL__ . 'install.php" class="btn btn-secondary"><i class="bi bi-arrow-repeat me-1"></i>Re-Check</a>';
+    echo '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> ' . htmlspecialchars($ex->getMessage()) . '</div>';
 }
+?>

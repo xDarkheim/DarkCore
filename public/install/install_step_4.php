@@ -6,84 +6,77 @@
  * @author      Dmytro Hovenko <dmytro.hovenko@gmail.com>
  */
 
-if(!defined('access') or !access or access != 'install') die();
-?>
-<h3 class="inst-title"><i class="bi bi-clock-history me-2"></i>Add Cron Jobs</h3>
-<?php
+if (! defined('access') || access !== 'install') {
+    die();
+}
+
+/** @var array $install */
+
 try {
-    if(isset($_POST['install_step_4_submit'])) {
-        if(!isset($_POST['install_step_4_error'])) {
+    if (isset($_POST['install_step_4_submit'])) {
+        if (! isset($_POST['install_step_4_error'])) {
+            if (empty($_POST['install_step_4_1'])) {
+                throw new Exception('Admin username is required.');
+            }
+            if (empty($_POST['install_step_4_2'])) {
+                throw new Exception('Admin password is required.');
+            }
+            if (empty($_POST['install_step_4_3'])) {
+                throw new Exception('Admin email is required.');
+            }
+
+            $_SESSION['install_admin_user']  = trim($_POST['install_step_4_1']);
+            $_SESSION['install_admin_pass']  = $_POST['install_step_4_2'];
+            $_SESSION['install_admin_email'] = trim($_POST['install_step_4_3']);
+
             $_SESSION['install_cstep']++;
             header('Location: install.php');
             die();
-        } else {
-            echo '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>One or more errors occurred. Fix them before continuing.</div>';
         }
     }
+    ?>
 
-    if(!isset($_SESSION['install_sql_db1'])) throw new Exception('Database connection info missing. Please restart the installation.');
+<div class="step-section active">
+    <h2 class="step-title"><i class="bi bi-person-check"></i> Create Admin Account</h2>
+    <p class="step-description">Set up the main administrator account for DarkCore.</p>
 
-    $mudb = new dB(
-        $_SESSION['install_sql_host'],
-        $_SESSION['install_sql_port'],
-        $_SESSION['install_sql_db1'],
-        $_SESSION['install_sql_user'],
-        $_SESSION['install_sql_pass']
-    );
+    <form method="post">
+        <div class="form-group">
+            <label for="admin_user">Admin Username</label>
+            <input type="text" id="admin_user" name="install_step_4_1" class="form-control" 
+                   placeholder="administrator" value="<?php echo htmlspecialchars($_SESSION['install_admin_user'] ?? ''); ?>" required>
+            <small style="color: var(--tx-3); margin-top: 4px; display: block;">Must be unique and contain 3-20 characters</small>
+        </div>
 
-    if($mudb->dead) throw new Exception('Could not connect to database: ' . htmlspecialchars($_SESSION['install_sql_db1']));
+        <div class="form-group">
+            <label for="admin_pass">Admin Password</label>
+            <input type="password" id="admin_pass" name="install_step_4_2" class="form-control" 
+                   placeholder="••••••••" required>
+            <small style="color: var(--tx-3); margin-top: 4px; display: block;">Use a strong password with mixed case and numbers</small>
+        </div>
 
-    foreach($install['cron_jobs'] as $key => $cron) {
-        $cronPath = __PATH_CRON__ . $cron[2];
-        if(!file_exists($cronPath)) throw new Exception('Missing cron file: ' . $cron[2]);
-        array_push($install['cron_jobs'][$key], md5_file($cronPath));
-    }
+        <div class="form-group">
+            <label for="admin_email">Admin Email</label>
+            <input type="email" id="admin_email" name="install_step_4_3" class="form-control" 
+                   placeholder="admin@example.com" value="<?php echo htmlspecialchars($_SESSION['install_admin_email'] ?? ''); ?>" required>
+            <small style="color: var(--tx-3); margin-top: 4px; display: block;">Used for account recovery and notifications</small>
+        </div>
 
-    $error = false;
+        <div class="info-box">
+            <strong><i class="bi bi-shield-lock"></i> Security</strong><br>
+            Keep these credentials safe. You'll need them to access the admin control panel after installation completes.
+        </div>
 
-    echo '<div class="inst-card mb-3">';
-    echo '<div class="inst-card-header"><i class="bi bi-list-check me-1"></i>Cron Job Status</div>';
-    echo '<div class="list-group list-group-flush">';
+        <div class="btn-group" style="margin-top: 28px;">
+            <button type="submit" name="install_step_4_submit" class="btn btn-primary">
+                <i class="bi bi-arrow-right"></i> Continue
+            </button>
+        </div>
+    </form>
+</div>
 
-    foreach($install['cron_jobs'] as $cron) {
-        $cronExists = $mudb->query_fetch_single(
-            "SELECT * FROM " . Cron . " WHERE cron_file_run = ?",
-            array($cron[2])
-        );
-
-        echo '<div class="list-group-item d-flex justify-content-between align-items-center">';
-        echo '<div>';
-        echo '<span style="color:#ddd;font-size:13px;">'.htmlspecialchars($cron[0]).'</span> ';
-        echo '<code style="font-size:11px;color:var(--text-muted);">'.htmlspecialchars($cron[2]).'</code>';
-        echo '</div>';
-
-        if(!$cronExists) {
-            $addCron = $mudb->query(
-                "INSERT INTO " . Cron . " (cron_name,cron_description,cron_file_run,cron_run_time,cron_status,cron_protected,cron_file_md5) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                $cron
-            );
-            if($addCron) {
-                echo '<span class="label label-success"><i class="bi bi-check-lg"></i> Added</span>';
-            } else {
-                echo '<span class="label label-danger"><i class="bi bi-x-lg"></i> Error</span>';
-                $error = true;
-            }
-        } else {
-            echo '<span class="label label-default"><i class="bi bi-dash-lg"></i> Already Exists</span>';
-        }
-
-        echo '</div>';
-    }
-
-    echo '</div></div>';
-
-    echo '<form method="post" class="d-flex gap-2">';
-    if($error) echo '<input type="hidden" name="install_step_4_error" value="1"/>';
-    echo '<a href="' . __INSTALL_URL__ . 'install.php" class="btn btn-secondary"><i class="bi bi-arrow-repeat me-1"></i>Re-Check</a>';
-    echo '<button type="submit" name="install_step_4_submit" value="continue" class="btn btn-success">Continue <i class="bi bi-arrow-right ms-1"></i></button>';
-    echo '</form>';
-
+<?php
 } catch (Exception $ex) {
-    echo '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>' . $ex->getMessage() . '</div>';
-    echo '<a href="' . __INSTALL_URL__ . 'install.php" class="btn btn-secondary"><i class="bi bi-arrow-repeat me-1"></i>Re-Check</a>';
+    echo '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> ' . htmlspecialchars($ex->getMessage()) . '</div>';
 }
+?>

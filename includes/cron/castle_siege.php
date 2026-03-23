@@ -11,4 +11,4 @@ $castleSiege = new CastleSiege();
 $castleSiege->updateSiegeCache();
 
 // UPDATE CRON
-(new CronManager())->updateLastRun($file_name);
+new CronManager()->updateLastRun($file_name);
