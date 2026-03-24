@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Routing;
 
-use Darkheim\Infrastructure\Routing\AdmincpRouteRegistry;
-use Darkheim\Infrastructure\Routing\AdmincpModuleDispatcher;
+use Darkheim\Infrastructure\Routing\Registries\AdmincpRouteRegistry;
+use Darkheim\Infrastructure\Routing\Dispatchers\AdmincpModuleDispatcher;
 use PHPUnit\Framework\TestCase;
 
 final class AdmincpTestController

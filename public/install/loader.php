@@ -44,7 +44,7 @@ try {
 
     // Global aliases — installer step files use short class names without namespace
     class_alias(\Darkheim\Infrastructure\Database\dB::class, 'dB');
-    class_alias(\Darkheim\Domain\Validator::class, 'Validator');
+    class_alias(\Darkheim\Domain\Validation\Validator::class, 'Validator');
 
     if (! @include(__PATH_CONFIGS__ . 'tables.php')) {
         throw new Exception('Could not load DarkCore table definitions.');

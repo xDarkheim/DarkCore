@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Routing;
 
-use Darkheim\Infrastructure\Routing\SubpageRouteDispatcher;
-use Darkheim\Infrastructure\Routing\SubpageRouteRegistry;
+use Darkheim\Infrastructure\Routing\Dispatchers\SubpageRouteDispatcher;
+use Darkheim\Infrastructure\Routing\Registries\SubpageRouteRegistry;
 use PHPUnit\Framework\TestCase;
 
 final class SubpageRouteDispatcherTest extends TestCase

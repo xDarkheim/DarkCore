@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Routing;
 
-use Darkheim\Infrastructure\Routing\PageAccessDispatcher;
+use Darkheim\Infrastructure\Routing\Dispatchers\PageAccessDispatcher;
 use PHPUnit\Framework\TestCase;
 
 final class PageAccessDispatcherTest extends TestCase

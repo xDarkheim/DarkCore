@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Darkheim\Infrastructure\Plugins;
 
 use Darkheim\Application\Shared\UI\MessageRenderer;
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\Database\Connection;
-use Darkheim\Infrastructure\Runtime\NativeSessionStore;
-use Darkheim\Infrastructure\Runtime\SessionStore;
+use Darkheim\Infrastructure\Runtime\Native\NativeSessionStore;
+use Darkheim\Infrastructure\Runtime\Contracts\SessionStore;
 
 /**
  * Plugin installation, activation, cache rebuild.
@@ -28,8 +28,8 @@ class Plugins
 
     public function importPlugin($_FILE): void
     {
-        if ($_FILE["file"]["type"] == "text/xml") {
-            $xml        = simplexml_load_string(file_get_contents($_FILE["file"]["tmp_name"]));
+        if ($_FILE['file']['type'] == 'text/xml') {
+            $xml        = simplexml_load_string(file_get_contents($_FILE['file']['tmp_name']));
             $pluginDATA = self::xmlToArray($xml->children());
             if ($this->checkXML($pluginDATA)) {
                 if ($this->checkCompatibility($pluginDATA['compatibility'])) {
@@ -128,27 +128,27 @@ class Plugins
         $compatibility = $pluginDATA['compatibility']['darkheim'];
         $files         = $pluginDATA['files']['file'];
         if (is_array($pluginDATA['compatibility']['darkheim'])) {
-            $compatibility = implode("", $pluginDATA['compatibility']['darkheim']);
+            $compatibility = implode('', $pluginDATA['compatibility']['darkheim']);
         }
         if (is_array($pluginDATA['files']['file'])) {
-            $files = implode("", $pluginDATA['files']['file']);
+            $files = implode('', $pluginDATA['files']['file']);
         }
         $data = [
             $pluginDATA['name'], $pluginDATA['author'], $pluginDATA['version'],
             $compatibility, $pluginDATA['folder'], $files, 1, time(), (string) $this->session()->get('username', ''),
         ];
 
-        return $this->db->query("INSERT INTO " . Plugins . " (name, author, version, compatibility, folder, files, status, install_date, installed_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", $data);
+        return $this->db->query('INSERT INTO ' . Plugins . ' (name, author, version, compatibility, folder, files, status, install_date, installed_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', $data);
     }
 
     public function retrieveInstalledPlugins(): false|array|null
     {
-        return $this->db->query_fetch("SELECT * FROM " . Plugins . " ORDER BY id");
+        return $this->db->query_fetch('SELECT * FROM ' . Plugins . ' ORDER BY id');
     }
 
     public function updatePluginStatus($plugin_id, $new_status): void
     {
-        $this->db->query("UPDATE " . Plugins . " SET status = ? WHERE id = ?", [$new_status, $plugin_id]);
+        $this->db->query('UPDATE ' . Plugins . ' SET status = ? WHERE id = ?', [$new_status, $plugin_id]);
         if (! $this->rebuildPluginsCache()) {
             MessageRenderer::toast('error', 'Could not update plugins cache data, make sure the file exists and it\'s writable!');
         }
@@ -156,13 +156,13 @@ class Plugins
 
     public function uninstallPlugin($plugin_id): bool
     {
-        return $this->db->query("DELETE FROM " . Plugins . " WHERE id = ?", [$plugin_id]);
+        return $this->db->query('DELETE FROM ' . Plugins . ' WHERE id = ?', [$plugin_id]);
     }
 
     public function rebuildPluginsCache(): bool
     {
         $cache   = new CacheRepository(__PATH_CACHE__);
-        $plugins = $this->db->query_fetch("SELECT * FROM " . Plugins . " WHERE status = 1 ORDER BY id");
+        $plugins = $this->db->query_fetch('SELECT * FROM ' . Plugins . ' WHERE status = 1 ORDER BY id');
         if (! is_array($plugins)) {
             return $cache->save('plugins.cache', '');
         }

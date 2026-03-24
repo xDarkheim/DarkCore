@@ -2,7 +2,7 @@
 /**
  * AdminCP new registrations view.
  *
- * Variables provided by Darkheim\Application\Admincp\NewRegistrationsController:
+ * Variables provided by Darkheim\Application\Admincp\Controller\Dashboard\NewRegistrationsController:
  * - string $pageTitle
  * - string $cardTitle
  * - array<int,array{id:string,username:string,email:string,accountInfoUrl:string}> $rows

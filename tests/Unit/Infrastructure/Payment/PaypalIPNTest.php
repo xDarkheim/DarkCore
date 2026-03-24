@@ -45,5 +45,24 @@ class PaypalIPNTest extends TestCase
         $this->expectExceptionMessage('Missing POST Data');
         $ipn->verifyIPN();
     }
+
+    public function testDefaultCertPathUsesBundledCertificateWhenAvailable(): void
+    {
+        $ipn = new PaypalIPN();
+
+        $resolver = \Closure::bind(
+            function (): string {
+                return $this->cert_path;
+            },
+            $ipn,
+            PaypalIPN::class,
+        );
+
+        $certPath = $resolver();
+
+        $this->assertIsString($certPath);
+        $this->assertFileExists($certPath);
+        $this->assertStringEndsWith('/includes/paypal/cert/cacert.pem', $certPath);
+    }
 }
 

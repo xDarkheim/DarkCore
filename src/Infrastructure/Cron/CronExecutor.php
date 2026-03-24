@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Cron;
 
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 
 /**
  * Executes configured cron jobs using the existing CronManager schedule rules.

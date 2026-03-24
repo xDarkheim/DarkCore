@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Darkheim\Infrastructure\Email;
 
 use Darkheim\Application\Shared\Language\Translator;
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -71,15 +71,15 @@ class Email
 
         $templates = [];
         foreach ($configs['email_templates']['template'] as $template) {
-            $templates[$template['filename']] = str_replace("{SERVER_NAME}", $serverName, $template['subject']);
+            $templates[$template['filename']] = str_replace('{SERVER_NAME}', $serverName, $template['subject']);
         }
 
-        $this->addVariable("{SERVER_NAME}", $serverName);
+        $this->addVariable('{SERVER_NAME}', $serverName);
         $this->_templates = $templates;
         $this->mail       = new PHPMailer(true);
     }
 
-    public function setFrom($email, $name = "Unknown"): void
+    public function setFrom($email, $name = 'Unknown'): void
     {
         $this->_from = $email;
         $this->_name = $name;

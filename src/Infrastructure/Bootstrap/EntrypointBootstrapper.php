@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Bootstrap;
 
-use Darkheim\Infrastructure\Routing\Handler;
+use Darkheim\Infrastructure\Routing\Dispatchers\Handler;
 
 final class EntrypointBootstrapper
 {

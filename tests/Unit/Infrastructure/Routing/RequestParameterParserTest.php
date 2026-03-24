@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Routing;
 
-use Darkheim\Infrastructure\Routing\RequestParameterParser;
+use Darkheim\Infrastructure\Routing\Support\RequestParameterParser;
 use PHPUnit\Framework\TestCase;
 use Tests\Stubs\ArrayQueryStore;
 

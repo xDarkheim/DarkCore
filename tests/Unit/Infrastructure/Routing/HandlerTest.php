@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Routing;
 
-use Darkheim\Infrastructure\Routing\Handler;
+use Darkheim\Infrastructure\Routing\Dispatchers\Handler;
 use PHPUnit\Framework\TestCase;
 use Tests\Stubs\ArrayQueryStore;
 use Tests\Stubs\ArraySessionStore;

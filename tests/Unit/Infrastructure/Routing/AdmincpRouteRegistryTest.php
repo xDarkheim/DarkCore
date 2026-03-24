@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Routing;
 
-use Darkheim\Application\Admincp\CacheManagerController;
-use Darkheim\Application\Admincp\HomeController;
-use Darkheim\Application\Admincp\NewRegistrationsController;
-use Darkheim\Application\Admincp\OnlineAccountsController;
-use Darkheim\Infrastructure\Routing\AdmincpRouteRegistry;
+use Darkheim\Application\Admincp\Controller\Operations\CacheManagerController;
+use Darkheim\Application\Admincp\Controller\Dashboard\HomeController;
+use Darkheim\Application\Admincp\Controller\Dashboard\NewRegistrationsController;
+use Darkheim\Application\Admincp\Controller\Dashboard\OnlineAccountsController;
+use Darkheim\Infrastructure\Routing\Registries\AdmincpRouteRegistry;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

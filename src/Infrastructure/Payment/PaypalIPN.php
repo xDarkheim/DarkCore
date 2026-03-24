@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Payment;
 
-use Darkheim\Infrastructure\Runtime\NativePostStore;
-use Darkheim\Infrastructure\Runtime\PostStore;
+use Darkheim\Infrastructure\Runtime\Native\NativePostStore;
+use Darkheim\Infrastructure\Runtime\Contracts\PostStore;
 
 /**
  * PaypalIPN — verifies PayPal Instant Payment Notifications via cURL postback.
@@ -125,9 +125,13 @@ class PaypalIPN
     {
         // PSR-4 file lives at src/Infrastructure/Payment/ — walk up 3 levels to project root.
         $projectRoot = dirname(__DIR__, 3);
-        $bundled     = $projectRoot . '/includes/classes/paypal/cert/cacert.pem';
+        $bundled     = $projectRoot . '/includes/paypal/cert/cacert.pem';
         if (is_file($bundled)) {
             return $bundled;
+        }
+        $legacy = $projectRoot . '/includes/classes/paypal/cert/cacert.pem';
+        if (is_file($legacy)) {
+            return $legacy;
         }
         // Fallback: cert next to this file (for custom deploys that copy it here).
         return __DIR__ . '/cert/cacert.pem';

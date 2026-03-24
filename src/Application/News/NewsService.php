@@ -7,7 +7,7 @@ namespace Darkheim\Application\News;
 use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Infrastructure\Database\Connection;
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Application\Shared\Language\LanguageRepository;

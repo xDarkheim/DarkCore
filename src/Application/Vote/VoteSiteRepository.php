@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Vote;
 
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Database\Connection;
 
 /**

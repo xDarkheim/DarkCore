@@ -7,10 +7,10 @@ namespace Darkheim\Application\Account;
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Auth\Login;
 use Darkheim\Application\Shared\Language\Translator;
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Email\Email;
-use Darkheim\Infrastructure\Runtime\ServerContext;
+use Darkheim\Infrastructure\Runtime\Support\ServerContext;
 
 /**
  * Account — registration, verification, password recovery, email change.

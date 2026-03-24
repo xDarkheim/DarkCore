@@ -8,12 +8,12 @@ use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Character\Character;
 use Darkheim\Application\Shared\Game\GameHelper;
 use Darkheim\Application\Shared\Language\Translator;
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Database\Connection;
-use Darkheim\Infrastructure\Runtime\NativeRequestStore;
-use Darkheim\Infrastructure\Runtime\RequestStore;
+use Darkheim\Infrastructure\Runtime\Native\NativeRequestStore;
+use Darkheim\Infrastructure\Runtime\Contracts\RequestStore;
 
 /**
  * RankingsService — cache-building and menu rendering for all ranking types.

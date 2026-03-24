@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Routing;
 
-use Darkheim\Application\Api\EventsApiController;
-use Darkheim\Application\Api\GuildmarkApiController;
-use Darkheim\Infrastructure\Routing\ApiRouteRegistry;
+use Darkheim\Application\Website\EventsApiController;
+use Darkheim\Application\Profile\GuildmarkApiController;
+use Darkheim\Infrastructure\Routing\Registries\ApiRouteRegistry;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

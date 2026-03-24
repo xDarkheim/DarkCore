@@ -2,7 +2,7 @@
 /**
  * AdminCP cache manager view.
  *
- * Variables provided by Darkheim\Application\Admincp\CacheManagerController:
+ * Variables provided by Darkheim\Application\Admincp\Controller\Operations\CacheManagerController:
  * - string $pageTitle
  * - array<int,array{file:string,size:string,lastModified:string,writableLabel:string,writableClass:string,clearUrl:string}> $cacheRows
  * - array<int,array{label:string,fileCount:string,totalSize:string,deleteUrl:string,showDelete:bool,deleteLabel:string}> $profileCards

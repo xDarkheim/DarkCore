@@ -2,7 +2,7 @@
 /**
  * AdminCP online accounts view.
  *
- * Variables provided by Darkheim\Application\Admincp\OnlineAccountsController:
+ * Variables provided by Darkheim\Application\Admincp\Controller\Dashboard\OnlineAccountsController:
  * - string $pageTitle
  * - array<int,array{value:string,label:string,accent:bool}> $statBoxes
  * - array<int,array{accountHtml:string,ipAddress:string,server:string}> $rows

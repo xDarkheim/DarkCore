@@ -33,7 +33,7 @@ Tests are split into three tiers by dependency complexity.
 No mocking, no filesystem, fully deterministic. Examples: `Validator`, `NewsItem`, `RankingCache`.
 
 ```php
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 use PHPUnit\Framework\TestCase;
 
 class ValidatorTest extends TestCase

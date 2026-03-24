@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Database;
 
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 
 /**
  * PDO database abstraction layer — query, fetch, error logging.

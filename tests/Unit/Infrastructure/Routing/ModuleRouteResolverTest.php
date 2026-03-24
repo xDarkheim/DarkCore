@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Routing;
 
-use Darkheim\Infrastructure\Routing\ModuleRouteResolver;
+use Darkheim\Infrastructure\Routing\Support\ModuleRouteResolver;
 use PHPUnit\Framework\TestCase;
 
 final class ModuleRouteResolverTest extends TestCase

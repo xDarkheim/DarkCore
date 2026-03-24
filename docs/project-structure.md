@@ -9,7 +9,14 @@ This map shows where the main CMS components live and which paths are safe to mo
 │   │   ├── Account/
 │   │   │   └── Account.php         # Account read/write helpers
 │   │   ├── Admincp/
-│   │   │   ├── *Controller.php     # AdminCP controller-backed modules
+│   │   │   ├── Controller/
+│   │   │   │   ├── Dashboard/
+│   │   │   │   ├── Accounts/
+│   │   │   │   ├── News/
+│   │   │   │   ├── Settings/
+│   │   │   │   ├── Plugins/
+│   │   │   │   ├── Security/
+│   │   │   │   └── Operations/
 │   │   │   ├── Layout/
 │   │   │   │   ├── AdmincpLayoutDataProvider.php
 │   │   │   │   └── AdmincpUrlGenerator.php
@@ -21,8 +28,14 @@ This map shows where the main CMS components live and which paths are safe to mo
 │   │   │   ├── AuthService.php     # Core authentication logic
 │   │   │   ├── Common.php          # Shared auth + IP-block helpers
 │   │   │   ├── Login.php           # Login handler
-│   │   │   └── SessionManager.php  # Session lifecycle
+│   │   │   ├── SessionManager.php  # Session lifecycle
+│   │   │   ├── LoginController.php # Top-level route controller (`/login`)
+│   │   │   ├── LogoutController.php # Top-level route controller (`/logout`)
+│   │   │   ├── RegisterController.php # Top-level route controller (`/register`)
+│   │   │   ├── ForgotPasswordController.php # Top-level route controller (`/forgotpassword`)
+│   │   │   └── VerifyEmailController.php # Top-level route controller (`/verifyemail`)
 │   │   ├── CastleSiege/
+│   │   │   ├── CastleSiegeController.php # Top-level route controller (`/castlesiege`)
 │   │   │   └── CastleSiege.php     # Castle siege data access
 │   │   ├── Character/
 │   │   │   └── Character.php       # Character read/write helpers
@@ -40,35 +53,38 @@ This map shows where the main CMS components live and which paths are safe to mo
 │   │   │   └── UI/
 │   │   │       └── MessageRenderer.php # Toast (popup) and inline styled messages
 │   │   ├── News/
+│   │   │   ├── NewsController.php  # Top-level route controller (`/news`)
 │   │   │   ├── NewsItem.php        # News value object
 │   │   │   ├── NewsRepository.php  # DB-backed news reads
 │   │   │   └── NewsService.php     # News orchestration
-│   │   ├── Page/                   # ★ Top-level page controllers (one per public route)
-│   │   │   ├── CastleSiegeController.php
-│   │   │   ├── ContactController.php
-│   │   │   ├── DonationController.php
-│   │   │   ├── DownloadsController.php
-│   │   │   ├── ForgotPasswordController.php
+│   │   ├── Language/
+│   │   │   └── LanguageSwitchSubpageController.php # Subpage route controller (`language/switch`)
+│   │   ├── Website/                # Top-level public page controllers
 │   │   │   ├── HomeController.php
+│   │   │   ├── ContactController.php
+│   │   │   ├── DownloadsController.php
 │   │   │   ├── InfoController.php
-│   │   │   ├── LoginController.php
-│   │   │   ├── LogoutController.php
-│   │   │   ├── NewsController.php
 │   │   │   ├── PrivacyController.php
-│   │   │   ├── RankingsController.php
-│   │   │   ├── RankingsSectionController.php
 │   │   │   ├── RefundsController.php
-│   │   │   ├── RegisterController.php
-│   │   │   ├── TosController.php
-│   │   │   ├── UsercpController.php
-│   │   │   └── VerifyEmailController.php
+│   │   │   └── TosController.php
+│   │   ├── Donation/
+│   │   │   ├── DonationController.php # Top-level route controller (`/donation`)
+│   │   │   └── DonationPaypalSubpageController.php # Subpage route controller (`donation/paypal`)
+│   │   ├── Usercp/
+│   │   │   ├── UsercpController.php # Top-level route controller (`/usercp`)
+│   │   │   └── Subpage/
+│   │   │       ├── AbstractCharacterActionTableSubpageController.php
+│   │   │       └── *SubpageController.php
 │   │   ├── Profile/
 │   │   │   ├── ProfileRenderer.php # Player / guild profile link builder
-│   │   │   └── ProfileRepository.php
+│   │   │   ├── ProfileRepository.php
+│   │   │   ├── ProfileGuildSubpageController.php
+│   │   │   └── ProfilePlayerSubpageController.php
 │   │   ├── Rankings/
 │   │   │   ├── RankingCache.php    # Cache read/write for rankings
 │   │   │   ├── RankingRepository.php
-│   │   │   └── RankingsService.php
+│   │   │   ├── RankingsService.php
+│   │   │   └── RankingsSectionController.php # Shared rankings subpage controller (`rankings/*`)
 │   │   ├── Theme/
 │   │   │   └── Layout/
 │   │   │       └── DefaultThemeLayoutBuilder.php # Prepares default theme layout context (navbar, sidebar, footer, assets)
@@ -77,7 +93,8 @@ This map shows where the main CMS components live and which paths are safe to mo
 │   │       └── VoteSiteRepository.php
 │   │
 │   ├── Domain/
-│   │   └── Validator.php           # Input validation helpers (hasValue, Email, Ip, …)
+│   │   └── Validation/
+│   │       └── Validator.php       # Input validation helpers (hasValue, Email, Ip, …)
 │   │
 │   └── Infrastructure/             # I/O, frameworks, DB drivers
 │       ├── Bootstrap/
@@ -114,24 +131,36 @@ This map shows where the main CMS components live and which paths are safe to mo
 │       ├── View/
 │       │   └── ViewRenderer.php    # Renders view templates — lookup: theme override → views/
 │       ├── Routing/
-│       │   ├── Handler.php                  # Entry point — loadPage() / loadModule() / loadAdminCPModule()
-│       │   ├── AdmincpModuleDispatcher.php  # Resolves AdminCP route metadata, loads module_config, calls controller->render()
-│       │   ├── AdmincpRouteRegistry.php     # Loads & caches config/routes.admincp.php route table
-│       │   ├── ControllerRouteDispatcher.php# Resolves page name → Controller via WebRouteRegistry and calls render()
-│       │   ├── LanguageBootstrapper.php     # Applies session language override before rendering
-│       │   ├── ModuleRouteResolver.php      # Normalises (?page=x&subpage=y) into a typed route descriptor
-│       │   ├── PageAccessDispatcher.php     # Enforces the `access` constant and renders the theme shell
-│       │   ├── RequestParameterParser.php   # Populates QueryStore from raw $_GET on each request
-│       │   ├── RouteInputSanitizer.php      # Strips dangerous chars from $page / $subpage tokens
-│       │   ├── SubpageRouteDispatcher.php   # Dispatches sub-page template routes (config/routes.subpages.php)
-│       │   ├── SubpageRouteRegistry.php     # Loads & caches config/routes.subpages.php route table
-│       │   └── WebRouteRegistry.php         # Loads & caches config/routes.web.php route table
+│       │   ├── Dispatchers/
+│       │   │   ├── Handler.php                  # Entry point — loadPage() / loadModule() / loadAdminCPModule()
+│       │   │   ├── AdmincpModuleDispatcher.php  # Resolves AdminCP route metadata, loads module_config, calls controller->render()
+│       │   │   ├── ApiRouteDispatcher.php       # Dispatches /api/{endpoint} to controller->render()
+│       │   │   ├── ControllerRouteDispatcher.php# Resolves page name → Controller via WebRouteRegistry and calls render()
+│       │   │   ├── PageAccessDispatcher.php     # Enforces the `access` constant and renders the theme shell
+│       │   │   └── SubpageRouteDispatcher.php   # Dispatches sub-page routes (config/routes.subpages.php)
+│       │   ├── Registries/
+│       │   │   ├── AdmincpRouteRegistry.php     # Loads & caches config/routes.admincp.php route table
+│       │   │   ├── ApiRouteRegistry.php         # Loads & caches config/routes.api.php route table
+│       │   │   ├── SubpageRouteRegistry.php     # Loads & caches config/routes.subpages.php route table
+│       │   │   └── WebRouteRegistry.php         # Loads & caches config/routes.web.php route table
+│       │   └── Support/
+│       │       ├── LanguageBootstrapper.php     # Applies session language override before rendering
+│       │       ├── ModuleRouteResolver.php      # Normalises (?page=x&subpage=y) into a typed route descriptor
+│       │       ├── RequestParameterParser.php   # Populates QueryStore from raw $_GET on each request
+│       │       └── RouteInputSanitizer.php      # Strips dangerous chars from $page / $subpage tokens
 │       ├── Runtime/
-│       │   ├── SessionStore.php    # Session abstraction + native adapter
-│       │   ├── QueryStore.php      # `$_GET` abstraction + native adapter
-│       │   ├── RequestStore.php    # `$_REQUEST` abstraction + native adapter
-│       │   ├── PostStore.php       # `$_POST` abstraction + native adapter
-│       │   └── ServerContext.php   # Server metadata accessor (`REMOTE_ADDR`, etc.)
+│       │   ├── Contracts/
+│       │   │   ├── SessionStore.php    # Session abstraction
+│       │   │   ├── QueryStore.php      # `$_GET` abstraction
+│       │   │   ├── RequestStore.php    # `$_REQUEST` abstraction
+│       │   │   └── PostStore.php       # `$_POST` abstraction
+│       │   ├── Native/
+│       │   │   ├── NativeSessionStore.php
+│       │   │   ├── NativeQueryStore.php
+│       │   │   ├── NativeRequestStore.php
+│       │   │   └── NativePostStore.php
+│       │   └── Support/
+│       │       └── ServerContext.php   # Server metadata accessor (`REMOTE_ADDR`, etc.)
 │       └── Security/
 │           └── IpBlocker.php       # Checks REMOTE_ADDR against blocked_ip.cache
 │
@@ -168,13 +197,11 @@ This map shows where the main CMS components live and which paths are safe to mo
 ├── bin/
 │   └── cron.php                    # CLI cron runner (preferred over HTTP trigger)
 │
-├── src/Application/Api/            # API endpoint controllers routed via /api/*.php
-│   ├── CastleSiegeApiController.php
-│   ├── EventsApiController.php
-│   ├── GuildmarkApiController.php
-│   ├── PaypalApiController.php
-│   ├── ServerTimeApiController.php
-│   └── VersionApiController.php
+├── src/Application/<Feature>/      # API endpoint controllers are now feature-local
+│   ├── CastleSiege/CastleSiegeApiController.php
+│   ├── Donation/PaypalApiController.php
+│   ├── Profile/GuildmarkApiController.php
+│   └── Website/{EventsApiController,ServerTimeApiController,VersionApiController}.php
 │
 ├── config/                         # ★ Configuration files (NOT web-accessible)
 │   ├── config.json                 # Main config (DB, language, server info, …)
@@ -244,7 +271,7 @@ public/index.php
               ├── config/tables.php
               ├── config/timezone-config.php
               ├── plugin files            ← from var/cache/plugins.cache
-              └── Handler::loadPage()     ← Darkheim\Infrastructure\Routing\Handler
+              └── Handler::loadPage()     ← Darkheim\Infrastructure\Routing\Dispatchers\Handler
 ```
 
 ## AdminCP bootstrap path
@@ -287,11 +314,11 @@ Classes under `src/` avoid reading PHP superglobals directly. Runtime state is f
 
 | Adapter         | Wraps       | Used by                                         |
 |:----------------|:------------|:------------------------------------------------|
-| `SessionStore`  | `$_SESSION` | `SessionManager`, `Login`, `Plugins`, `Handler` |
-| `QueryStore`    | `$_GET`     | `Handler`, `CreditSystem`                       |
-| `RequestStore`  | `$_REQUEST` | `RankingsService`                               |
-| `PostStore`     | `$_POST`    | `PaypalIPN`                                     |
-| `ServerContext` | `$_SERVER`  | `Login`, `Account`, `CreditSystem`              |
+| `Contracts\SessionStore` | `$_SESSION` | `SessionManager`, `Login`, `Plugins`, `Handler` |
+| `Contracts\QueryStore`   | `$_GET`     | `Handler`, `CreditSystem`                       |
+| `Contracts\RequestStore` | `$_REQUEST` | `RankingsService`                               |
+| `Contracts\PostStore`    | `$_POST`    | `PaypalIPN`                                     |
+| `Support\ServerContext`  | `$_SERVER`  | `Login`, `Account`, `CreditSystem`              |
 
 This keeps the composition root inside `src/Infrastructure/Bootstrap/` explicit while making namespaced services easier to test in isolation.
 
@@ -302,7 +329,7 @@ All classes under `src/` are autoloaded via Composer PSR-4 with the root namespa
 | Namespace                             | Directory                       | Purpose                                                                 |
 |:--------------------------------------|:--------------------------------|:------------------------------------------------------------------------|
 | `Darkheim\Application\Account\*`      | `src/Application/Account/`      | Account read/write helpers                                              |
-| `Darkheim\Application\Admincp\*`      | `src/Application/Admincp/`      | AdminCP controllers, layout/support helpers, downloads service          |
+| `Darkheim\Application\Admincp\*`      | `src/Application/Admincp/`      | AdminCP controller groups, layout/support helpers, downloads service    |
 | `Darkheim\Application\Auth\*`         | `src/Application/Auth/`         | Authentication, session, AdminCP guard                                  |
 | `Darkheim\Application\CastleSiege\*`  | `src/Application/CastleSiege/`  | Castle siege data access                                                |
 | `Darkheim\Application\Character\*`    | `src/Application/Character/`    | Character read/write helpers                                            |
@@ -311,13 +338,17 @@ All classes under `src/` are autoloaded via Composer PSR-4 with the root namespa
 | `Darkheim\Application\Shared\Language\*` | `src/Application/Shared/Language/` | Translator, LanguageRepository                                      |
 | `Darkheim\Application\Shared\Support\*` | `src/Application/Shared/Support/` | Encoder, TimeHelper                                                 |
 | `Darkheim\Application\News\*`         | `src/Application/News/`         | News value object, repository, service                                  |
-| `Darkheim\Application\Page\*`         | `src/Application/Page/`         | Top-level page controllers (one per public route)                       |
+| `Darkheim\Application\Language\*`     | `src/Application/Language/`     | Language switch subpage controller                                      |
+| `Darkheim\Application\Website\*`      | `src/Application/Website/`      | Top-level informational page controllers                                  |
+| `Darkheim\Application\Donation\*`     | `src/Application/Donation/`     | Top-level donation page controller                                        |
+| `Darkheim\Application\Usercp\*`       | `src/Application/Usercp/`       | Top-level UserCP page controller                                          |
+| `Darkheim\Application\Usercp\Subpage\*` | `src/Application/Usercp/Subpage/` | UserCP subpage controllers                                         |
 | `Darkheim\Application\Profile\*`      | `src/Application/Profile/`      | Profile link builder, repository                                        |
 | `Darkheim\Application\Rankings\*`     | `src/Application/Rankings/`     | Ranking cache, repository, service                                      |
 | `Darkheim\Application\Shared\UI\*`   | `src/Application/Shared/UI/`    | MessageRenderer (toast + inline)                                        |
 | `Darkheim\Application\Vote\*`         | `src/Application/Vote/`         | Vote tracking                                                           |
 | `Darkheim\Application\Theme\Layout\*` | `src/Application/Theme/Layout/` | Theme layout context builders (`DefaultThemeLayoutBuilder`)             |
-| `Darkheim\Domain\*`                   | `src/Domain/`                   | Pure domain helpers (Validator)                                         |
+| `Darkheim\Domain\Validation\*`        | `src/Domain/Validation/`        | Pure domain validation helpers (Validator)                              |
 | `Darkheim\Infrastructure\Bootstrap\*` | `src/Infrastructure/Bootstrap/` | AppKernel, ConfigProvider, RuntimeState, BootstrapContext               |
 | `Darkheim\Infrastructure\Cache\*`     | `src/Infrastructure/Cache/`     | CacheBuilder, CacheRepository, CacheManager                             |
 | `Darkheim\Infrastructure\Config\*`    | `src/Infrastructure/Config/`    | JSON/XML config readers                                                 |
@@ -328,9 +359,13 @@ All classes under `src/` are autoloaded via Composer PSR-4 with the root namespa
 | `Darkheim\Infrastructure\Http\*`      | `src/Infrastructure/Http/`      | Redirector, GeoIpService                                                |
 | `Darkheim\Infrastructure\Payment\*`   | `src/Infrastructure/Payment/`   | PayPal IPN                                                              |
 | `Darkheim\Infrastructure\Plugins\*`   | `src/Infrastructure/Plugins/`   | Plugin loader                                                           |
-| `Darkheim\Infrastructure\Routing\*`   | `src/Infrastructure/Routing/`   | Handler, Controller/Subpage/AdminCP dispatchers, registries, sanitizers |
+| `Darkheim\Infrastructure\Routing\Dispatchers\*` | `src/Infrastructure/Routing/Dispatchers/` | Request dispatchers (`Handler`, page/subpage/admincp/api)    |
+| `Darkheim\Infrastructure\Routing\Registries\*`  | `src/Infrastructure/Routing/Registries/`  | Route registries for web/subpages/admincp/api                |
+| `Darkheim\Infrastructure\Routing\Support\*`     | `src/Infrastructure/Routing/Support/`     | Input parsing/sanitizing and language bootstrapping helpers   |
 | `Darkheim\Infrastructure\View\*`      | `src/Infrastructure/View/`      | ViewRenderer — theme-aware template engine                              |
-| `Darkheim\Infrastructure\Runtime\*`   | `src/Infrastructure/Runtime/`   | Request/session/server boundary adapters                                |
+| `Darkheim\Infrastructure\Runtime\Contracts\*` | `src/Infrastructure/Runtime/Contracts/` | Runtime boundary contracts (`*Store`)                       |
+| `Darkheim\Infrastructure\Runtime\Native\*`    | `src/Infrastructure/Runtime/Native/`    | Native `$_GET`/`$_POST`/`$_REQUEST`/`$_SESSION` adapters     |
+| `Darkheim\Infrastructure\Runtime\Support\*`   | `src/Infrastructure/Runtime/Support/`   | Runtime support helpers (`ServerContext`)                     |
 | `Darkheim\Infrastructure\Security\*`  | `src/Infrastructure/Security/`  | IpBlocker                                                               |
 
 ## Helper policy
@@ -393,8 +428,8 @@ Do **not** add these directly to `views/` or `public/themes/default/` templates:
 
 Examples already following this rule:
 
-- `Darkheim\Application\Page\RankingsSectionController` → `views/ranking.php`
-- `Darkheim\Application\Subpage\Usercp\AbstractCharacterActionTableSubpageController` → `views/subpages/usercp/actiontables.php`
+- `Darkheim\Application\Rankings\RankingsSectionController` → `views/ranking.php`
+- `Darkheim\Application\Usercp\Subpage\AbstractCharacterActionTableSubpageController` → `views/subpages/usercp/actiontables.php`
 - `Darkheim\Application\Theme\Layout\DefaultThemeLayoutBuilder` → `public/themes/default/index.php` + `inc/modules/*.php`
 - `Darkheim\Application\Admincp\*Controller` → `views/admincp/*.php`
 
@@ -408,7 +443,7 @@ Examples already following this rule:
 
 ## Adding a new controller-backed view
 
-1. Create or update a controller under `src/Application/Page/` or `src/Application/Subpage/...`.
+1. Create or update a controller under the matching feature namespace in `src/Application/` (for example `Website/`, `Auth/`, `News/`, `Rankings/`, `Usercp/Subpage/`, `Profile/`, `Donation/`, `Language/`).
 2. Prepare a complete view-model array in the controller (formatted text, URLs, CSS classes, booleans, row data).
 3. Register the route in `config/routes.web.php` or `config/routes.subpages.php`.
 4. Render a template via `Darkheim\Infrastructure\View\ViewRenderer`.
@@ -421,7 +456,7 @@ For repeated layouts, prefer one shared template over many near-identical files.
 
 ### Recipe: add a top-level page
 
-1. Create `src/Application/Page/<Name>Controller.php` with `render(): void`.
+1. Create `src/Application/<Feature>/<Name>Controller.php` with `render(): void` (for example `Website/HomeController.php`).
 2. Create a final template in `views/<name>.php`.
 3. Register the controller in `config/routes.web.php`.
 4. If the page is tracked, update `config/routing-migration.json`.

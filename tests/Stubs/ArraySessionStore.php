@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Stubs;
 
-use Darkheim\Infrastructure\Runtime\SessionStore;
+use Darkheim\Infrastructure\Runtime\Contracts\SessionStore;
 
 final class ArraySessionStore implements SessionStore
 {

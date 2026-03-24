@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Routing;
 
-use Darkheim\Infrastructure\Routing\ControllerRouteDispatcher;
-use Darkheim\Infrastructure\Routing\WebRouteRegistry;
+use Darkheim\Infrastructure\Routing\Dispatchers\ControllerRouteDispatcher;
+use Darkheim\Infrastructure\Routing\Registries\WebRouteRegistry;
 use PHPUnit\Framework\TestCase;
 
 final class ControllerRouteDispatcherTest extends TestCase

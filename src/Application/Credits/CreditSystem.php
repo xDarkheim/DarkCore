@@ -7,12 +7,12 @@ namespace Darkheim\Application\Credits;
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Character\Character;
 use Darkheim\Application\Shared\Language\Translator;
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\Database\dB;
-use Darkheim\Infrastructure\Runtime\NativeQueryStore;
-use Darkheim\Infrastructure\Runtime\QueryStore;
-use Darkheim\Infrastructure\Runtime\ServerContext;
+use Darkheim\Infrastructure\Runtime\Native\NativeQueryStore;
+use Darkheim\Infrastructure\Runtime\Contracts\QueryStore;
+use Darkheim\Infrastructure\Runtime\Support\ServerContext;
 
 /**
  * CreditSystem — add/subtract credits, manage configurations, log transactions.

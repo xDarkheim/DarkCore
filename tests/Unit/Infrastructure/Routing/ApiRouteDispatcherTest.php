@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Routing;
 
-use Darkheim\Infrastructure\Routing\ApiRouteDispatcher;
-use Darkheim\Infrastructure\Routing\ApiRouteRegistry;
+use Darkheim\Infrastructure\Routing\Dispatchers\ApiRouteDispatcher;
+use Darkheim\Infrastructure\Routing\Registries\ApiRouteRegistry;
 use PHPUnit\Framework\TestCase;
 
 final class ApiTestController

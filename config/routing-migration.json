@@ -7,87 +7,87 @@
     "pages": {
         "castlesiege": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\CastleSiegeController",
+            "controller": "Darkheim\\Application\\CastleSiege\\CastleSiegeController",
             "module_config": "castlesiege"
         },
         "contact": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\ContactController",
+            "controller": "Darkheim\\Application\\Website\\ContactController",
             "module_config": "contact"
         },
         "donation": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\DonationController",
+            "controller": "Darkheim\\Application\\Donation\\DonationController",
             "module_config": "donation"
         },
         "downloads": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\DownloadsController",
+            "controller": "Darkheim\\Application\\Website\\DownloadsController",
             "module_config": "downloads"
         },
         "forgotpassword": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\ForgotPasswordController",
+            "controller": "Darkheim\\Application\\Auth\\ForgotPasswordController",
             "module_config": "forgotpassword"
         },
         "home": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\HomeController",
+            "controller": "Darkheim\\Application\\Website\\HomeController",
             "module_config": "home"
         },
         "info": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\InfoController",
+            "controller": "Darkheim\\Application\\Website\\InfoController",
             "module_config": "info"
         },
         "login": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\LoginController",
+            "controller": "Darkheim\\Application\\Auth\\LoginController",
             "module_config": "login"
         },
         "logout": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\LogoutController",
+            "controller": "Darkheim\\Application\\Auth\\LogoutController",
             "module_config": "logout"
         },
         "news": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\NewsController",
+            "controller": "Darkheim\\Application\\News\\NewsController",
             "module_config": "news"
         },
         "privacy": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\PrivacyController",
+            "controller": "Darkheim\\Application\\Website\\PrivacyController",
             "module_config": "privacy"
         },
         "rankings": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\RankingsController",
+            "controller": "Darkheim\\Application\\Rankings\\RankingsController",
             "module_config": "rankings"
         },
         "refunds": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\RefundsController",
+            "controller": "Darkheim\\Application\\Website\\RefundsController",
             "module_config": "refunds"
         },
         "register": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\RegisterController",
+            "controller": "Darkheim\\Application\\Auth\\RegisterController",
             "module_config": "register"
         },
         "tos": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\TosController",
+            "controller": "Darkheim\\Application\\Website\\TosController",
             "module_config": "tos"
         },
         "usercp": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\UsercpController",
+            "controller": "Darkheim\\Application\\Usercp\\UsercpController",
             "module_config": "usercp"
         },
         "verifyemail": {
             "status": "migrated",
-            "controller": "Darkheim\\Application\\Page\\VerifyEmailController",
+            "controller": "Darkheim\\Application\\Auth\\VerifyEmailController",
             "module_config": "verifyemail"
         }
     }

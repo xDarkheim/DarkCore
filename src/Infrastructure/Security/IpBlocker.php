@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Security;
 
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Cache\CacheRepository;
 
 /**

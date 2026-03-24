@@ -6,11 +6,11 @@ namespace Darkheim\Application\Auth;
 
 use Darkheim\Application\Shared\Language\Translator;
 use Darkheim\Application\Shared\UI\MessageRenderer;
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Database\Connection;
 use Darkheim\Infrastructure\Http\Redirector;
-use Darkheim\Infrastructure\Runtime\ServerContext;
+use Darkheim\Infrastructure\Runtime\Support\ServerContext;
 
 /**
  * Login — credential validation, brute-force throttle, session init.

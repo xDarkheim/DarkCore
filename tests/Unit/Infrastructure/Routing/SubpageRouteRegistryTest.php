@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Routing;
 
-use Darkheim\Application\Page\RankingsSectionController;
-use Darkheim\Application\Subpage\Usercp\AddStatsSubpageController;
-use Darkheim\Application\Subpage\Usercp\BuyZenSubpageController;
-use Darkheim\Application\Subpage\Usercp\MyAccountSubpageController;
-use Darkheim\Infrastructure\Routing\SubpageRouteRegistry;
+use Darkheim\Application\Rankings\RankingsSectionController;
+use Darkheim\Application\Usercp\Subpage\AddStatsSubpageController;
+use Darkheim\Application\Usercp\Subpage\BuyZenSubpageController;
+use Darkheim\Application\Usercp\Subpage\MyAccountSubpageController;
+use Darkheim\Infrastructure\Routing\Registries\SubpageRouteRegistry;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

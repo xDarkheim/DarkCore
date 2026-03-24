@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-use Darkheim\Application\Page\RankingsSectionController;
-use Darkheim\Application\Subpage\DonationPaypalSubpageController;
-use Darkheim\Application\Subpage\LanguageSwitchSubpageController;
-use Darkheim\Application\Subpage\ProfileGuildSubpageController;
-use Darkheim\Application\Subpage\ProfilePlayerSubpageController;
-use Darkheim\Application\Subpage\Usercp\AddStatsSubpageController;
-use Darkheim\Application\Subpage\Usercp\BuyZenSubpageController;
-use Darkheim\Application\Subpage\Usercp\ClearPkSubpageController;
-use Darkheim\Application\Subpage\Usercp\ClearSkillTreeSubpageController;
-use Darkheim\Application\Subpage\Usercp\MyAccountSubpageController;
-use Darkheim\Application\Subpage\Usercp\MyEmailSubpageController;
-use Darkheim\Application\Subpage\Usercp\MyPasswordSubpageController;
-use Darkheim\Application\Subpage\Usercp\ResetStatsSubpageController;
-use Darkheim\Application\Subpage\Usercp\ResetSubpageController;
-use Darkheim\Application\Subpage\Usercp\UnstickSubpageController;
-use Darkheim\Application\Subpage\Usercp\VoteSubpageController;
+use Darkheim\Application\Donation\DonationPaypalSubpageController;
+use Darkheim\Application\Language\LanguageSwitchSubpageController;
+use Darkheim\Application\Profile\ProfileGuildSubpageController;
+use Darkheim\Application\Profile\ProfilePlayerSubpageController;
+use Darkheim\Application\Rankings\RankingsSectionController;
+use Darkheim\Application\Usercp\Subpage\AddStatsSubpageController;
+use Darkheim\Application\Usercp\Subpage\BuyZenSubpageController;
+use Darkheim\Application\Usercp\Subpage\ClearPkSubpageController;
+use Darkheim\Application\Usercp\Subpage\ClearSkillTreeSubpageController;
+use Darkheim\Application\Usercp\Subpage\MyAccountSubpageController;
+use Darkheim\Application\Usercp\Subpage\MyEmailSubpageController;
+use Darkheim\Application\Usercp\Subpage\MyPasswordSubpageController;
+use Darkheim\Application\Usercp\Subpage\ResetStatsSubpageController;
+use Darkheim\Application\Usercp\Subpage\ResetSubpageController;
+use Darkheim\Application\Usercp\Subpage\UnstickSubpageController;
+use Darkheim\Application\Usercp\Subpage\VoteSubpageController;
 
 /**
  * Subpage route registry.

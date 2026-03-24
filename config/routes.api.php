@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use Darkheim\Application\Api\VersionApiController;
-use Darkheim\Application\Api\ServerTimeApiController;
-use Darkheim\Application\Api\PaypalApiController;
-use Darkheim\Application\Api\GuildmarkApiController;
-use Darkheim\Application\Api\EventsApiController;
-use Darkheim\Application\Api\CastleSiegeApiController;
+use Darkheim\Application\Website\VersionApiController;
+use Darkheim\Application\Website\ServerTimeApiController;
+use Darkheim\Application\Donation\PaypalApiController;
+use Darkheim\Application\Profile\GuildmarkApiController;
+use Darkheim\Application\Website\EventsApiController;
+use Darkheim\Application\CastleSiege\CastleSiegeApiController;
 
 /**
  * API route registry.

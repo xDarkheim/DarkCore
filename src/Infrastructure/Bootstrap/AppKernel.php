@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Bootstrap;
 
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Cache\CacheRepository;
-use Darkheim\Infrastructure\Routing\Handler;
+use Darkheim\Infrastructure\Routing\Dispatchers\Handler;
 use Darkheim\Infrastructure\Security\IpBlocker;
 
 final class AppKernel

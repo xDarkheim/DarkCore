@@ -2,7 +2,7 @@
 /**
  * AdminCP dashboard view.
  *
- * Variables provided by Darkheim\Application\Admincp\HomeController:
+ * Variables provided by Darkheim\Application\Admincp\Controller\Dashboard\HomeController:
  * - bool $showInstallWarning
  * - string $installWarningHtml
  * - array<int,array{iconClass:string,iconStyle:string,backgroundStyle:string,value:string,label:string}> $statCards

@@ -83,7 +83,7 @@ Open `https://your-domain/install/` in the browser, complete the setup wizard, t
 ## Architecture notes
 
 - `src/Infrastructure/Bootstrap/` owns the composition-root logic through `EntrypointBootstrapper`, `AppKernel`, `ConfigProvider`, `RuntimeState`, and `TimezoneInitializer`.
-- `src/Infrastructure/Runtime/` contains the runtime boundary for request, post, query, session, and server access.
+- `src/Infrastructure/Runtime/` contains runtime boundary contracts (`Contracts/*Store`), native superglobal adapters (`Native/*`), and support helpers (`Support/ServerContext`).
 - Classes in `src/` depend on these adapters instead of reading PHP superglobals directly.
 - Front controllers (`public/index.php`, `public/admincp/index.php`) and CLI entrypoint (`bin/cron.php`) load Composer autoloader and call `EntrypointBootstrapper::boot()`.
 - Legacy bootstrap shims under `includes/bootstrap/` have been removed; runtime code now uses namespaced classes directly.

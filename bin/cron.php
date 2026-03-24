@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Bootstrap\EntrypointBootstrapper;
 use Darkheim\Infrastructure\Cron\CronExecutor;
 

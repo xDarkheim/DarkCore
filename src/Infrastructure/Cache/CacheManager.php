@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Cache;
 
-use Darkheim\Domain\Validator;
+use Darkheim\Domain\Validation\Validator;
 
 /**
  * AdminCP cache file management — list, clear, delete profile caches.

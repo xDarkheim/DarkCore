@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-use Darkheim\Application\Page\CastleSiegeController;
-use Darkheim\Application\Page\ContactController;
-use Darkheim\Application\Page\DonationController;
-use Darkheim\Application\Page\DownloadsController;
-use Darkheim\Application\Page\ForgotPasswordController;
-use Darkheim\Application\Page\HomeController;
-use Darkheim\Application\Page\InfoController;
-use Darkheim\Application\Page\LoginController;
-use Darkheim\Application\Page\LogoutController;
-use Darkheim\Application\Page\NewsController;
-use Darkheim\Application\Page\PrivacyController;
-use Darkheim\Application\Page\RankingsController;
-use Darkheim\Application\Page\RefundsController;
-use Darkheim\Application\Page\RegisterController;
-use Darkheim\Application\Page\TosController;
-use Darkheim\Application\Page\UsercpController;
-use Darkheim\Application\Page\VerifyEmailController;
+use Darkheim\Application\CastleSiege\CastleSiegeController;
+use Darkheim\Application\Website\ContactController;
+use Darkheim\Application\Donation\DonationController;
+use Darkheim\Application\Website\DownloadsController;
+use Darkheim\Application\Auth\ForgotPasswordController;
+use Darkheim\Application\Website\HomeController;
+use Darkheim\Application\Website\InfoController;
+use Darkheim\Application\Auth\LoginController;
+use Darkheim\Application\Auth\LogoutController;
+use Darkheim\Application\News\NewsController;
+use Darkheim\Application\Website\PrivacyController;
+use Darkheim\Application\Rankings\RankingsController;
+use Darkheim\Application\Website\RefundsController;
+use Darkheim\Application\Auth\RegisterController;
+use Darkheim\Application\Website\TosController;
+use Darkheim\Application\Usercp\UsercpController;
+use Darkheim\Application\Auth\VerifyEmailController;
 
 /**
  * Web route registry.

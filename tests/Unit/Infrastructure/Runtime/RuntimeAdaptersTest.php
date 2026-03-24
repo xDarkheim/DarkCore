@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Runtime;
 
-use Darkheim\Infrastructure\Runtime\NativePostStore;
-use Darkheim\Infrastructure\Runtime\NativeQueryStore;
-use Darkheim\Infrastructure\Runtime\NativeRequestStore;
-use Darkheim\Infrastructure\Runtime\NativeSessionStore;
-use Darkheim\Infrastructure\Runtime\ServerContext;
+use Darkheim\Infrastructure\Runtime\Native\NativePostStore;
+use Darkheim\Infrastructure\Runtime\Native\NativeQueryStore;
+use Darkheim\Infrastructure\Runtime\Native\NativeRequestStore;
+use Darkheim\Infrastructure\Runtime\Native\NativeSessionStore;
+use Darkheim\Infrastructure\Runtime\Support\ServerContext;
 use PHPUnit\Framework\TestCase;
 
 final class RuntimeAdaptersTest extends TestCase
@@ -53,6 +53,8 @@ final class RuntimeAdaptersTest extends TestCase
 
         $store = new NativeRequestStore();
 
+        $this->assertTrue($store->has('subpage'));
+        $this->assertFalse($store->has('missing'));
         $this->assertSame('gens', $store->get('subpage'));
         $this->assertSame('default', $store->get('missing', 'default'));
     }
@@ -63,6 +65,10 @@ final class RuntimeAdaptersTest extends TestCase
 
         $store = new NativePostStore();
 
+        $this->assertTrue($store->has('txn_id'));
+        $this->assertFalse($store->has('missing'));
+        $this->assertSame('abc123', $store->get('txn_id'));
+        $this->assertSame('fallback', $store->get('missing', 'fallback'));
         $this->assertSame(2, $store->count());
     }
 

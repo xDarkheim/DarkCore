@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Stubs;
 
-use Darkheim\Infrastructure\Runtime\QueryStore;
+use Darkheim\Infrastructure\Runtime\Contracts\QueryStore;
 
 final class ArrayQueryStore implements QueryStore
 {

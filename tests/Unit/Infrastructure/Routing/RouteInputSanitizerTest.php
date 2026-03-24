@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Routing;
 
-use Darkheim\Infrastructure\Routing\RouteInputSanitizer;
+use Darkheim\Infrastructure\Routing\Support\RouteInputSanitizer;
 use PHPUnit\Framework\TestCase;
 
 final class RouteInputSanitizerTest extends TestCase
