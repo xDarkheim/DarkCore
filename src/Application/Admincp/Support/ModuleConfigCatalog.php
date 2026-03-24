@@ -11,9 +11,9 @@ final class ModuleConfigCatalog
      */
     public function definition(string $configKey): ?array
     {
-        $moduleConfigsBasePath      = $this->moduleConfigsBasePath();
+        $moduleConfigsBasePath       = $this->moduleConfigsBasePath();
         $moduleConfigsUsercpBasePath = $this->moduleConfigsUsercpBasePath();
-        $configsBasePath            = $this->configsBasePath();
+        $configsBasePath             = $this->configsBasePath();
 
         $simpleMap = [
             'contact' => [
@@ -303,4 +303,3 @@ final class ModuleConfigCatalog
         return '';
     }
 }
-

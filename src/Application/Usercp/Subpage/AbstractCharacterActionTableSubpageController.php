@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Darkheim\Application\Usercp\Subpage;
 
+use Darkheim\Application\Auth\SessionManager;
 use Darkheim\Application\Character\Character;
 use Darkheim\Application\Shared\Language\Translator;
+use Darkheim\Application\Shared\UI\MessageRenderer;
+use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
+use Darkheim\Infrastructure\Http\Redirector;
 use Darkheim\Infrastructure\View\ViewRenderer;
 
 abstract class AbstractCharacterActionTableSubpageController
@@ -19,19 +23,19 @@ abstract class AbstractCharacterActionTableSubpageController
 
     final public function render(): void
     {
-        if (!\Darkheim\Application\Auth\SessionManager::websiteAuthenticated()) {
-            \Darkheim\Infrastructure\Http\Redirector::go(1, 'login');
+        if (! SessionManager::websiteAuthenticated()) {
+            Redirector::go(1, 'login');
             return;
         }
 
         try {
-            if (!\Darkheim\Infrastructure\Bootstrap\BootstrapContext::moduleValue('active')) {
+            if (! BootstrapContext::moduleValue('active')) {
                 throw new \Exception(Translator::phrase('error_47'));
             }
 
-            $characterService = new Character();
+            $characterService  = new Character();
             $accountCharacters = $characterService->AccountCharacter($_SESSION['username']);
-            if (!is_array($accountCharacters)) {
+            if (! is_array($accountCharacters)) {
                 throw new \Exception(Translator::phrase('error_46'));
             }
 
@@ -39,7 +43,7 @@ abstract class AbstractCharacterActionTableSubpageController
                 try {
                     $this->handleSubmit($characterService);
                 } catch (\Exception $ex) {
-                    \Darkheim\Application\Shared\UI\MessageRenderer::toast('error', $ex->getMessage());
+                    MessageRenderer::toast('error', $ex->getMessage());
                 }
             }
 
@@ -60,7 +64,7 @@ abstract class AbstractCharacterActionTableSubpageController
                 'requirementsLines' => $this->requirementsLines(),
             ]);
         } catch (\Exception $ex) {
-            \Darkheim\Application\Shared\UI\MessageRenderer::inline('error', $ex->getMessage());
+            MessageRenderer::inline('error', $ex->getMessage());
         }
     }
 
@@ -88,4 +92,3 @@ abstract class AbstractCharacterActionTableSubpageController
     /** @return array<int, string> */
     abstract protected function requirementsLines(): array;
 }
-

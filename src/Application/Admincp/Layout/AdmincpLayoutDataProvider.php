@@ -56,7 +56,7 @@ final class AdmincpLayoutDataProvider
                     throw new \RuntimeException('Invalid AdminCP layout link configuration.');
                 }
                 if (! is_array($this->routeRegistry->routeFor($module))) {
-                    throw new \RuntimeException("AdminCP layout references unknown module '{$module}'.");
+                    throw new \RuntimeException("AdminCP layout references unknown module '$module'.");
                 }
                 $links[] = [
                     'module' => $module,
@@ -83,7 +83,6 @@ final class AdmincpLayoutDataProvider
             throw new \RuntimeException('AdminCP layout config file not found.');
         }
 
-        /** @var mixed $data */
         $data = include $this->layoutConfigFile;
         if (! is_array($data)) {
             throw new \RuntimeException('AdminCP layout config must return an array.');

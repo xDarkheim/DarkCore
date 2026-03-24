@@ -98,19 +98,6 @@ class RankingsService
         }
     }
 
-    public function rankingsMenu(): void
-    {
-        echo '<div class="rankings_menu" id="rankings-anchor">';
-        foreach ($this->_rankingsMenu as $item) {
-            if (! $item[2]) {
-                continue;
-            }
-            $active = ((string) $this->request->get('subpage', '')) == $item[1] ? ' active' : '';
-            echo '<a href="' . __PATH_MODULES_RANKINGS__ . $item[1] . '/" class="' . $active . ' rankings-nav-link">' . $item[0] . '</a>';
-        }
-        echo '</div>';
-    }
-
     /**
      * @return array<int, array{label:string,subpage:string,isActive:bool,url:string}>
      */
@@ -132,31 +119,6 @@ class RankingsService
         }
 
         return $items;
-    }
-
-    public function rankingsFilterMenu(): void
-    {
-        $filterData = $this->_getRankingsFilterData();
-        if (! is_array($filterData)) {
-            return;
-        }
-
-        echo '<div class="text-center">';
-        echo '<ul class="rankings-class-filter">';
-        echo '<li><a onclick="rankingsFilterRemove()" class="rankings-class-filter-selection">'
-            . GameHelper::playerClassAvatar(-1, true, false, 'rankings-class-filter-image')
-            . '<br />' . Translator::phrase('rankings_filter_1') . '</a></li>';
-        foreach ($filterData as $row) {
-            $classGroup  = (int) ($row[0] ?? 0);
-            $classIds    = (string) ($row[1] ?? '');
-            $filterLabel = (string) ($row[2] ?? '');
-            $onclick     = 'rankingsFilterByClass(' . $classIds . ')';
-            echo '<li><a onclick="' . $onclick . '" class="rankings-class-filter-selection rankings-class-filter-grayscale">'
-                . GameHelper::playerClassAvatar($classGroup, true, false, 'rankings-class-filter-image')
-                . '<br />' . $filterLabel . '</a></li>';
-        }
-        echo '</ul>';
-        echo '</div>';
     }
 
     /**

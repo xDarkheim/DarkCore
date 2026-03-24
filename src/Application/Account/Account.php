@@ -7,9 +7,11 @@ namespace Darkheim\Application\Account;
 use Darkheim\Application\Auth\Common;
 use Darkheim\Application\Auth\Login;
 use Darkheim\Application\Shared\Language\Translator;
+use Darkheim\Application\Shared\UI\MessageRenderer;
 use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Email\Email;
+use Darkheim\Infrastructure\Http\Redirector;
 use Darkheim\Infrastructure\Runtime\Support\ServerContext;
 
 /**
@@ -89,7 +91,7 @@ class Account extends Common
                 throw new \Exception(Translator::phrase('error_23'));
             }
             $this->sendRegistrationVerificationEmail($username, $email, $verificationKey);
-            \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_18'));
+            MessageRenderer::toast('success', Translator::phrase('success_18'));
             return;
         }
 
@@ -116,7 +118,7 @@ class Account extends Common
             throw new \Exception(Translator::phrase('error_22'));
         }
 
-        if (\Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('season_1_support')) {
+        if (BootstrapContext::cmsValue('season_1_support')) {
             // noinspection SqlNoDataSourceInspection — VI_CURR_INFO is a Season 1 game table
             $this->muonline->query(/** @lang TSQL */ "INSERT INTO VI_CURR_INFO (ends_days, chek_code, used_time, memb___id, memb_name, memb_guid, sno__numb, Bill_Section, Bill_Value, Bill_Hour, Surplus_Point, Surplus_Minute, Increase_Days) VALUES ('2005', '1', '1234', ?, '', '1', '7', '6', '3', '6', '6', '2020-01-01 00:00:00', '0')", [$username]);
         }
@@ -125,17 +127,17 @@ class Account extends Common
             $this->sendWelcomeEmail($username, $email);
         }
 
-        \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_1'));
+        MessageRenderer::toast('success', Translator::phrase('success_1'));
 
         if ($regCfg['automatic_login'] ?? false) {
             try {
                 $userLogin = new Login();
                 $userLogin->validateLogin($username, $password);
             } catch (\Exception $ex) {
-                \Darkheim\Infrastructure\Http\Redirector::go(1, 'login/');
+                Redirector::go(1, 'login/');
             }
         } else {
-            \Darkheim\Infrastructure\Http\Redirector::go(2, 'login/', 5);
+            Redirector::go(2, 'login/', 5);
         }
     }
 
@@ -183,7 +185,7 @@ class Account extends Common
         } catch (\Exception $ex) {
         }
 
-        \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_2'));
+        MessageRenderer::toast('success', Translator::phrase('success_2'));
     }
 
     public function changePasswordProcess_verifyEmail($userid, $username, $password, $new_password, $confirm_new_password, $ip_address): void
@@ -243,7 +245,7 @@ class Account extends Common
             $email->addVariable('{EXPIRATION_TIME}', $mypassCfg['change_password_request_timeout']);
             $email->addAddress($accountData[_CLMN_EMAIL_]);
             $email->send();
-            \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_3'));
+            MessageRenderer::toast('success', Translator::phrase('success_3'));
         } catch (\Exception $ex) {
             if ($this->_debug) {
                 throw new \Exception($ex->getMessage());
@@ -308,7 +310,7 @@ class Account extends Common
         }
 
         $this->removePasswordChangeRequest($user_id);
-        \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_5'));
+        MessageRenderer::toast('success', Translator::phrase('success_5'));
     }
 
     public function passwordRecoveryProcess($user_email, $ip_address): void
@@ -350,7 +352,7 @@ class Account extends Common
             $email->addVariable('{LINK}', $aru);
             $email->addAddress($accountData[_CLMN_EMAIL_]);
             $email->send();
-            \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_6'));
+            MessageRenderer::toast('success', Translator::phrase('success_6'));
         } catch (\Exception $ex) {
             if ($this->_debug) {
                 throw new \Exception($ex->getMessage());
@@ -399,7 +401,7 @@ class Account extends Common
             $email->addVariable('{NEW_PASSWORD}', $new_password);
             $email->addAddress($accountData[_CLMN_EMAIL_]);
             $email->send();
-            \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_7'));
+            MessageRenderer::toast('success', Translator::phrase('success_7'));
         } catch (\Exception $ex) {
             if ($this->_debug) {
                 throw new \Exception($ex->getMessage());
@@ -510,7 +512,7 @@ class Account extends Common
 
         $this->_deleteRegistrationVerification($username);
 
-        if (\Darkheim\Infrastructure\Bootstrap\BootstrapContext::cmsValue('season_1_support')) {
+        if (BootstrapContext::cmsValue('season_1_support')) {
             // noinspection SqlNoDataSourceInspection — VI_CURR_INFO is a Season 1 game table
             $this->muonline->query(/** @lang TSQL */ "INSERT INTO VI_CURR_INFO (ends_days, chek_code, used_time, memb___id, memb_name, memb_guid, sno__numb, Bill_Section, Bill_Value, Bill_Hour, Surplus_Point, Surplus_Minute, Increase_Days) VALUES ('2005', '1', '1234', ?, '', '1', '7', '6', '3', '6', '6', '2020-01-01 00:00:00', '0')", [$verifyKey['registration_account']]);
         }
@@ -519,8 +521,8 @@ class Account extends Common
             $this->sendWelcomeEmail($verifyKey['registration_account'], $verifyKey['registration_email']);
         }
 
-        \Darkheim\Application\Shared\UI\MessageRenderer::toast('success', Translator::phrase('success_1'));
-        \Darkheim\Infrastructure\Http\Redirector::go(2, 'login/', 5);
+        MessageRenderer::toast('success', Translator::phrase('success_1'));
+        Redirector::go(2, 'login/', 5);
     }
 
     public function insertAccountCountry()

@@ -52,7 +52,7 @@ final class MessageRenderer
     }
 
     /**
-     * Outputs a visible inline styled message block.
+     * Outputs a visible inline-styled message block.
      * Use for passive empty-state notices inside panels/cards.
      */
     public static function inline(string $type = 'info', string $message = '', string $title = ''): void
