@@ -12,8 +12,6 @@ use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Cache\CacheBuilder;
 use Darkheim\Infrastructure\Database\Connection;
-use Darkheim\Infrastructure\Runtime\Native\NativeRequestStore;
-use Darkheim\Infrastructure\Runtime\Contracts\RequestStore;
 
 /**
  * RankingsService — cache-building and menu rendering for all ranking types.
@@ -29,11 +27,8 @@ class RankingsService
     protected $config;
     protected $mu;
     protected $me;
-    private RequestStore $request;
-
-    public function __construct(?RequestStore $request = null)
+    public function __construct()
     {
-        $this->request = $request                                   ?? new NativeRequestStore();
         $this->config  = BootstrapContext::configProvider()?->cms() ?? [];
 
         BootstrapContext::loadModuleConfig('rankings');
