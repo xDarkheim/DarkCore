@@ -29,7 +29,7 @@ class RankingsService
     protected $me;
     public function __construct()
     {
-        $this->config  = BootstrapContext::configProvider()?->cms() ?? [];
+        $this->config = BootstrapContext::configProvider()?->cms() ?? [];
 
         BootstrapContext::loadModuleConfig('rankings');
         $this->_results = Validator::hasValue(
