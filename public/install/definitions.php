@@ -3,7 +3,7 @@
 /**
  * DarkCore
  *
- * @version 1.1.0
+ * @version 1.1.1
  * @author      Dmytro Hovenko <dmytro.hovenko@gmail.com>
  */
 
@@ -14,7 +14,7 @@ if (! defined('access') or ! access or access != 'install') {
 /**
  * INSTALLER_VERSION
  */
-define('INSTALLER_VERSION', '1.1.0');
+define('INSTALLER_VERSION', '1.1.1');
 
 /**
  * CMS_CONFIGURATION_FILE

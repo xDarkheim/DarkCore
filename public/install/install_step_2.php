@@ -2,7 +2,7 @@
 /**
  * DarkCore
  *
- * @version 1.1.0
+ * @version 1.1.1
  * @author      Dmytro Hovenko <dmytro.hovenko@gmail.com>
  */
 if (! defined('access') || access !== 'install') {

@@ -87,7 +87,7 @@ final class AppKernel
     private function defineVersion(): void
     {
         if (! defined('__CMS_VERSION__')) {
-            define('__CMS_VERSION__', '1.1.0');
+            define('__CMS_VERSION__', '1.1.1');
         }
     }
 

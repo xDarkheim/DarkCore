@@ -41,7 +41,7 @@ define('__PATH_GUILD_PROFILES_CACHE__', $tmpBase . 'cache/profiles/guilds/');
 define('__PATH_API__', 'http://localhost:8081/api/');
 define('__PATH_ADMINCP_HOME__', 'http://localhost:8081/admincp/');
 define('__BASE_URL__', 'http://localhost:8081/');
-define('__CMS_VERSION__', '1.1.0');
+define('__CMS_VERSION__', '1.1.1');
 define('DARKHEIM_DATABASE_ERRORLOG', __PATH_LOGS__ . 'db_errors.log');
 define('DARKHEIM_PHP_ERRORLOG', __PATH_LOGS__ . 'php_errors.log');
 define('__PATH_THEME_ROOT__', __PATH_THEMES__ . 'default/');
