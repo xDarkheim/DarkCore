@@ -27,6 +27,7 @@ Copy `config.default.json` to `config.json` and fill in your values. The install
 | `website_title`            | string | `<title>` tag content                               |
 | `website_meta_description` | string | Meta description                                    |
 | `website_meta_keywords`    | string | Meta keywords                                       |
+| `website_url`              | string | Canonical public base URL used for links in emails, redirects, and URL generation |
 | `website_forum_link`       | string | Forum URL (used in navbar/links)                    |
 | `server_info_season`       | string | Season/version label (e.g. `"Darkheim v1"`)         |
 | `server_info_exp`          | string | EXP rate label                                      |
@@ -46,8 +47,12 @@ Copy `config.default.json` to `config.json` and fill in your values. The install
 | `SQL_DB_USER`             | string | Database user                                                 |
 | `SQL_DB_PASS`             | string | Database password                                             |
 | `SQL_DB_PORT`             | string | Port (default: `"1433"`)                                      |
-| `SQL_PASSWORD_ENCRYPTION` | string | Password hashing: `"none"`, `"wzmd5"`, `"phpmd5"`, `"sha256"` |
+| `SQL_PASSWORD_ENCRYPTION` | string | Account password format: `"none"`, `"wzmd5"`, `"phpmd5"`, `"sha256"` |
 | `SQL_SHA256_SALT`         | string | Salt used when `SQL_PASSWORD_ENCRYPTION = "sha256"`           |
+
+> `SQL_PASSWORD_ENCRYPTION` must match the format already used by your game server's account table.
+> `none` remains supported for legacy/plaintext MU server setups and should not be changed unless your emulator/database is migrated first.
+> Use `sha256` only together with a non-empty `SQL_SHA256_SALT`.
 
 ### Language
 
@@ -80,6 +85,13 @@ Copy `config.default.json` to `config.json` and fill in your values. The install
 | `plugins_system_enable`  |  bool  | Enable the plugin system                               |
 | `ip_block_system_enable` |  bool  | Enable IP blocking                                     |
 | `season_1_support`       |  bool  | Enable Season 1 compatibility mode                     |
+
+### Reverse proxy / canonical URL
+
+| Key                   |  Type  | Description |
+|:----------------------|:------:|:------------|
+| `website_url`         | string | Preferred absolute site URL. When set, the CMS uses it for generated links in password recovery, registration verification, and other outbound URLs. |
+| `trust_proxy_headers` |  bool  | Trust `CF-Connecting-IP` and `X-Forwarded-Proto` from an upstream proxy. Leave `false` unless the app is only accessible through a trusted reverse proxy/CDN. |
 
 ### Cron
 
@@ -155,3 +167,7 @@ cp docker/config.env.example docker/config.env
 - Never commit `config.json` to a public repository — it contains database credentials
 - `docker-compose.override.yml` is in `.gitignore` and must never be committed
 - Delete the `public/install/` directory after running the web installer
+- Password recovery and email verification now use server-side one-time action records stored under `var/cache/security/`
+- The website no longer emails plaintext passwords; recovery is completed through a reset link and on-site password form
+- Set `website_url` to your canonical public origin to avoid malformed or attacker-controlled links in emails and redirects
+- Enable `trust_proxy_headers` only when direct access to Apache is blocked and your proxy sanitizes forwarding headers

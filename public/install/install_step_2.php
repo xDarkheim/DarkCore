@@ -42,7 +42,10 @@ if (isset($_POST['install_step_2_submit'])) {
         $_SESSION['install_sql_pass']           = $_POST['install_step_2_3'];
         $_SESSION['install_sql_db1']            = trim($_POST['install_step_2_4']);
         $_SESSION['install_sql_passwd_encrypt'] = strtolower($_POST['install_step_2_6']);
-        $_SESSION['install_sql_sha256_salt']    = $_POST['install_step_2_9'] ?? '';
+        $_SESSION['install_sql_sha256_salt']    = trim((string) ($_POST['install_step_2_9'] ?? ''));
+        if ($_SESSION['install_sql_passwd_encrypt'] === 'sha256' && $_SESSION['install_sql_sha256_salt'] === '') {
+            $_SESSION['install_sql_sha256_salt'] = bin2hex(random_bytes(16));
+        }
         /** @phpstan-ignore-next-line */
         $db1 = new dB($_SESSION['install_sql_host'], $_SESSION['install_sql_port'], $_SESSION['install_sql_db1'], $_SESSION['install_sql_user'], $_SESSION['install_sql_pass']);
         if ($db1->dead) {
@@ -110,7 +113,7 @@ if (isset($_POST['install_step_2_submit'])) {
         <div class="form-group">
             <label for="salt">SHA256 Salt <small style="color: var(--tx-3);">(Optional)</small></label>
             <input type="text" id="salt" name="install_step_2_9" class="form-control" 
-                   placeholder="Leave empty to generate automatically" 
+                   placeholder="Leave empty to generate automatically"
                    value="<?php echo htmlspecialchars($_SESSION['install_sql_sha256_salt'] ?? ''); ?>">
         </div>
 

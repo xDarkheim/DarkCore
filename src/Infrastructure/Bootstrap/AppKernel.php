@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Darkheim\Infrastructure\Bootstrap;
 
+use Darkheim\Application\Auth\Common;
 use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Cache\CacheRepository;
 use Darkheim\Infrastructure\Routing\Dispatchers\Handler;
@@ -40,8 +41,8 @@ final class AppKernel
 
         $this->defineVersion();
         $this->configureEncoding();
-        $this->initializeSession($access);
         $this->normalizeProxyHeaders();
+        $this->initializeSession($access);
         $this->definePathConstants();
         $this->configureErrorLogging();
 
@@ -101,6 +102,16 @@ final class AppKernel
     {
         session_name('Darkheim010');
         if ($access !== 'cron') {
+            @ini_set('session.use_strict_mode', '1');
+            @ini_set('session.cookie_httponly', '1');
+            @ini_set('session.cookie_samesite', 'Lax');
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path'     => '/',
+                'secure'   => $this->isHttpsRequest(),
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
             @header('Content-Type: text/html; charset=UTF-8');
             @ob_start();
             if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -111,7 +122,12 @@ final class AppKernel
 
     private function normalizeProxyHeaders(): void
     {
-        if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+        $config = $this->configProvider->cms();
+        if (! ($config['trust_proxy_headers'] ?? false)) {
+            return;
+        }
+
+        if (isset($_SERVER['HTTP_CF_CONNECTING_IP']) && Validator::Ip((string) $_SERVER['HTTP_CF_CONNECTING_IP'])) {
             $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
         }
 
@@ -122,12 +138,11 @@ final class AppKernel
 
     private function definePathConstants(): void
     {
-        $httpHost       = $_SERVER['HTTP_HOST'] ?? 'CLI';
-        $serverProtocol = (! empty($_SERVER['HTTPS']) && strtolower(
-            $_SERVER['HTTPS'],
-        ) === 'on') ? 'https://' : 'https://';
-        $rootDir   = str_replace('\\', '/', dirname($this->includesDir)) . '/';
-        $publicDir = is_dir($rootDir . 'public') ? $rootDir . 'public/' : $rootDir;
+        $config         = $this->configProvider->cms();
+        $httpHost       = $this->resolveHttpHost($config);
+        $serverProtocol = $this->isHttpsRequest() ? 'https://' : 'http://';
+        $rootDir        = str_replace('\\', '/', dirname($this->includesDir)) . '/';
+        $publicDir      = is_dir($rootDir . 'public') ? $rootDir . 'public/' : $rootDir;
 
         $access    = defined('access') ? access : '';
         $rootDepth = match ($access) {
@@ -145,7 +160,7 @@ final class AppKernel
             ? rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'], $rootDepth)), '/') . '/'
             : '/';
 
-        $baseUrl = $serverProtocol . $httpHost . $relativeRoot;
+        $baseUrl = $this->resolveBaseUrl($config, $httpHost, $serverProtocol, $relativeRoot);
 
         $constants = [
             'HTTP_HOST'       => $httpHost,
@@ -274,6 +289,17 @@ final class AppKernel
         if (! Validator::hasValue($config['SQL_DB_PORT'] ?? null)) {
             throw new \Exception('The database port configuration is required to connect to your database.');
         }
+
+        $passwordMode = strtolower((string) ($config['SQL_PASSWORD_ENCRYPTION'] ?? ''));
+        if (! in_array($passwordMode, Common::supportedPasswordEncryptionModes(), true)) {
+            throw new \Exception('Unsupported password encryption mode configured.');
+        }
+        if ($passwordMode === 'sha256' && ! Validator::hasValue($config['SQL_SHA256_SALT'] ?? null)) {
+            throw new \Exception('The SHA-256 salt configuration is required when SHA-256 password encryption is enabled.');
+        }
+        if (Validator::hasValue($config['website_url'] ?? null) && ! Validator::Url((string) $config['website_url'])) {
+            throw new \Exception('The website URL configuration must be a valid absolute URL.');
+        }
     }
 
     /**
@@ -367,5 +393,65 @@ final class AppKernel
                 define($name, $value);
             }
         }
+    }
+
+    private function isHttpsRequest(): bool
+    {
+        return ! empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) === 'on';
+    }
+
+    /**
+     * @param array<string,mixed> $config
+     */
+    private function resolveHttpHost(array $config): string
+    {
+        $configuredHost = '';
+        if (Validator::hasValue($config['website_url'] ?? null)) {
+            $configuredHost = $this->sanitizeHost((string) parse_url((string) $config['website_url'], PHP_URL_HOST), null);
+            $configuredPort = parse_url((string) $config['website_url'], PHP_URL_PORT);
+            if ($configuredHost !== '' && is_int($configuredPort)) {
+                return $configuredHost . ':' . $configuredPort;
+            }
+            if ($configuredHost !== '') {
+                return $configuredHost;
+            }
+        }
+
+        $httpHost   = $this->sanitizeHost((string) ($_SERVER['HTTP_HOST'] ?? ''), true);
+        $serverName = $this->sanitizeHost((string) ($_SERVER['SERVER_NAME'] ?? ''), null);
+        if ($serverName !== '') {
+            $httpHostName = strtolower((string) preg_replace('/:\d+$/', '', $httpHost));
+            if ($httpHost === '' || ($httpHostName !== '' && $httpHostName !== strtolower($serverName))) {
+                return $serverName;
+            }
+        }
+
+        return $httpHost !== '' ? $httpHost : ($serverName !== '' ? $serverName : 'localhost');
+    }
+
+    /**
+     * @param array<string,mixed> $config
+     */
+    private function resolveBaseUrl(array $config, string $httpHost, string $serverProtocol, string $relativeRoot): string
+    {
+        if (Validator::hasValue($config['website_url'] ?? null) && Validator::Url((string) $config['website_url'])) {
+            return rtrim((string) $config['website_url'], '/') . '/';
+        }
+
+        return $serverProtocol . $httpHost . $relativeRoot;
+    }
+
+    private function sanitizeHost(string $host, ?bool $allowPort): string
+    {
+        $host = trim(strtolower($host));
+        if ($host === '') {
+            return '';
+        }
+
+        $pattern = $allowPort === true
+            ? '/\A(?:[a-z0-9.-]+|\[[0-9a-f:.]+\])(?::\d{1,5})?\z/i'
+            : '/\A(?:[a-z0-9.-]+|\[[0-9a-f:.]+\])\z/i';
+
+        return preg_match($pattern, $host) === 1 ? $host : '';
     }
 }

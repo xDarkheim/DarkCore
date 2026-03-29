@@ -32,6 +32,8 @@ if (isset($_POST['install_step_5_submit'])) {
         $cmsDefaultConfig['SQL_PDO_DRIVER']          = $_SESSION['install_sql_dsn'] ?? 'mssql';
         $cmsDefaultConfig['SQL_PASSWORD_ENCRYPTION'] = $_SESSION['install_sql_passwd_encrypt'];
         $cmsDefaultConfig['SQL_SHA256_SALT']         = $_SESSION['install_sql_sha256_salt'];
+        $cmsDefaultConfig['website_url']             = __BASE_URL__;
+        $cmsDefaultConfig['trust_proxy_headers']     = false;
         $cmsDefaultConfig['cms_installed']           = true;
 
         $configRepository = new ConfigRepository(dirname($cmsConfigsPath));

@@ -7,17 +7,21 @@ namespace Darkheim\Application\Auth;
 use Darkheim\Domain\Validation\Validator;
 use Darkheim\Infrastructure\Bootstrap\BootstrapContext;
 use Darkheim\Infrastructure\Database\Connection;
+use Darkheim\Infrastructure\Security\OneTimeActionStore;
 
 /**
  * Common base class — shared account/auth utilities used by child classes.
  */
 class Common
 {
+    protected const string PASSWORD_CHANGE_REQUEST_BUCKET = 'password-change-requests';
+
     protected $_passwordEncryption;
     protected $_sha256salt;
     protected $_debug = false;
 
     protected $muonline;
+    private ?OneTimeActionStore $oneTimeActionStore = null;
 
     public function __construct()
     {
@@ -66,7 +70,10 @@ class Common
 
         $data = ['username' => $username, 'password' => $password];
 
-        switch ($this->_passwordEncryption) {
+        switch ($this->passwordEncryptionMode()) {
+            case 'none':
+                $query = "SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_USERNM_ . " = :username AND " . _CLMN_PASSWD_ . " = :password";
+                break;
             case 'wzmd5':
                 // noinspection SqlNoDataSourceInspection — fn_md5 is a MSSQL server-side stored function
                 $query = /** @lang TSQL */ "SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_USERNM_ . " = :username AND " . _CLMN_PASSWD_ . " = [dbo].[fn_md5](:password, :username)";
@@ -79,8 +86,6 @@ class Common
                 $data['password'] = $password . $username . $this->_sha256salt;
                 $query            = "SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_USERNM_ . " = :username AND " . _CLMN_PASSWD_ . " = HASHBYTES('SHA2_256', CAST(:password AS VARCHAR(MAX)))";
                 break;
-            default:
-                $query = "SELECT * FROM " . _TBL_MI_ . " WHERE " . _CLMN_USERNM_ . " = :username AND " . _CLMN_PASSWD_ . " = :password";
         }
 
         $result = $this->muonline->query_fetch_single($query, $data);
@@ -152,31 +157,11 @@ class Common
             return;
         }
 
-        switch ($this->_passwordEncryption) {
-            case 'wzmd5':
-                $data  = ['userid' => $id, 'username' => $username, 'password' => $new_password];
-                $query = "UPDATE " . _TBL_MI_ . " SET " . _CLMN_PASSWD_ . " = [dbo].[fn_md5](:password, :username) WHERE " . _CLMN_MEMBID_ . " = :userid";
-                break;
-            case 'phpmd5':
-                $data  = ['userid' => $id, 'password' => md5($new_password)];
-                $query = "UPDATE " . _TBL_MI_ . " SET " . _CLMN_PASSWD_ . " = :password WHERE " . _CLMN_MEMBID_ . " = :userid";
-                break;
-            case 'sha256':
-                $data  = ['userid' => $id, 'password' => '0x' . hash('sha256', $new_password . $username . $this->_sha256salt)];
-                $query = "UPDATE " . _TBL_MI_ . " SET " . _CLMN_PASSWD_ . " = CONVERT(binary(32),:password,1) WHERE " . _CLMN_MEMBID_ . " = :userid";
-                break;
-            default:
-                $data  = ['userid' => $id, 'password' => $new_password];
-                $query = "UPDATE " . _TBL_MI_ . " SET " . _CLMN_PASSWD_ . " = :password WHERE " . _CLMN_MEMBID_ . " = :userid";
-        }
-
-        $result = $this->muonline->query($query, $data);
-        if ($result) {
-            return true;
-        }
+        $encodedPassword = $this->encodePasswordForStorage((string) $username, (string) $new_password);
+        return $this->updatePasswordWithEncodedValue($id, $encodedPassword, null);
     }
 
-    public function addPasswordChangeRequest($userid, $new_password, $auth_code)
+    public function addPasswordChangeRequest($userid, $new_password, $auth_code, $username = null)
     {
         if (! Validator::hasValue($userid)) {
             return;
@@ -189,6 +174,10 @@ class Common
         }
         if (! Validator::PasswordLength($new_password)) {
             return;
+        }
+
+        if (Validator::hasValue($username)) {
+            return $this->storePasswordChangeRequest((string) $userid, (string) $username, (string) $new_password, (string) $auth_code);
         }
 
         $data   = [$userid, $new_password, $auth_code, time()];
@@ -204,16 +193,22 @@ class Common
         if (! Validator::hasValue($userid)) {
             return;
         }
+
+        $storedRequest = $this->loadActionRequest(self::PASSWORD_CHANGE_REQUEST_BUCKET, (string) $userid);
+        if (is_array($storedRequest)) {
+            if ($this->isPasswordChangeRequestActive($storedRequest)) {
+                return true;
+            }
+
+            $this->removePasswordChangeRequest($userid);
+            return;
+        }
+
         $result = $this->muonline->query_fetch_single("SELECT * FROM " . Passchange_Request . " WHERE user_id = ?", [$userid]);
         if (! is_array($result)) {
             return;
         }
-        $configs = BootstrapContext::configProvider()?->moduleConfig('my-password');
-        if (! is_array($configs)) {
-            return;
-        }
-        $request_timeout = $configs['change_password_request_timeout'] * 3600;
-        $request_date    = $result['request_date'] + $request_timeout;
+        $request_date = (int) ($result['request_date'] ?? 0) + $this->passwordChangeRequestTimeout();
         if (time() < $request_date) {
             return true;
         }
@@ -222,6 +217,13 @@ class Common
 
     public function removePasswordChangeRequest($userid)
     {
+        $storedRequest = $this->loadActionRequest(self::PASSWORD_CHANGE_REQUEST_BUCKET, (string) $userid);
+        if (is_array($storedRequest)) {
+            if ($this->actionStore()->delete(self::PASSWORD_CHANGE_REQUEST_BUCKET, (string) $userid)) {
+                return true;
+            }
+        }
+
         $result = $this->muonline->query("DELETE FROM " . Passchange_Request . " WHERE user_id = ?", [$userid]);
         if ($result) {
             return true;
@@ -233,9 +235,9 @@ class Common
         return __BASE_URL__ . 'verifyemail/?op=1&uid=' . $user_id . '&key=' . $auth_code;
     }
 
-    public function generateAccountRecoveryCode($user_id, $username): string
+    public function generateAccountRecoveryCode(): string
     {
-        return md5(md5($user_id) . md5($username));
+        return $this->generateOpaqueToken();
     }
 
     public function updateEmail($userid, $newEmail)
@@ -326,5 +328,168 @@ class Common
         }
 
         return $this->muonline->query("DELETE FROM " . Blocked_IP . " WHERE id = ?", [$id]);
+    }
+
+    public static function supportedPasswordEncryptionModes(): array
+    {
+        return ['none', 'wzmd5', 'phpmd5', 'sha256'];
+    }
+
+    protected function passwordEncryptionMode(?string $mode = null): string
+    {
+        $normalized = strtolower((string) ($mode ?? $this->_passwordEncryption));
+        if (! in_array($normalized, self::supportedPasswordEncryptionModes(), true)) {
+            throw new \RuntimeException('Unsupported password encryption setting.');
+        }
+
+        return $normalized;
+    }
+
+    protected function encodePasswordForStorage(string $username, string $password, ?string $mode = null): string
+    {
+        return match ($this->passwordEncryptionMode($mode)) {
+            'none'   => $password,
+            'wzmd5'  => $this->encodeWzMd5Password($username, $password),
+            'phpmd5' => md5($password),
+            'sha256' => '0x' . hash('sha256', $password . $username . $this->_sha256salt),
+        };
+    }
+
+    protected function updatePasswordWithEncodedValue(int|string $userId, string $encodedPassword, ?string $mode = null): bool
+    {
+        return match ($this->passwordEncryptionMode($mode)) {
+            'none', 'wzmd5', 'phpmd5' => $this->muonline->query(
+                "UPDATE " . _TBL_MI_ . " SET " . _CLMN_PASSWD_ . " = :password WHERE " . _CLMN_MEMBID_ . " = :userid",
+                ['userid' => $userId, 'password' => $encodedPassword],
+            ),
+            'sha256' => $this->muonline->query(
+                "UPDATE " . _TBL_MI_ . " SET " . _CLMN_PASSWD_ . " = CONVERT(binary(32),:password,1) WHERE " . _CLMN_MEMBID_ . " = :userid",
+                ['userid' => $userId, 'password' => $encodedPassword],
+            ),
+        };
+    }
+
+    protected function insertAccountWithEncodedPassword(string $username, string $encodedPassword, string $email, ?string $mode = null): bool
+    {
+        $data = [
+            'username' => $username,
+            'password' => $encodedPassword,
+            'name'     => $username,
+            'serial'   => '1111111111111',
+            'email'    => $email,
+        ];
+
+        $query = match ($this->passwordEncryptionMode($mode)) {
+            'none', 'wzmd5', 'phpmd5' => "INSERT INTO " . _TBL_MI_ . " (" . _CLMN_USERNM_ . ", " . _CLMN_PASSWD_ . ", " . _CLMN_MEMBNAME_ . ", " . _CLMN_SNONUMBER_ . ", " . _CLMN_EMAIL_ . ", " . _CLMN_BLOCCODE_ . ", " . _CLMN_CTLCODE_ . ") VALUES (:username, :password, :name, :serial, :email, 0, 0)",
+            'sha256' => "INSERT INTO " . _TBL_MI_ . " (" . _CLMN_USERNM_ . ", " . _CLMN_PASSWD_ . ", " . _CLMN_MEMBNAME_ . ", " . _CLMN_SNONUMBER_ . ", " . _CLMN_EMAIL_ . ", " . _CLMN_BLOCCODE_ . ", " . _CLMN_CTLCODE_ . ") VALUES (:username, CONVERT(binary(32),:password,1), :name, :serial, :email, 0, 0)",
+        };
+
+        return $this->muonline->query($query, $data);
+    }
+
+    protected function actionStore(): OneTimeActionStore
+    {
+        if (! $this->oneTimeActionStore instanceof OneTimeActionStore) {
+            $this->oneTimeActionStore = new OneTimeActionStore();
+        }
+
+        return $this->oneTimeActionStore;
+    }
+
+    /**
+     * @param array<string,mixed> $payload
+     */
+    protected function saveActionRequest(string $bucket, string $key, array $payload): bool
+    {
+        return $this->actionStore()->save($bucket, $key, $payload);
+    }
+
+    /**
+     * @return array<string,mixed>|null
+     */
+    protected function loadActionRequest(string $bucket, string $key): ?array
+    {
+        return $this->actionStore()->load($bucket, $key);
+    }
+
+    /**
+     * @return array<int,array<string,mixed>>
+     */
+    protected function loadAllActionRequests(string $bucket): array
+    {
+        return $this->actionStore()->all($bucket);
+    }
+
+    protected function generateOpaqueToken(int $bytes = 32): string
+    {
+        return bin2hex(random_bytes($bytes));
+    }
+
+    protected function hashOpaqueToken(string $token): string
+    {
+        return hash('sha256', $token);
+    }
+
+    protected function opaqueTokenMatches(string $expectedHash, string $token): bool
+    {
+        return hash_equals($expectedHash, $this->hashOpaqueToken($token));
+    }
+
+    protected function storePasswordChangeRequest(string $userId, string $username, string $newPassword, string $authCode): bool
+    {
+        $encodedPassword = $this->encodePasswordForStorage($username, $newPassword);
+
+        return $this->saveActionRequest(self::PASSWORD_CHANGE_REQUEST_BUCKET, $userId, [
+            'user_id'          => $userId,
+            'username'         => $username,
+            'encoded_password' => $encodedPassword,
+            'password_mode'    => $this->passwordEncryptionMode(),
+            'token_hash'       => $this->hashOpaqueToken($authCode),
+            'request_date'     => time(),
+        ]);
+    }
+
+    /**
+     * @return array<string,mixed>|null
+     */
+    protected function loadPasswordChangeRequest(string $userId): ?array
+    {
+        return $this->loadActionRequest(self::PASSWORD_CHANGE_REQUEST_BUCKET, $userId);
+    }
+
+    protected function isPasswordChangeRequestActive(array $request): bool
+    {
+        $requestDate = (int) ($request['request_date'] ?? 0);
+        return $requestDate > 0 && time() < ($requestDate + $this->passwordChangeRequestTimeout());
+    }
+
+    protected function passwordChangeRequestTimeout(): int
+    {
+        $configs = BootstrapContext::configProvider()?->moduleConfig('my-password');
+        if (! is_array($configs)) {
+            return 12 * 3600;
+        }
+
+        return max(1, (int) ($configs['change_password_request_timeout'] ?? 12)) * 3600;
+    }
+
+    private function encodeWzMd5Password(string $username, string $password): string
+    {
+        $result = $this->muonline->query_fetch_single(
+            /** @lang TSQL */
+            "SELECT [dbo].[fn_md5](?, ?) AS password_hash",
+            [$password, $username],
+        );
+
+        if (! is_array($result)) {
+            throw new \RuntimeException('Could not hash password.');
+        }
+
+        $hash = $result['password_hash'] ?? reset($result);
+        if (! is_string($hash) || $hash === '') {
+            throw new \RuntimeException('Could not hash password.');
+        }
+
+        return $hash;
     }
 }

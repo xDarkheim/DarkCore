@@ -44,13 +44,19 @@ cp docker/config.env.example docker/config.env
 
 ### 2. Fill in `config/config.json`
 
-| Key           |     Example      | Description               |
-|:--------------|:----------------:|:--------------------------|
-| `SQL_DB_HOST` | `"192.168.1.56"` | SQL Server IP or hostname |
-| `SQL_DB_NAME` |   `"MuOnline"`   | Database name             |
-| `SQL_DB_USER` |      `"sa"`      | Database user             |
-| `SQL_DB_PASS` | `"yourpassword"` | Database password         |
-| `SQL_DB_PORT` |     `"1433"`     | SQL Server port           |
+| Key                       |          Example           | Description |
+|:--------------------------|:--------------------------:|:------------|
+| `SQL_DB_HOST`             |      `"192.168.1.56"`      | SQL Server IP or hostname |
+| `SQL_DB_NAME`             |       `"MuOnline"`         | Database name |
+| `SQL_DB_USER`             |          `"sa"`            | Database user |
+| `SQL_DB_PASS`             |      `"yourpassword"`      | Database password |
+| `SQL_DB_PORT`             |         `"1433"`           | SQL Server port |
+| `SQL_PASSWORD_ENCRYPTION` |         `"none"`           | Must match the password format already used by your emulator account table |
+| `SQL_SHA256_SALT`         | `"change-me-if-using-sha"` | Required only for `sha256` mode |
+| `website_url`             |  `"https://mu.example.com"` | Canonical public URL used in recovery/verification emails and redirects |
+| `trust_proxy_headers`     |          `false`           | Enable only when the app is reachable exclusively through a trusted proxy/CDN |
+
+`SQL_PASSWORD_ENCRYPTION=none` remains a valid compatibility mode for legacy MU server databases. Do not switch to a hashed mode unless the game server and existing account data are migrated together.
 
 See [Configuration](configuration.md) for all available keys.
 
@@ -123,6 +129,14 @@ Then configure a **Proxy Host** in Nginx Proxy Manager:
 | Block Common Exploits | `Yes`                                  |
 
 SSL → **Request a new SSL Certificate** (Let's Encrypt).
+
+When you run behind Nginx Proxy Manager, Cloudflare, or another TLS terminator:
+
+- set `config/config.json -> website_url` to the exact public origin players use
+- keep `trust_proxy_headers` disabled unless direct access to the Apache container is blocked
+- enable `trust_proxy_headers` only if the proxy is the component setting `CF-Connecting-IP` / `X-Forwarded-Proto`
+
+This keeps generated password-reset / verification links canonical and lets the CMS mark session cookies as `secure` on HTTPS traffic.
 
 ## Docker files
 

@@ -45,13 +45,19 @@ docker compose up -d --build
 
 Open `https://your-domain/install/` in the browser, complete the setup wizard, then **delete the `public/install/` directory**.
 
+After installation, review three security-sensitive settings in `config/config.json`:
+
+- `SQL_PASSWORD_ENCRYPTION` must match the format used by your emulator account table. Legacy/plaintext setups can keep `none`; hashed modes remain available when your stack supports them.
+- `website_url` should be set to the canonical public origin used by players, especially if the site is behind a reverse proxy or CDN.
+- `trust_proxy_headers` should stay `false` unless the app is reachable only through a trusted proxy that rewrites client IP / HTTPS headers.
+
 ---
 
 ## Features
 
 | Feature              | Details                                                  |
 |:---------------------|:---------------------------------------------------------|
-| Authentication       | Registration, login, forgot password, email verification |
+| Authentication       | Registration, login, reset-link recovery, email verification |
 | Character management | View and edit character stats                            |
 | Rankings             | Player and guild rankings with class filter              |
 | News                 | Multi-language news with translations                    |

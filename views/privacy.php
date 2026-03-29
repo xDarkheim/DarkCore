@@ -37,7 +37,7 @@
 	<div class="tos-section-body">
 		<div class="tos-rule">
 			<span class="tos-rule-badge">§ 1.1</span>
-			<span><strong>Account data</strong> — When you register, we collect your username, email address and a hashed version of your password. We do not store your password in plain text.</span>
+			<span><strong>Account data</strong> — When you register, we collect your username, email address and the password representation required by this server's account database. Depending on the emulator and compatibility mode in use, this may be stored in plaintext-compatible or hashed form.</span>
 		</div>
 		<div class="tos-rule">
 			<span class="tos-rule-badge">§ 1.2</span>
@@ -205,7 +205,7 @@
 	<div class="tos-section-body">
 		<div class="tos-rule">
 			<span class="tos-rule-badge">§ 7.1</span>
-			<span>Passwords are stored using industry-standard one-way hashing. We never store or transmit your password in plain text.</span>
+			<span>Password handling follows the account format configured by the server operator. Legacy MU server compatibility modes may use plaintext-compatible storage, while supported setups can use hashed modes. The website does not send plaintext passwords by email and uses one-time recovery links instead.</span>
 		</div>
 		<div class="tos-rule">
 			<span class="tos-rule-badge">§ 7.2</span>

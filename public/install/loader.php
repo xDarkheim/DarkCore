@@ -12,6 +12,16 @@ if (! defined('access') || access !== 'install') {
 }
 
 session_name('DarkheimInstaller010');
+@ini_set('session.use_strict_mode', '1');
+@ini_set('session.cookie_httponly', '1');
+@ini_set('session.cookie_samesite', 'Lax');
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path'     => '/',
+    'secure'   => ! empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) === 'on',
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
 session_start();
 ob_start();
 
@@ -20,7 +30,7 @@ ob_start();
 define('HTTP_HOST', $_SERVER['HTTP_HOST']);
 define(
     'SERVER_PROTOCOL',
-    (! empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on') ? 'https://' : 'https://',
+    (! empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on') ? 'https://' : 'http://',
 );
 // Project root is 3 levels up from public/install/loader.php
 define('__ROOT_DIR__', str_replace('\\', '/', dirname(__FILE__, 3)) . '/');

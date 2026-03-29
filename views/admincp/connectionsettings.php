@@ -3,7 +3,7 @@
  * AdminCP connection settings view.
  *
  * Variables:
- * - string $host, $database, $user, $password, $port, $encryption
+ * - string $host, $database, $user, $password, $port, $encryption, $sha256Salt
  */
 ?>
 <h1 class="page-header"><i class="bi bi-database-fill me-2"></i>Connection Settings</h1>
@@ -46,6 +46,10 @@
                     <?php endforeach; ?>
                 </td>
             </tr>
+            <tr>
+                <td><strong>SHA-256 Salt</strong><p class="setting-description">Required when SHA-256 is selected. Leave empty to auto-generate on save.</p></td>
+                <td><input type="text" class="form-control" name="SQL_SHA256_SALT" value="<?php echo htmlspecialchars($sha256Salt, ENT_QUOTES, 'UTF-8'); ?>"></td>
+            </tr>
         </table>
         <div class="p-3">
             <button type="submit" name="settings_submit" value="ok" class="btn btn-primary">
@@ -54,4 +58,3 @@
         </div>
     </form>
 </div>
-

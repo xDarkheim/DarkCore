@@ -114,12 +114,13 @@ class CommonTest extends TestCase
 
     // ── generateAccountRecoveryCode ──────────────────────────────────────────
 
-    public function testGenerateAccountRecoveryCode(): void
+    public function testGenerateAccountRecoveryCodeReturnsOpaqueToken(): void
     {
-        $db       = $this->createMock(dB::class);
-        $sut      = $this->make($db);
-        $expected = md5(md5('5') . md5('testuser'));
-        $this->assertSame($expected, $sut->generateAccountRecoveryCode('5', 'testuser'));
+        $db    = $this->createMock(dB::class);
+        $sut   = $this->make($db);
+        $token = $sut->generateAccountRecoveryCode();
+
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $token);
     }
 
     // ── generatePasswordChangeVerificationURL ────────────────────────────────
@@ -168,6 +169,15 @@ class CommonTest extends TestCase
         $db->method('query_fetch_single')->willReturn(null);
         $sut = $this->make($db);
         $this->assertFalse($sut->validateUser('testuser', 'pass1234'));
+    }
+
+    public function testValidateUserSupportsPlaintextPasswordMode(): void
+    {
+        $db = $this->createMock(dB::class);
+        $db->method('query_fetch_single')->willReturn(['memb___id' => 'testuser']);
+        $sut = $this->make($db);
+        $this->setProp($sut, '_passwordEncryption', 'none');
+        $this->assertTrue($sut->validateUser('testuser', 'pass1234'));
     }
 
     public function testValidateUserReturnsNullForTooShortPassword(): void

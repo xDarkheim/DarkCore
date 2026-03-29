@@ -33,22 +33,38 @@ final class ForgotPasswordController
                 return;
             }
 
-            // Email verification link (sent by email): /verifyemail/?op=0&ui=...&ue=...&key=...
-            if (isset($_GET['ui'], $_GET['ue'], $_GET['key'])) {
+            $recoveryUserId = (string) ($_GET['ui'] ?? $_POST['recovery_ui'] ?? '');
+            $recoveryToken  = (string) ($_GET['key'] ?? $_POST['recovery_key'] ?? '');
+            $recoveryEmail  = (string) ($_GET['ue'] ?? $_POST['recovery_email'] ?? '');
+            $recoveryMode   = $recoveryUserId !== '' && $recoveryToken !== '';
+
+            if ($recoveryMode) {
+                $account = new Account();
                 try {
-                    new Account()->passwordRecoveryVerificationProcess(
-                        $_GET['ui'],
-                        $_GET['ue'],
-                        $_GET['key'],
+                    $account->passwordRecoveryVerificationProcess(
+                        $recoveryUserId,
+                        $recoveryToken,
+                        $recoveryEmail !== '' ? $recoveryEmail : null,
                     );
+
+                    if (isset($_POST['darkheimRecovery_submit'])) {
+                        $account->passwordRecoveryResetProcess(
+                            $recoveryUserId,
+                            $recoveryToken,
+                            $_POST['darkheimRecovery_new']     ?? '',
+                            $_POST['darkheimRecovery_confirm'] ?? '',
+                            $recoveryEmail !== '' ? $recoveryEmail : null,
+                        );
+                        Redirector::go(2, 'login/', 3);
+                        return;
+                    }
                 } catch (\Exception $ex) {
                     MessageRenderer::inline('error', $ex->getMessage());
+                    return;
                 }
-                return;
             }
 
-            // Form submission
-            if (isset($_POST['darkheimEmail_submit'])) {
+            if (! $recoveryMode && isset($_POST['darkheimEmail_submit'])) {
                 try {
                     new Account()->passwordRecoveryProcess(
                         $_POST['darkheimEmail_current'] ?? '',
@@ -60,8 +76,12 @@ final class ForgotPasswordController
             }
 
             $this->view->render('forgotpassword', [
-                'baseUrl'  => __BASE_URL__,
-                'loginUrl' => __BASE_URL__ . 'login',
+                'baseUrl'        => __BASE_URL__,
+                'loginUrl'       => __BASE_URL__ . 'login',
+                'recoveryMode'   => $recoveryMode,
+                'recoveryUserId' => $recoveryUserId,
+                'recoveryToken'  => $recoveryToken,
+                'recoveryEmail'  => $recoveryEmail,
             ]);
         } catch (\Exception $ex) {
             MessageRenderer::inline('error', $ex->getMessage());

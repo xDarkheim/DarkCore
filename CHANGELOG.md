@@ -4,6 +4,16 @@ All notable changes to this project are documented in this file.
 
 The format is based on Keep a Changelog.
 
+## [Unreleased]
+
+### Changed
+- Documented `website_url` and `trust_proxy_headers` as deployment-critical settings for canonical links and trusted proxy setups.
+- Clarified that `SQL_PASSWORD_ENCRYPTION=none` remains supported for emulator compatibility and must match the existing account table format.
+
+### Security
+- Documented the move to one-time server-side password recovery / verification actions and the removal of plaintext passwords from recovery emails.
+- Updated privacy-facing copy to avoid false claims about password storage on legacy plaintext-compatible deployments.
+
 ## [1.1.1] - 2026-03-26
 
 ### Changed
@@ -42,4 +52,3 @@ The format is based on Keep a Changelog.
 [1.1.1]: https://github.com/darkheim/DarkCore/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/darkheim/DarkCore/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/darkheim/DarkCore/releases/tag/v1.0.0
-

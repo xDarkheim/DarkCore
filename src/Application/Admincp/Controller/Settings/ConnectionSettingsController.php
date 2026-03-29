@@ -22,7 +22,7 @@ final class ConnectionSettingsController
 
     public function render(): void
     {
-        $allowedSettings = ['settings_submit', 'SQL_DB_HOST', 'SQL_DB_NAME', 'SQL_DB_USER', 'SQL_DB_PASS', 'SQL_DB_PORT', 'SQL_PASSWORD_ENCRYPTION'];
+        $allowedSettings = ['settings_submit', 'SQL_DB_HOST', 'SQL_DB_NAME', 'SQL_DB_USER', 'SQL_DB_PASS', 'SQL_DB_PORT', 'SQL_PASSWORD_ENCRYPTION', 'SQL_SHA256_SALT'];
 
         if (isset($_POST['settings_submit'])) {
             try {
@@ -41,8 +41,12 @@ final class ConnectionSettingsController
                 if (! isset($_POST['SQL_DB_PORT']) || ! Validator::UnsignedNumber($_POST['SQL_DB_PORT'])) {
                     throw new \RuntimeException('Invalid Port setting.');
                 }
-                if (! isset($_POST['SQL_PASSWORD_ENCRYPTION']) || ! in_array($_POST['SQL_PASSWORD_ENCRYPTION'], ['none', 'wzmd5', 'phpmd5', 'sha256'])) {
+                if (! isset($_POST['SQL_PASSWORD_ENCRYPTION']) || ! in_array($_POST['SQL_PASSWORD_ENCRYPTION'], \Darkheim\Application\Auth\Common::supportedPasswordEncryptionModes(), true)) {
                     throw new \RuntimeException('Invalid password encryption setting.');
+                }
+                $sha256Salt = (string) ($_POST['SQL_SHA256_SALT'] ?? '');
+                if ($_POST['SQL_PASSWORD_ENCRYPTION'] === 'sha256' && ! Validator::hasValue($sha256Salt)) {
+                    $sha256Salt = bin2hex(random_bytes(16));
                 }
                 $setting = [
                     'SQL_DB_HOST'             => $_POST['SQL_DB_HOST'],
@@ -51,6 +55,7 @@ final class ConnectionSettingsController
                     'SQL_DB_PASS'             => $_POST['SQL_DB_PASS'],
                     'SQL_DB_PORT'             => $_POST['SQL_DB_PORT'],
                     'SQL_PASSWORD_ENCRYPTION' => $_POST['SQL_PASSWORD_ENCRYPTION'],
+                    'SQL_SHA256_SALT'         => $sha256Salt,
                 ];
 
                 $testDb = new dB($setting['SQL_DB_HOST'], $setting['SQL_DB_PORT'], $setting['SQL_DB_NAME'], $setting['SQL_DB_USER'], $setting['SQL_DB_PASS']);
@@ -80,6 +85,7 @@ final class ConnectionSettingsController
             'password'   => (string) BootstrapContext::cmsValue('SQL_DB_PASS', true),
             'port'       => (string) BootstrapContext::cmsValue('SQL_DB_PORT', true),
             'encryption' => (string) BootstrapContext::cmsValue('SQL_PASSWORD_ENCRYPTION', true),
+            'sha256Salt' => (string) BootstrapContext::cmsValue('SQL_SHA256_SALT', true),
         ]);
     }
 }
